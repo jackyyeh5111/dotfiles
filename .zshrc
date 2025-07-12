@@ -1,0 +1,146 @@
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+# Path to your oh-my-zsh installation.
+export ZSH="/Users/jackyyeh/.oh-my-zsh"
+
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time oh-my-zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+ZSH_THEME="robbyrussell"
+
+# Set list of themes to pick from when loading at random
+# Setting this variable when ZSH_THEME=random will cause zsh to load
+# a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
+# If set to an empty array, this variable will have no effect.
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+
+# Uncomment the following line to use case-sensitive completion.
+# CASE_SENSITIVE="true"
+
+# Uncomment the following line to use hyphen-insensitive completion.
+# Case-sensitive completion must be off. _ and - will be interchangeable.
+# HYPHEN_INSENSITIVE="true"
+
+# Uncomment the following line to disable bi-weekly auto-update checks.
+# DISABLE_AUTO_UPDATE="true"
+
+# Uncomment the following line to automatically update without prompting.
+# DISABLE_UPDATE_PROMPT="true"
+
+# Uncomment the following line to change how often to auto-update (in days).
+# export UPDATE_ZSH_DAYS=13
+
+# Uncomment the following line if pasting URLs and other text is messed up.
+# DISABLE_MAGIC_FUNCTIONS=true
+
+# Uncomment the following line to disable colors in ls.
+# DISABLE_LS_COLORS="true"
+
+# Uncomment the following line to disable auto-setting terminal title.
+# DISABLE_AUTO_TITLE="true"
+
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
+
+# Uncomment the following line to display red dots whilst waiting for completion.
+# COMPLETION_WAITING_DOTS="true"
+
+# Uncomment the following line if you want to disable marking untracked files
+# under VCS as dirty. This makes repository status check for large repositories
+# much, much faster.
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
+
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# You can set one of the optional three formats:
+# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# or set a custom format using the strftime function format specifications,
+# see 'man strftime' for details.
+# HIST_STAMPS="mm/dd/yyyy"
+
+# Would you like to use another custom folder than $ZSH/custom?
+# ZSH_CUSTOM=/path/to/new-custom-folder
+
+# Which plugins would you like to load?
+# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(git )
+
+source $ZSH/oh-my-zsh.sh
+
+# User configuration
+
+# export MANPATH="/usr/local/man:$MANPATH"
+
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
+
+# Preferred editor for local and remote sessions
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='vim'
+# else
+#   export EDITOR='mvim'
+# fi
+
+# Compilation flags
+# export ARCHFLAGS="-arch x86_64"
+
+# Set personal aliases, overriding those provided by oh-my-zsh libs,
+# plugins, and themes. Aliases can be placed here, though oh-my-zsh
+# users are encouraged to define aliases within the ZSH_CUSTOM folder.
+# For a full list of active aliases, run `alias`.
+#
+# Example aliases
+# alias zshconfig="mate ~/.zshrc"
+# alias ohmyzsh="mate ~/.oh-my-zsh"
+
+export WORKON_HOME=~/pyEnv
+VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+source /usr/local/bin/virtualenvwrapper.sh
+
+export DYLD_LIBRARY_PATH="/Users/jackyyeh/gatos/gvaoi/gatoslib/usr/local/lib"
+alias cdpost="cd /Users/jackyyeh/gatos/AOI-Deluxe/postprocessor" 
+alias cdsy="cd /Users/jackyyeh/gatos/gvsynthesize"
+alias vocab="python3 /Users/jackyyeh/SideProject/Vocab-Learning-Helper/main.py"
+alias gs="git status"
+alias ga="git add"
+alias gce="git commit -e"
+alias gca="git commit --amend"
+alias gd="git diff"
+alias gb="git branch"
+alias gck="git checkout"
+alias gh='git checkout HEAD'
+alias glo='git log --oneline'
+alias cdu="cd /Users/jackyyeh/Desktop/Courses/UIUC"
+alias cdf484="cd ~/Desktop/Courses/UIUC/ECE484-Principles-Of-Safe-Autonomy/ECE484-Principles-Of-Safe-Autonomy-2023Fall-Final"
+alias vimz="vim ~/.zshrc"
+alias souz="source ~/.zshrc"
+alias cdf1='cd ~/Desktop/Courses/UIUC/ECE484-Principles-Of-Safe-Autonomy/ECE484-Principles-Of-Safe-Autonomy-2023Fall-Final'
+
+#PATH="$PATH:/Users/jackyyeh/Library/Application Support/multipass/bin"
+alias cd543='cd ~/Desktop/Courses/UIUC/CS543-Computer-Vision-Fall-2023'
+alias cd498='cd /Users/jackyyeh/Desktop/Courses/UIUC/CS498-Mobile-Robotics'
+alias cdc='cd /Users/jackyyeh/SideProjects/Udacity-Sensor-Fusion-Nanodegree/Camera/Lesson-7-Project-3D-Object-Tracking'
+alias cd588="cd /Users/jackyyeh/Desktop/Courses/UIUC/CS588-Autonomous-Vehicle"
+alias cd445="cd /Users/jackyyeh/Desktop/Courses/UIUC/CS445-Computational-Photography"
+alias cd444="cd /Users/jackyyeh/Desktop/Courses/UIUC/CS444-DL-for-Computer-Vision/CS444-DL-for-ComputerVision-2024Spring"
+alias cd431="cd /Users/jackyyeh/Desktop/Courses/UIUC/CS431-Embedded-System"
+alias cdmxex="cd ~/memryx/mx_examples"
+alias cdlinux="cd ~/Desktop/Courses/linux2025"
+alias sshser='ssh -t memryx-jacky "cd ~/memryx/MX_API/build/mx_server; zsh -i"'
+alias rymxapi="cd ~/memryx/MX_API && rsync -avz --progress  --include='*/' --include='*.cpp' --include='*.h' --include='*.hpp' --exclude='*'  mx_accl mxa_manager    memryx-jacky:/home/jackyyeh/memryx/MX_API/"
+
+
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+alias vimf='vim $(fzf)'
+alias cdf='cd $(find * -type d | fzf)'
+alias fzfp='fzf --preview="cat {}'
+
+# copy current working directory
+alias cpw='pwd | pbcopy'
+
