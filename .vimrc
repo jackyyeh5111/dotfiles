@@ -12,4 +12,14 @@ set cursorline
 set listchars=eol:↵,tab:»·,trail:╳,extends:»,precedes:«
 set clipboard=unnamedplus
 
-let g:ycm_clangd_binary_path = trim(system('brew --prefix llvm')).'/bin/clangd'
+" Use // instead of /* */ in C, C++, Java, etc.
+let g:NERDCustomDelimiters = {
+  \ 'c': {'left': '//'},
+  \ 'cpp': {'left': '//'},
+  \ 'java': {'left': '//'},
+  \ }
+
+call plug#begin('~/.vim/plugged')
+Plug 'preservim/nerdcommenter'
+call plug#end()
+
