@@ -9,17 +9,44 @@ set ruler
 set hlsearch
 set number
 set cursorline
-set listchars=eol:↵,tab:»·,trail:╳,extends:»,precedes:«
-set clipboard=unnamedplus
+set ignorecase
+set smartcase
+set wildmenu
+inoremap jk <Esc>
 
-" Use // instead of /* */ in C, C++, Java, etc.
-let g:NERDCustomDelimiters = {
-  \ 'c': {'left': '//'},
-  \ 'cpp': {'left': '//'},
-  \ 'java': {'left': '//'},
-  \ }
+" Move line up/down with Option-j (Meta-j)
+" On Mac, need addional setting for iTerm2
+" Open Preferences → Profiles → Keys.
+nnoremap <M-j> :m .+1<CR>==
+nnoremap <M-k> :m .-2<CR>==
+
+" For visual mode (multiple lines)
+vnoremap <C-j> :m '>+1<CR>gv=gv
+vnoremap <C-k> :m '<-2<CR>gv=gv
 
 call plug#begin('~/.vim/plugged')
-Plug 'preservim/nerdcommenter'
+
+" Example plugins:
+" After adding plugin, remember to ':PlugInstall'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'tpope/vim-sensible'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'jiangmiao/auto-pairs'
+" Status line
+Plug 'itchyny/lightline.vim'
+" Surrounding text operations
+Plug 'tpope/vim-surround'
+
+" Comment toggling
+Plug 'tpope/vim-commentary'
+
+" Repeat support for custom motions
+Plug 'tpope/vim-repeat'
+"Jump to any location specified by two characters.
+Plug 'justinmk/vim-sneak'
+
+Plug 'mg979/vim-visual-multi'
+
 call plug#end()
 
