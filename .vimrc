@@ -12,6 +12,13 @@ set cursorline
 set ignorecase
 set smartcase
 set wildmenu
+
+" ref:
+" https://unix.stackexchange.com/questions/348771/why-do-vim-colors-look-different-inside-and-outside-of-tmux
+" For some reason, inside tmux, vim wasn't detecting a dark background. 
+set background=dark
+
+" Insert mode binding
 inoremap jk <Esc>
 
 " Move line up/down with Option-j (Meta-j)
@@ -23,6 +30,10 @@ nnoremap <M-k> :m .-2<CR>==
 " For visual mode (multiple lines)
 vnoremap <C-j> :m '>+1<CR>gv=gv
 vnoremap <C-k> :m '<-2<CR>gv=gv
+
+" copy and paste across vim and other app
+vnoremap <C-c> "+y
+map <C-v> "+p
 
 call plug#begin('~/.vim/plugged')
 
