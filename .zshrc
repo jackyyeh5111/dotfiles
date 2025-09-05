@@ -145,13 +145,18 @@ alias fzfp='fzf --preview="cat {}'
 # copy current working directory
 alias cpw='pwd | pbcopy'
 
-# use fzf for preview git diff
+### use fzf for preview git diff ###
+# Navigate files with arrows
+# TAB to multi-select
+# Enter → diff
+# CTRL-A → add
+# CTRL-R → restore
 git_interactive() {
   local out key files_array file
 
   # Run fzf with preview and key bindings
   out=$(
-    git status -uno --porcelain | awk '{print $2}' | \
+    git status -uno -s | awk '{print $2}' | \
       fzf -m \
         --bind "enter:accept" \
         --bind "ctrl-a:accept" \
