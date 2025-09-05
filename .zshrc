@@ -1,18 +1,18 @@
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-# Path to your Oh My Zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+# Path to your oh-my-zsh installation.
+export ZSH="/Users/jackyyeh/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
-# load a random theme each time Oh My Zsh is loaded, in which case,
+# load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="robbyrussell"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
+# a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
 # If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
@@ -23,16 +23,17 @@ ZSH_THEME="robbyrussell"
 # Case-sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
 
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
+# Uncomment the following line to disable bi-weekly auto-update checks.
+# DISABLE_AUTO_UPDATE="true"
+
+# Uncomment the following line to automatically update without prompting.
+# DISABLE_UPDATE_PROMPT="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
+# export UPDATE_ZSH_DAYS=13
 
 # Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
+# DISABLE_MAGIC_FUNCTIONS=true
 
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
@@ -44,9 +45,6 @@ ZSH_THEME="robbyrussell"
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 # COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
@@ -66,11 +64,11 @@ ZSH_THEME="robbyrussell"
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
 # Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
+# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git) 
+plugins=(git )
 
 source $ZSH/oh-my-zsh.sh
 
@@ -85,79 +83,116 @@ source $ZSH/oh-my-zsh.sh
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
 # else
-#   export EDITOR='nvim'
+#   export EDITOR='mvim'
 # fi
 
 # Compilation flags
-# export ARCHFLAGS="-arch $(uname -m)"
+# export ARCHFLAGS="-arch x86_64"
 
-# Set personal aliases, overriding those provided by Oh My Zsh libs,
-# plugins, and themes. Aliases can be placed here, though Oh My Zsh
-# users are encouraged to define aliases within a top-level file in
-# the $ZSH_CUSTOM folder, with .zsh extension. Examples:
-# - $ZSH_CUSTOM/aliases.zsh
-# - $ZSH_CUSTOM/macos.zsh
+# Set personal aliases, overriding those provided by oh-my-zsh libs,
+# plugins, and themes. Aliases can be placed here, though oh-my-zsh
+# users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+export WORKON_HOME=~/pyEnv
+VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+source /usr/local/bin/virtualenvwrapper.sh
+
+export DYLD_LIBRARY_PATH="/Users/jackyyeh/gatos/gvaoi/gatoslib/usr/local/lib"
+alias cdpost="cd /Users/jackyyeh/gatos/AOI-Deluxe/postprocessor" 
+alias cdsy="cd /Users/jackyyeh/gatos/gvsynthesize"
+alias vocab="python3 /Users/jackyyeh/SideProject/Vocab-Learning-Helper/main.py"
 alias gs="git status"
+alias gst="git status -uno"
 alias ga="git add"
 alias gce="git commit -e"
 alias gca="git commit --amend"
 alias gd="git diff"
+alias gb="git branch"
 alias gck="git checkout"
-alias gh="git checkout HEAD"
-alias dp="docker ps"
-alias de="docker exec"
-alias di="docker image"
-alias dr="docker rm"
-
+alias gh='git checkout HEAD'
+alias glo='git log --oneline'
+alias cdu="cd /Users/jackyyeh/Desktop/Courses/UIUC"
+alias cdf484="cd ~/Desktop/Courses/UIUC/ECE484-Principles-Of-Safe-Autonomy/ECE484-Principles-Of-Safe-Autonomy-2023Fall-Final"
 alias vimz="vim ~/.zshrc"
 alias souz="source ~/.zshrc"
-alias vimv='vim ~/.vimrc'
-alias souv='source ~/.vimrc'
+alias cdf1='cd ~/Desktop/Courses/UIUC/ECE484-Principles-Of-Safe-Autonomy/ECE484-Principles-Of-Safe-Autonomy-2023Fall-Final'
 
-alias cdvd='cd /home/jackyyeh/memryx/mx_examples/video_inference'
-alias cdseg='cd /home/jackyyeh/memryx/mx_examples/video_inference/segmentation_yolov8'
-alias cdrun="cd /home/jackyyeh/memryx/MIX/runtime"
-alias cdswap='cd /home/jackyyeh/memryx/MX_API/samples/dfpSwap/multistream/build'
-alias cdaccl='cd ~/memryx/MX_API/build/mx_accl'
-alias cdmg='cd ~/memryx/MX_API/build/mxa_manager'
-alias cdface='cd /home/jackyyeh/memryx/mx_examples/video_inference/face_emotion_detection/src/cpp/build'
-alias cdpy='cd ~/memryx/MX_API/mx_accl/pymodule && workon no_pip_memryx' 
-alias u='cd ..'
-alias runmg='/home/jackyyeh/memryx/MX_API/build/mxa_manager/mxa_manager'
+#PATH="$PATH:/Users/jackyyeh/Library/Application Support/multipass/bin"
+alias cd543='cd ~/Desktop/Courses/UIUC/CS543-Computer-Vision-Fall-2023'
+alias cd498='cd /Users/jackyyeh/Desktop/Courses/UIUC/CS498-Mobile-Robotics'
+alias cdc='cd /Users/jackyyeh/SideProjects/Udacity-Sensor-Fusion-Nanodegree/Camera/Lesson-7-Project-3D-Object-Tracking'
+alias cd588="cd /Users/jackyyeh/Desktop/Courses/UIUC/CS588-Autonomous-Vehicle"
+alias cd445="cd /Users/jackyyeh/Desktop/Courses/UIUC/CS445-Computational-Photography"
+alias cd444="cd /Users/jackyyeh/Desktop/Courses/UIUC/CS444-DL-for-Computer-Vision/CS444-DL-for-ComputerVision-2024Spring"
+alias cd431="cd /Users/jackyyeh/Desktop/Courses/UIUC/CS431-Embedded-System"
+alias cdmxex="cd ~/memryx/mx_examples"
+alias cdlinux="cd ~/Desktop/Courses/linux2025"
+alias sshser='ssh -t memryx-jacky "cd ~/memryx/MX_API/build/mx_server; zsh -i"'
+alias rymxapi="cd ~/memryx/MX_API && rsync -avz --progress  --include='*/' --include='*.cpp' --include='*.h' --include='*.hpp' --exclude='*'  mx_accl mxa_manager    memryx-jacky:/home/jackyyeh/memryx/MX_API/"
+alias ryseg="rsync -avzh --progress ~/memryx/mx_examples/video_inference/segmentation_yolov8/src/cpp*  memryx-jacky:/home/jackyyeh/memryx/mx_examples/video_inference/segmentation_yolov8/src/"
 
-export PATH="$HOME/.local/bin:$PATH"
-export VIRTUALENVWRAPPER_PYTHON=$(which python3)
-export WORKON_HOME=$HOME/.virtualenvs
-source $(which virtualenvwrapper.sh)
-#workon mx
-#source ~/mx/bin/activate
 
-# # Set up fzf key bindings and fuzzy completion
-# source <(fzf --zsh)
-
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 alias vimf='vim $(fzf)'
 alias cdf='cd $(find * -type d | fzf)'
 alias fzfp='fzf --preview="cat {}'
 
-alias tk='tmux kill-server'
-alias kill9='sudo kill -9 '
-alias setupmix='cd /home/jackyyeh/memryx/MIX && source setup_env.sh'
-alias cdpytest='workon no_pip_memryx && setupmix && cd ~/memryx/MIX/runtime/tests'
-alias cdtest='cd /home/jackyyeh/memryx/MX_API/build/mx_accl'
-alias initmgr='cd /run &&  sudo mkdir -p mxa_manager && cd mxa_manager && sudo touch 10000.sock 10001.sock 10002.sock && cd /run && sudo chmod -R 777 mxa_manager'
-alias cdd='/home/jackyyeh/memryx/mx_examples/multi_dfp_application/nightmare_vision/src/python && workon no_pip_memryx'
-#alias cdd='/home/jackyyeh/memryx/mx_examples/multi_dfp_application/cartoonizer_pose_overlay/src/python && workon mx2.0'
-alias cdo='/home/jackyyeh/memryx/mx_examples/multi_dfp_application/cartoonizer_pose_overlay/src/python && workon mx2.0'
-
-export SPDLOG_LEVEL="debug"
-export MX_API_HOME=/home/jackyyeh/memryx/MX_API
-
-source /usr/share/doc/fzf/examples/key-bindings.zsh
-
 # copy current working directory
-alias cpw='pwd | xclip -selection clipboard'
+alias cpw='pwd | pbcopy'
+
+# use fzf for preview git diff
+git_interactive() {
+  local out key files_array file
+
+  # Run fzf with preview and key bindings
+  out=$(
+    git status -uno --porcelain | awk '{print $2}' | \
+      fzf -m \
+        --bind "enter:accept" \
+        --bind "ctrl-a:accept" \
+        --bind "ctrl-r:accept" \
+        --expect=enter,ctrl-a,ctrl-r \
+        --preview 'git diff --color=always -- {}' \
+        --preview-window=right:70%
+  ) || return
+
+  # First line = key pressed, rest = selected files
+  key=$(head -n1 <<< "$out")
+  files_array=()
+  while IFS= read -r file; do
+    [[ -n "$file" ]] && files_array+=("$file")
+  done < <(tail -n +2 <<< "$out")
+
+  if [[ ${#files_array[@]} -eq 0 ]]; then
+    echo "No files selected."
+    return
+  fi
+
+  # Perform action based on pressed key
+  case "$key" in
+    ctrl-a)
+      git add "${files_array[@]}"
+      echo "Added files:"
+      for f in "${files_array[@]}"; do
+        echo "$f"
+      done
+      ;;
+    ctrl-r)
+      git restore "${files_array[@]}"
+      echo "Restored files:"
+      for f in "${files_array[@]}"; do
+        echo "$f"
+      done
+      ;;
+    *)
+      git diff "${files_array[@]}"
+      ;;
+  esac
+}
+alias gi='git_interactive'
+
