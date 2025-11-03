@@ -54,6 +54,21 @@ keymap("v", "<A-j>", ":m '>+1<CR>gv=gv", opts)
 keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", opts)
 keymap("v", "p", '"_dP', opts) -- Paste without overwriting clipboard
 
+-- Remap all delete/change operators (d, x, c, s) to use the black hole register ("_")
+-- so that deleted or changed text does not overwrite any registers, in normal, visual, and operator-pending modes.
+vim.keymap.set("n", "dd", '"_dd', { noremap = true, silent = true })
+vim.keymap.set("n", "cc", '"_cc', { noremap = true, silent = true })
+local del_ops = { "d", "x", "c", "s" }
+for _, op in ipairs(del_ops) do
+    -- Normal mode
+    vim.keymap.set("n", op, '"_' .. op, { noremap = true, silent = true })
+    -- Visual mode
+    vim.keymap.set("v", op, '"_' .. op, { noremap = true, silent = true })
+    -- Operator-pending mode
+    vim.keymap.set("o", op, '"_' .. op, { noremap = true, silent = true })
+end
+
+
 -- Visual Block --
 -- Move text up and down
 keymap("x", "J", ":m '>+1<CR>gv=gv", opts)
@@ -69,6 +84,7 @@ vim.keymap.set('i', '<C-h>', '<C-o>h', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-j>', '<C-o>j', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-k>', '<C-o>k', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-w>', '<C-o>w', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-b>', '<C-o>b', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-e>', '<C-o>e', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-l>', '<C-o>l', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-u>', '<C-o>10k', { noremap = true, silent = true })
