@@ -32,8 +32,10 @@ keymap("n", "<C-Left>", ":vertical resize -2<CR>", opts)
 keymap("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 
 -- Navigate buffers
-keymap("n", "<S-l>", ":bnext<CR>", opts)
-keymap("n", "<S-h>", ":bprevious<CR>", opts)
+keymap("n", "<A-l>", ":bnext<CR>", opts)
+keymap("n", "<A-h>", ":bprevious<CR>", opts)
+-- Remap Ctrl-^ to switch to last buffer
+vim.keymap.set('n', '<A-b>', ':b#<CR>', { noremap = true, silent = true })
 
 -- Move text up and down
 keymap("n", "<A-j>", ":m .+1<CR>==", opts)
@@ -73,11 +75,6 @@ end
 -- Move text up and down
 keymap("x", "J", ":m '>+1<CR>gv=gv", opts)
 keymap("x", "K", ":m '<-2<CR>gv=gv", opts)
-keymap("x", "<A-j>", ":m '>+1<CR>gv=gv", opts)
-keymap("x", "<A-k>", ":m '<-2<CR>gv=gv", opts)
-
--- Remap Ctrl-^ to switch to last buffer
-vim.keymap.set('n', '<A-l>', ':b#<CR>', { noremap = true, silent = true })
 
 -- Move cursor in insert mode with Ctrl + hjkl
 vim.keymap.set('i', '<C-h>', '<C-o>h', { noremap = true, silent = true })
@@ -92,4 +89,10 @@ vim.keymap.set('i', '<C-d>', '<C-o>10j', { noremap = true, silent = true })
 
 -- Make Ctrl + C act like ESC in all major modes
 vim.keymap.set({ 'i', 'v', 'c' }, '<C-c>', '<Esc>', { noremap = true, silent = true })
+
+-- Move to first non-blank character
+vim.keymap.set("n", "H", "^", { noremap = true, silent = true, desc = "Go to line start (non-blank)" })
+
+-- Move to end of line
+vim.keymap.set("n", "L", "$", { noremap = true, silent = true, desc = "Go to line end" })
 
