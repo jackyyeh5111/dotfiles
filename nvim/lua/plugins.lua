@@ -242,16 +242,9 @@ local neo_tree = {
         end,
         
     config = function()
-        require("neo-tree").setup {
-            -- window = {
-            --     position = "left",
-            --     width = function()
-            --         return math.floor(vim.o.columns * 0.2) -- X% of total screen width
-            --     end,
-            -- },
-        }
+        require("neo-tree").setup {}
 
-        vim.keymap.set('n', '<leader>e', ':Neotree filesystem toggle float<CR>')
+        vim.keymap.set('n', '<leader>e', ':Neotree filesystem toggle left<CR>')
     end
 }
 
