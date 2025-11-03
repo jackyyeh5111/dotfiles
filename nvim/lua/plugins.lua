@@ -213,6 +213,13 @@ local multicursor = {
             end)
             
             -- Enable and clear cursors using escape.
+            layerSet("n", "<C-c>", function()
+                if not mc.cursorsEnabled() then
+                    mc.enableCursors()
+                else
+                    mc.clearCursors()
+                end
+            end)
             layerSet("n", "<esc>", function()
                 if not mc.cursorsEnabled() then
                     mc.enableCursors()
@@ -266,6 +273,30 @@ local tmux_navigator = {
     { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
   },
 }
+
+local treesitter_context = {
+    "nvim-treesitter/nvim-treesitter-context",
+    config = function()
+        require("treesitter-context").setup{
+            enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+            max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+            trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+            patterns = { -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
+                default = {
+                    'class',
+                    'function',
+                    'method',
+                    'for',
+                    'while',
+                    'if',
+                    'switch',
+                    'case',
+                },
+            },
+        }
+    end
+}
+
 return {
     catppuccin,
     telescope,
@@ -276,5 +307,6 @@ return {
     toggleterm,
     multicursor,
     neo_tree,
-    tmux_navigator
+    tmux_navigator,
+    treesitter_context, -- not working now
 }

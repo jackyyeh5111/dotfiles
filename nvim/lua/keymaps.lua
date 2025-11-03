@@ -60,3 +60,20 @@ keymap("x", "J", ":m '>+1<CR>gv=gv", opts)
 keymap("x", "K", ":m '<-2<CR>gv=gv", opts)
 keymap("x", "<A-j>", ":m '>+1<CR>gv=gv", opts)
 keymap("x", "<A-k>", ":m '<-2<CR>gv=gv", opts)
+
+-- Remap Ctrl-^ to switch to last buffer
+vim.keymap.set('n', '<A-l>', ':b#<CR>', { noremap = true, silent = true })
+
+-- Move cursor in insert mode with Ctrl + hjkl
+vim.keymap.set('i', '<C-h>', '<C-o>h', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-j>', '<C-o>j', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-k>', '<C-o>k', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-w>', '<C-o>w', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-e>', '<C-o>e', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-l>', '<C-o>l', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-u>', '<C-o>10k', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-d>', '<C-o>10j', { noremap = true, silent = true })
+
+-- Make Ctrl + C act like ESC in all major modes
+vim.keymap.set({ 'i', 'v', 'c' }, '<C-c>', '<Esc>', { noremap = true, silent = true })
+
