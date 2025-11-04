@@ -111,3 +111,14 @@ vim.keymap.set("n", "<C-Down>",  ":resize -5<CR>",         { silent = true, desc
 vim.keymap.set("n", "<C-Left>",  ":vertical resize -5<CR>", { silent = true, desc = "Decrease window width" })
 vim.keymap.set("n", "<C-Right>", ":vertical resize +5<CR>", { silent = true, desc = "Increase window width" })
 
+-- Jump to prev/next diff chunk
+vim.keymap.set('n', '<A-]>', ']c', { noremap = true, silent = true, desc = 'Next diff chunk' })
+vim.keymap.set('n', '<A-[>', '[c', { noremap = true, silent = true, desc = 'Previous diff chunk' })
+
+-- Exit diff view and return to single window
+vim.keymap.set('n', '<leader>o', ':only<CR>', { noremap = true, silent = true })
+
+-- Open Git diff view for current file
+vim.keymap.set('n', '<leader>d', ':Gvdiffsplit<CR>', { noremap = true, silent = true, desc = 'Open Git diff view' })
+
+

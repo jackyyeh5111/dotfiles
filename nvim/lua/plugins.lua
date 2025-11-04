@@ -35,7 +35,7 @@ local telescope = {
         }
         local builtin = require("telescope.builtin")
         vim.keymap.set("n", "<leader>p", builtin.find_files)
-        vim.keymap.set("n", "<leader>g", builtin.live_grep)
+        vim.keymap.set("n", "<leader>r", builtin.live_grep)
         vim.keymap.set("n", "<leader>b", builtin.buffers)
         vim.keymap.set('n', '<leader>h', builtin.command_history)
 
@@ -101,6 +101,10 @@ local lspconfig = {
     }
 }
 
+local git_fugitive = {
+    "tpope/vim-fugitive",
+    cmd = { "Git", "Gdiff", "Gvdiffsplit", "Gread", "Gwrite" },
+}
 local gitsigns = {
     "lewis6991/gitsigns.nvim",
     event = "BufReadPre",  -- load on buffer read
@@ -112,6 +116,9 @@ local gitsigns = {
                 follow_files = true
             },
         })
+
+        vim.keymap.set("n", "<leader>gp", ":Gitsigns preview_hunk<CR>")
+        vim.keymap.set("n", "<leader>gb", ":Gitsigns toggle_current_line_blame<CR>")
     end,
     dependencies = { "nvim-lua/plenary.nvim" },  -- gitsigns depends on plenary
 }
@@ -297,16 +304,44 @@ local treesitter_context = {
     end
 }
 
+local lazygit = {
+    "kdheepak/lazygit.nvim",
+    lazy = true,
+    cmd = {
+        "LazyGit",
+        "LazyGitConfig",
+        "LazyGitCurrentFile",
+        "LazyGitFilter",
+        "LazyGitFilterCurrentFile",
+    },
+    -- optional for floating window border decoration
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+        { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+    }
+}    
+
+local diffview = {
+    "sindrets/diffview.nvim" 
+}
+
 return {
     catppuccin,
     telescope,
     treesitter,
     lspconfig,
     gitsigns,
+    git_fugitive,
+    lazygit,
     copilot,
     toggleterm,
     multicursor,
     neo_tree,
     tmux_navigator,
-    treesitter_context, -- not working now
+    treesitter_context,
+    diffview,
 }
