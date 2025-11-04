@@ -32,10 +32,18 @@ keymap("n", "<C-Left>", ":vertical resize -2<CR>", opts)
 keymap("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 
 -- Navigate buffers
-keymap("n", "<A-l>", ":bnext<CR>", opts)
-keymap("n", "<A-h>", ":bprevious<CR>", opts)
+-- keymap("n", "<A-l>", ":bnext<CR>", opts)
+-- keymap("n", "<A-h>", ":bprevious<CR>", opts)
 -- Remap Ctrl-^ to switch to last buffer
-vim.keymap.set('n', '<A-b>', ':b#<CR>', { noremap = true, silent = true })
+-- vim.keymap.set('n', '<A-b>', ':b#<CR>', { noremap = true, silent = true })
+
+-- Move between tabs
+vim.keymap.set('n', '<A-l>', ':tabnext<CR>', { silent = true })
+vim.keymap.set('n', '<A-h>', ':tabprevious<CR>', { silent = true })
+
+-- Open / close tabs
+vim.keymap.set('n', '<A-n>', ':tabnew<CR>', { silent = true })
+vim.keymap.set('n', '<A-w>', ':tabclose<CR>', { silent = true })
 
 -- Move text up and down
 keymap("n", "<A-j>", ":m .+1<CR>==", opts)
@@ -51,10 +59,8 @@ keymap("i", "kj", "<ESC>", opts)
 keymap("v", "<", "<gv^", opts)
 keymap("v", ">", ">gv^", opts)
 
--- Move text up and down
-keymap("v", "<A-j>", ":m '>+1<CR>gv=gv", opts)
-keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", opts)
-keymap("v", "p", '"_dP', opts) -- Paste without overwriting clipboard
+-- Paste without overwriting clipboard
+keymap("v", "p", '"_dP', opts) 
 
 -- Remap all delete/change operators (d, x, c, s) to use the black hole register ("_")
 -- so that deleted or changed text does not overwrite any registers, in normal, visual, and operator-pending modes.
@@ -120,5 +126,4 @@ vim.keymap.set('n', '<leader>o', ':only<CR>', { noremap = true, silent = true })
 
 -- Open Git diff view for current file
 vim.keymap.set('n', '<leader>d', ':Gvdiffsplit<CR>', { noremap = true, silent = true, desc = 'Open Git diff view' })
-
 

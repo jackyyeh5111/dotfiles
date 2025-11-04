@@ -326,7 +326,22 @@ local lazygit = {
 }    
 
 local diffview = {
-    "sindrets/diffview.nvim" 
+    "sindrets/diffview.nvim",
+
+    config = function()
+        require("diffview").setup {}
+        
+        -- automatically close (hide) the file panel when you open Diffview, by calling
+        vim.keymap.set("n", "<leader>do", function()
+            vim.cmd("DiffviewOpen")
+            vim.cmd("DiffviewToggleFiles") -- automatically close the file panel
+        end, { desc = "Open Diffview (no file panel)" })
+
+        vim.keymap.set('n', '<leader>dc', ':DiffviewClose<CR>', { noremap = true, silent = true, desc = "Diffview Close" })
+        vim.keymap.set("n", "<leader>df", ":DiffviewToggleFiles<CR>", { desc = "Toggle Diffview file panel" })
+        vim.keymap.set("n", "<leader>dh", ":DiffviewFileHistory %<CR>", { desc = "View file history of current file" })
+
+    end,
 }
 
 local nvim_autopairs = {
