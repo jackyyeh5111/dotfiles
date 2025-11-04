@@ -96,3 +96,18 @@ vim.keymap.set("n", "H", "^", { noremap = true, silent = true, desc = "Go to lin
 -- Move to end of line
 vim.keymap.set("n", "L", "$", { noremap = true, silent = true, desc = "Go to line end" })
 
+-- Vertical and horizontal splits
+vim.keymap.set("n", "<A-\\>", ":vsplit<CR>", { noremap = true, silent = true, desc = "Vertical Split" })
+
+-- Toggle wrap option
+vim.keymap.set("n", "<A-x>", function()
+  vim.opt.wrap = not vim.opt.wrap:get()
+  print("Wrap " .. (vim.opt.wrap:get() and "enabled" or "disabled"))
+end, { desc = "Toggle text wrap" })
+
+-- Resize splits easily with arrow keys
+vim.keymap.set("n", "<C-Up>",    ":resize +5<CR>",         { silent = true, desc = "Increase window height" })
+vim.keymap.set("n", "<C-Down>",  ":resize -5<CR>",         { silent = true, desc = "Decrease window height" })
+vim.keymap.set("n", "<C-Left>",  ":vertical resize -5<CR>", { silent = true, desc = "Decrease window width" })
+vim.keymap.set("n", "<C-Right>", ":vertical resize +5<CR>", { silent = true, desc = "Increase window width" })
+
