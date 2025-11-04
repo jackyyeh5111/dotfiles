@@ -1,5 +1,5 @@
--- Catppuccin theme config
-local catppuccin = {
+-- colorthem etheme config
+local colortheme = {
     "catppuccin/nvim",
     name = "catppuccin",
     lazy = false,
@@ -352,8 +352,13 @@ local nvim_autopairs = {
     end,
 }
 
+local devicons = {
+    "nvim-tree/nvim-web-devicons",
+}
+
 return {
-    catppuccin,
+    devicons,
+    colortheme,
     telescope,
     treesitter,
     lspconfig,

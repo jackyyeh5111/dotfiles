@@ -127,3 +127,5 @@ vim.keymap.set('n', '<leader>o', ':only<CR>', { noremap = true, silent = true })
 -- Open Git diff view for current file
 vim.keymap.set('n', '<leader>d', ':Gvdiffsplit<CR>', { noremap = true, silent = true, desc = 'Open Git diff view' })
 
+-- Quick save and quit
+vim.keymap.set('n', '<leader>q', ':q', { noremap = true, silent = true })
