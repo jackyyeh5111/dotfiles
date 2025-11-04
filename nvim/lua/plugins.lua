@@ -329,6 +329,14 @@ local diffview = {
     "sindrets/diffview.nvim" 
 }
 
+local nvim_autopairs = {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    config = function()
+        require("nvim-autopairs").setup {}
+    end,
+}
+
 return {
     catppuccin,
     telescope,
@@ -344,4 +352,5 @@ return {
     tmux_navigator,
     treesitter_context,
     diffview,
+    nvim_autopairs,
 }
