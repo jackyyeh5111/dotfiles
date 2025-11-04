@@ -356,7 +356,27 @@ local devicons = {
     "nvim-tree/nvim-web-devicons",
 }
 
+local commentor =
+{
+    'numToStr/Comment.nvim',
+    config = function()
+        require('Comment').setup(
+            {
+                toggler = {
+                    line = '<leader>/',  -- line comment toggle
+                    block = '<leader>.', -- block comment toggle
+                },
+                opleader = {
+                    line = '<leader>/',  -- visual mode line comment
+                    block = '<leader>.', -- visual mode block comment
+                },
+            }
+        )
+    end
+}
+
 return {
+    commentor,
     devicons,
     colortheme,
     telescope,
