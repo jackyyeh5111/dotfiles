@@ -176,6 +176,28 @@ local toggleterm = {
       vim.api.nvim_buf_set_keymap(0, "t", "<C-k>", [[<C-\><C-n><C-W>k]], opts)
       vim.api.nvim_buf_set_keymap(0, "t", "<C-l>", [[<C-\><C-n><C-W>l]], opts)
 
+
+      vim.api.nvim_buf_set_keymap(0, "t", '<C-g>', "", {
+          noremap = true,
+          silent = true,
+          callback = function()
+              -- Exit terminal mode
+              vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), 'n', true)
+
+              -- Get terminal buffer's current working directory
+              local cwd = vim.fn.getcwd()  -- or vim.fn.expand('%:p:h') if you want buffer dir
+
+              -- Get filename under cursor
+              local file = vim.fn.expand('<cword>')
+
+              -- Combine cwd + filename and get absolute path
+              local absolute_path = vim.fn.fnamemodify(cwd .. '/' .. file, ':p')
+
+              -- Open file in current buffer
+              vim.cmd('edit ' .. absolute_path)
+          end,
+      })
+
       -- enable numbers and relative numbers on this terminal buffer
       vim.api.nvim_buf_set_option(0, "number", true)
       vim.api.nvim_buf_set_option(0, "relativenumber", true)
@@ -332,14 +354,16 @@ local diffview = {
         require("diffview").setup {}
         
         -- automatically close (hide) the file panel when you open Diffview, by calling
-        vim.keymap.set("n", "<leader>do", function()
-            vim.cmd("DiffviewOpen")
-            vim.cmd("DiffviewToggleFiles") -- automatically close the file panel
-        end, { desc = "Open Diffview (no file panel)" })
+        -- vim.keymap.set("n", "<leader>do", function()
+        --     vim.cmd("DiffviewOpen")
+        --     vim.cmd("DiffviewToggleFiles") -- automatically close the file panel
+        -- end, { desc = "Open Diffview (no file panel)" })
 
-        vim.keymap.set('n', '<leader>dc', ':DiffviewClose<CR>', { noremap = true, silent = true, desc = "Diffview Close" })
-        vim.keymap.set("n", "<leader>df", ":DiffviewToggleFiles<CR>", { desc = "Toggle Diffview file panel" })
-        vim.keymap.set("n", "<leader>dh", ":DiffviewFileHistory %<CR>", { desc = "View file history of current file" })
+        vim.keymap.set('n', '<A-d>', ':DiffviewOpen<CR>', { noremap = true, silent = true, desc = "Diffview Open" })
+        -- vim.keymap.set('n', '<leader>do', ':Diffview<CR>', { noremap = true, silent = true, desc = "Diffview " })
+        -- vim.keymap.set('n', '<leader>dc', ':DiffviewClose<CR>', { noremap = true, silent = true, desc = "Diffview Close" })
+        -- vim.keymap.set("n", "<leader>df", ":DiffviewToggleFiles<CR>", { desc = "Toggle Diffview file panel" })
+        vim.keymap.set("n", "<A-f>", ":DiffviewFileHistory %<CR>", { desc = "View file history of current file" })
 
     end,
 }

@@ -131,3 +131,9 @@ vim.keymap.set('n', '<leader>ds', ':Gvdiffsplit<CR>', { noremap = true, silent =
 vim.keymap.set('n', '<leader>q', ':q!', { noremap = true })
 vim.keymap.set('n', '<leader>a', ':qa!', { noremap = true })
 
+-- Get the filename under the cursor, expand it to its absolute path, then edit it.
+vim.keymap.set('n', 'gf', function()
+  local file = vim.fn.expand('<cfile>')
+  local absolute_path = vim.fn.fnamemodify(file, ':p')
+  vim.cmd('edit ' .. absolute_path)
+end, { noremap = true, silent = true, desc = "Open file under cursor using absolute path" })
