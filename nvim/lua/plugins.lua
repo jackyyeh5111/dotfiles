@@ -412,7 +412,7 @@ return {
     copilot,
     toggleterm,
     multicursor,
-    neo_tree,
+    -- neo_tree,
     tmux_navigator,
     treesitter_context,
     diffview,
