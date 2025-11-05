@@ -39,6 +39,23 @@ local telescope = {
         vim.keymap.set("n", "<leader>b", builtin.buffers)
         vim.keymap.set('n', '<leader>h', builtin.command_history)
 
+        -- Telescope LSP symbols
+        vim.keymap.set("n", "<leader>sd", builtin.lsp_document_symbols)
+        vim.keymap.set("n", "<leader>sw", builtin.lsp_workspace_symbols)
+
+        -- Go to definition, declaration, implementation, type definition
+        -- vim.keymap.set("n", "<leader>gd", builtin.lsp_definitions)
+        -- vim.keymap.set("n", "<leader>gi", builtin.lsp.buf.implementation, opts)
+        -- vim.keymap.set("n", "<leader>gt", builtin.lsp.buf.type_definition, opts)
+        --
+        -- -- Find references
+        -- vim.keymap.set("n", "<leader>gr", builtin.lsp.buf.references, opts)
+        --
+        -- -- Code actions
+        -- vim.keymap.set("n", "<leader>ca", builtin.lsp.buf.code_action, opts)
+        -- vim.keymap.set("n", "<leader>rn", builtin.lsp.buf.rename, opts)
+
+
     end
 }
 
@@ -75,11 +92,14 @@ local lspconfig = {
         "neovim/nvim-lspconfig",
         lazy = false,
         config = function()
-            local cfg = vim.lsp.config["lua_ls"]
-            if cfg then
-                vim.lsp.start(cfg)
-            else
-                vim.notify("lua_ls config not found", vim.log.levels.ERROR)
+            local servers = { "lua_ls", "pyright", "clangd" }
+            for _, lsp in ipairs(servers) do
+                local cfg = vim.lsp.config[lsp]
+                if cfg then
+                    vim.lsp.start(cfg)
+                else
+                    vim.notify(lsp .. " config not found", vim.log.levels.ERROR)
+                end
             end
 
             -- Hover documentation
