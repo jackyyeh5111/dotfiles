@@ -64,7 +64,7 @@ keymap("v", "p", '"_dP', opts)
 
 -- Remap all delete/change operators (d, x, c, s) to use the black hole register ("_")
 -- so that deleted or changed text does not overwrite any registers, in normal, visual, and operator-pending modes.
--- vim.keymap.set("n", "dd", '"_dd', { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>d", '"_d', { noremap = true, silent = true })
 vim.keymap.set("n", "cc", '"_cc', { noremap = true, silent = true })
 local del_ops = {"x", "c", "s" }
 for _, op in ipairs(del_ops) do

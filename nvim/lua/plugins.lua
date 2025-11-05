@@ -157,11 +157,11 @@ local toggleterm = {
     -- size       
         size = function(term)
             if term.direction == "horizontal" then
-            return vim.o.lines * 0.3      -- 30% of total editor height
+                return vim.o.lines * 0.5      -- 30% of total editor height
             elseif term.direction == "vertical" then
-            return vim.o.columns * 0.4    -- 40% of total width
+                return vim.o.columns * 0.5    -- 40% of total width
             else
-            return 20                     -- default for float
+                return 20                     -- default for float
             end
         end,
   
@@ -190,7 +190,7 @@ local toggleterm = {
     function _G.set_terminal()
       local opts = { noremap = true }
       vim.api.nvim_buf_set_keymap(0, "t", "<esc>", [[<C-\><C-n>]], opts)
-      vim.api.nvim_buf_set_keymap(0, "t", "jk", [[<C-\><C-n>]], opts)
+      vim.api.nvim_buf_set_keymap(0, "t", "<C-[>", [[<C-\><C-n>]], opts)
       vim.api.nvim_buf_set_keymap(0, "t", "<C-h>", [[<C-\><C-n><C-W>h]], opts)
       vim.api.nvim_buf_set_keymap(0, "t", "<C-j>", [[<C-\><C-n><C-W>j]], opts)
       vim.api.nvim_buf_set_keymap(0, "t", "<C-k>", [[<C-\><C-n><C-W>k]], opts)
