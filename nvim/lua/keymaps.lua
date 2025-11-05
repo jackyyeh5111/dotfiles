@@ -64,9 +64,9 @@ keymap("v", "p", '"_dP', opts)
 
 -- Remap all delete/change operators (d, x, c, s) to use the black hole register ("_")
 -- so that deleted or changed text does not overwrite any registers, in normal, visual, and operator-pending modes.
-vim.keymap.set("n", "dd", '"_dd', { noremap = true, silent = true })
+-- vim.keymap.set("n", "dd", '"_dd', { noremap = true, silent = true })
 vim.keymap.set("n", "cc", '"_cc', { noremap = true, silent = true })
-local del_ops = { "d", "x", "c", "s" }
+local del_ops = {"x", "c", "s" }
 for _, op in ipairs(del_ops) do
     -- Normal mode
     vim.keymap.set("n", op, '"_' .. op, { noremap = true, silent = true })
@@ -131,9 +131,3 @@ vim.keymap.set('n', '<leader>ds', ':Gvdiffsplit<CR>', { noremap = true, silent =
 vim.keymap.set('n', '<leader>q', ':q!', { noremap = true })
 vim.keymap.set('n', '<leader>a', ':qa!', { noremap = true })
 
--- Get the filename under the cursor, expand it to its absolute path, then edit it.
-vim.keymap.set('n', 'gf', function()
-  local file = vim.fn.expand('<cfile>')
-  local absolute_path = vim.fn.fnamemodify(file, ':p')
-  vim.cmd('edit ' .. absolute_path)
-end, { noremap = true, silent = true, desc = "Open file under cursor using absolute path" })
