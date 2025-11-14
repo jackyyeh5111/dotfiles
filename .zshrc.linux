@@ -142,14 +142,15 @@ source $(which virtualenvwrapper.sh)
 
 
 alias tk='tmux kill-server'
+alias ta='tmux attach -t'
 alias kill9='sudo kill -9 '
 alias setupmix='cd /home/jackyyeh/memryx/MIX && source setup_env.sh'
 alias cdpytest='workon no_pip_memryx && setupmix && cd ~/memryx/MIX/runtime/tests'
 alias cdtest='cd /home/jackyyeh/memryx/MX_API/build/mx_accl'
 alias initmgr='cd /run &&  sudo mkdir -p mxa_manager && cd mxa_manager && sudo touch 10000.sock 10001.sock 10002.sock && cd /run && sudo chmod -R 777 mxa_manager'
-alias cdd='~/memryx/MX_GStreamer'
 alias mm='workon mx2.0 && ~/memryx/elm_async_fps_fix_internal/multistream_cpp'
 alias cdgi='/usr/include/gstreamer-1.0/gst'
+alias cdd='cd ~/SideProjects/pybind11-collection/reproduce && workon pybind11'
 
 export SPDLOG_LEVEL="debug"
 export MX_API_HOME=/home/jackyyeh/memryx/MX_API
@@ -158,7 +159,7 @@ source /usr/share/doc/fzf/examples/key-bindings.zsh
 
 # Fuzzy finder related
 alias vimf='vim $(fzf --preview="batcat --color=always {}")'
-alias cdf='cd $(find * -type d | fzf)'
+alias cdf='cd $(fd --type d . | fzf)'
 
 alias cpw='pwd | tee >(xclip -selection clipboard)'
 alias cpaf='fzf --preview="batcat --color=always {}" | xargs realpath | tee >(xclip -selection clipboard)'
@@ -224,3 +225,21 @@ git_interactive() {
 
 alias gi='git_interactive'
 alias bat='batcat'
+alias grep='rg'
+alias find='fd'
+alias vc='cd /home/jackyyeh/.config/nvim && nvim init.lua'  
+
+# alias nvim='/usr/bin/nvim.appimage'
+alias vim=nvim
+alias vi='nvim'
+alias v=nvim
+export PATH="$PATH:$HOME/.local/share/nvim/mason/bin"
+
+# nvm setting
+#export NVM_DIR="$HOME/.nvm"
+#[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+#[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+export PATH="$PATH:/home/jackyyeh/.nvm/versions/node/v24.11.0/bin"
+
+export COLORTERM=truecolor
