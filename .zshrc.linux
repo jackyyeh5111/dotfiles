@@ -107,6 +107,7 @@ alias ga="git add"
 alias gce="git commit -e"
 alias gca="git commit --amend"
 alias gd="git diff"
+alias gb="git branch"
 alias gck="git checkout"
 alias gh="git checkout HEAD"
 alias dp="docker ps"
@@ -119,16 +120,18 @@ alias souz="source ~/.zshrc"
 alias vimv='vim ~/.vimrc'
 alias souv='source ~/.vimrc'
 
-alias cdvd='cd /home/jackyyeh/memryx/mx_examples/video_inference'
-alias cdseg='cd /home/jackyyeh/memryx/mx_examples/video_inference/segmentation_yolov8/src/cpp'
 alias cdrun="cd /home/jackyyeh/memryx/MIX/runtime"
-alias cdswap='cd /home/jackyyeh/memryx/MX_API/samples/dfpSwap/multistream/build'
 alias cdaccl='cd ~/memryx/MX_API/build/mx_accl'
 alias cdmg='cd ~/memryx/MX_API/build/mxa_manager'
-alias cdface='cd /home/jackyyeh/memryx/mx_examples/video_inference/face_emotion_detection/src/cpp/build'
-alias cdpy='cd ~/memryx/MX_API/mx_accl/pymodule/tests && workon no_pip_memryx' 
+alias cdpy='cd ~/memryx/MX_API/mx_accl/pymodule/tests && workon mx2p2' 
+alias cdpp='cd ~/memryx/MxPrepost && workon no_pip_memryx'
+alias cdapi='cd ~/memryx/MX_API'
 alias u='cd ..'
-alias runmg='/home/jackyyeh/memryx/MX_API/build/mxa_manager/mxa_manager'
+alias runmg='cd /home/jackyyeh/memryx/MX_API/build/mxa_manager && ./mxa_manager'
+alias cdt='workon test && ~/memryx/Tahakom-Pipeline/Tahakom-video-pipeline/src'
+alias cds='workon mx2p2 && ~/memryx/Tahakom-Pipeline/src'
+alias cdsc='cd ~/memryx/MX_API/tools/dfp_schedule_bench'
+alias cdfc='workon mx2p2 && /home/jackyyeh/memryx/memryx_examples_internal/multi_dfp_application/cartoonizer_pose/src/python'
 
 export PATH="$HOME/.local/bin:$PATH"
 export VIRTUALENVWRAPPER_PYTHON=$(which python3)
@@ -226,7 +229,7 @@ git_interactive() {
 alias gi='git_interactive'
 alias bat='batcat'
 alias grep='rg'
-alias find='fd'
+#alias find='fd'
 alias vc='cd /home/jackyyeh/.config/nvim && nvim init.lua'  
 
 # alias nvim='/usr/bin/nvim.appimage'
@@ -243,3 +246,14 @@ export PATH="$PATH:$HOME/.local/share/nvim/mason/bin"
 export PATH="$PATH:/home/jackyyeh/.nvm/versions/node/v24.11.0/bin"
 
 export COLORTERM=truecolor
+
+export PATH=$PATH:/usr/local/go/bin
+
+# enable core dumps
+# ulimit -c unlimited
+
+. "$HOME/.cargo/env"
+
+# format alias
+alias mxstyle='astyle --align-pointer=type --align-reference=name --style=kr --add-braces --attach-return-type-decl --keep-one-line-statements --convert-tabs --close-templates --max-code-length=200 --pad-comma --pad-oper --indent-col1-comments --indent-preproc-define --indent-preproc-block --indent-labels --indent-switches --indent-modifiers --indent=spaces=4 --break-closing-braces --keep-one-line-blocks --lineend=linux'
+export GST_PLUGIN_PATH=$HOME/memryx/MX_GStreamer/plugins

@@ -165,7 +165,7 @@ local toggleterm = {
             end
         end,
   
-      open_mapping = [[<S-t>]],
+      open_mapping = [[<C-t>]],
       hide_numbers = true,
       shade_filetypes = {},
       shade_terminals = true,
