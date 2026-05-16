@@ -258,7 +258,6 @@ export PATH=$PATH:/usr/local/go/bin
 alias mxstyle='astyle --align-pointer=type --align-reference=name --style=kr --add-braces --attach-return-type-decl --keep-one-line-statements --convert-tabs --close-templates --max-code-length=200 --pad-comma --pad-oper --indent-col1-comments --indent-preproc-define --indent-preproc-block --indent-labels --indent-switches --indent-modifiers --indent=spaces=4 --break-closing-braces --keep-one-line-blocks --lineend=linux'
 export GST_PLUGIN_PATH=$HOME/memryx/MX_GStreamer/plugins
 
-# for ghostty using tmux
-export TERM=xterm-256color
-
 plugins=(git zsh-autosuggestions)
+
+eval "$(starship init zsh)"
