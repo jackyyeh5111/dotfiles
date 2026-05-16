@@ -131,7 +131,7 @@ alias runmg='cd /home/jackyyeh/memryx/MX_API/build/mxa_manager && ./mxa_manager'
 alias cdt='workon test && ~/memryx/Tahakom-Pipeline/Tahakom-video-pipeline/src'
 alias cds='workon mx2p2 && ~/memryx/Tahakom-Pipeline/src'
 alias cdsc='cd ~/memryx/MX_API/tools/dfp_schedule_bench'
-alias cdfc='workon mx2p2 && /home/jackyyeh/memryx/memryx_examples_internal/multi_dfp_application/cartoonizer_pose/src/python'
+alias cdfc='workon mx2p2 && ~/memryx/MX_API/samples/multi_dfp/cartoonizer_pose/src/cpp'
 
 export PATH="$HOME/.local/bin:$PATH"
 export VIRTUALENVWRAPPER_PYTHON=$(which python3)
@@ -257,3 +257,8 @@ export PATH=$PATH:/usr/local/go/bin
 # format alias
 alias mxstyle='astyle --align-pointer=type --align-reference=name --style=kr --add-braces --attach-return-type-decl --keep-one-line-statements --convert-tabs --close-templates --max-code-length=200 --pad-comma --pad-oper --indent-col1-comments --indent-preproc-define --indent-preproc-block --indent-labels --indent-switches --indent-modifiers --indent=spaces=4 --break-closing-braces --keep-one-line-blocks --lineend=linux'
 export GST_PLUGIN_PATH=$HOME/memryx/MX_GStreamer/plugins
+
+# for ghostty using tmux
+export TERM=xterm-256color
+
+plugins=(git zsh-autosuggestions)
