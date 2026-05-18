@@ -6,8 +6,11 @@ disabled = true
 
 [package]
 disabled = true
+
 [python]
-disabled = true
+format = 'via [(\($virtualenv\) )]($style)'
+symbol = '🐍 '
+
 [nodejs]
 disabled = true
 [rust]
@@ -35,4 +38,9 @@ disabled = true
 [julia]
 disabled = true
 [scala]
+disabled = true
+[cpp]
+disabled = true
+
+[c]
 disabled = true
