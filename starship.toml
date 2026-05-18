@@ -1,0 +1,38 @@
+[git_status]
+disabled = true
+
+[cmake]
+disabled = true
+
+[package]
+disabled = true
+[python]
+disabled = true
+[nodejs]
+disabled = true
+[rust]
+disabled = true
+[golang]
+disabled = true
+[java]
+disabled = true
+[ruby]
+disabled = true
+[php]
+disabled = true
+[dotnet]
+disabled = true
+[kotlin]
+disabled = true
+[swift]
+disabled = true
+[lua]
+disabled = true
+[perl]
+disabled = true
+[haskell]
+disabled = true
+[julia]
+disabled = true
+[scala]
+disabled = true
