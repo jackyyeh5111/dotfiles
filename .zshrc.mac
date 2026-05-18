@@ -200,4 +200,8 @@ git_interactive() {
   esac
 }
 alias gi='git_interactive'
+. "$HOME/.cargo/env"
+export PATH="$HOME/.local/bin:$PATH"
+source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+eval "$(starship init zsh)"
