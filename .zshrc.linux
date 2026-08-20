@@ -132,6 +132,9 @@ alias cdt='workon test && ~/memryx/Tahakom-Pipeline/Tahakom-video-pipeline/src'
 alias cds='workon mx2p2 && ~/memryx/Tahakom-Pipeline/src'
 alias cdsc='cd ~/memryx/MX_API/tools/dfp_schedule_bench'
 alias cdfc='workon mx2p2 && ~/memryx/MX_API/samples/multi_dfp/cartoonizer_pose/src/cpp'
+alias cdfp='workon mx2p2 && /home/jackyyeh/memryx/MX_API/samples/multi_dfp/conditional_pipe'
+alias hr='herdr'
+
 
 export PATH="$HOME/.local/bin:$PATH"
 export VIRTUALENVWRAPPER_PYTHON=$(which python3)
