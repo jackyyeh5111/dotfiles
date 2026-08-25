@@ -135,6 +135,20 @@ alias cdfc='workon mx2p2 && ~/memryx/MX_API/samples/multi_dfp/cartoonizer_pose/s
 alias cdfp='workon mx2p2 && /home/jackyyeh/memryx/MX_API/samples/multi_dfp/conditional_pipe'
 alias hr='herdr'
 
+# Standard listing replacement
+alias ls='eza --icons=auto'
+
+# Detailed list view (replacing `ll` / `ls -l`)
+alias ll='eza -l --git --header --icons=auto'
+
+# Detailed list including hidden files (replacing `la` / `ls -la`)
+alias la='eza -la --git --header --icons=auto'
+
+# Quick tree view up to 2 levels deep
+alias lt='eza -T -L 2 --icons=auto'
+
+# Complete tree view including hidden files, ignoring .git
+alias lta='eza -Ta -L 3 -I ".git" --icons=auto'
 
 export PATH="$HOME/.local/bin:$PATH"
 export VIRTUALENVWRAPPER_PYTHON=$(which python3)
@@ -150,7 +164,7 @@ source $(which virtualenvwrapper.sh)
 alias tk='tmux kill-server'
 alias ta='tmux attach -t'
 alias kill9='sudo kill -9 '
-alias setupmix='cd /home/jackyyeh/memryx/MIX && source setup_env.sh'
+alias cdmix='cd /home/jackyyeh/memryx/MIX && source setup_env.sh'
 alias cdpytest='workon no_pip_memryx && setupmix && cd ~/memryx/MIX/runtime/tests'
 alias cdtest='cd /home/jackyyeh/memryx/MX_API/build/mx_accl'
 alias initmgr='cd /run &&  sudo mkdir -p mxa_manager && cd mxa_manager && sudo touch 10000.sock 10001.sock 10002.sock && cd /run && sudo chmod -R 777 mxa_manager'
