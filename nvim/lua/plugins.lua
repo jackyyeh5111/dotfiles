@@ -75,6 +75,9 @@ local telescope = {
                     i = {
                         -- Toggle preview window dynamically
                         ["<M-p>"] = action_layout.toggle_preview,
+                        -- Move selection up/down like j/k
+                        ["<C-j>"] = actions.move_selection_next,
+                        ["<C-k>"] = actions.move_selection_previous,
                     },
                 },
 

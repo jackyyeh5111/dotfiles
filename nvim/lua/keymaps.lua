@@ -38,8 +38,8 @@ vim.g.maplocalleader = " "
 -- vim.keymap.set('n', '<A-b>', ':b#<CR>', { noremap = true, silent = true })
 
 -- Move between buffers (shown in bufferline)
-vim.keymap.set('n', '<A-,>', ':BufferLineCycleNext<CR>', { silent = true })
-vim.keymap.set('n', '<A-m>', ':BufferLineCyclePrev<CR>', { silent = true })
+vim.keymap.set('n', '<A-Tab>', ':BufferLineCycleNext<CR>', { silent = true })
+vim.keymap.set('n', '<A-S-Tab>', ':BufferLineCyclePrev<CR>', { silent = true })
 
 -- Open / close buffers
 vim.keymap.set('n', '<A-t>', ':enew<CR>', { silent = true })
@@ -78,6 +78,8 @@ vim.keymap.set('i', '<C-e>', '<C-o>e', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-l>', '<C-o>l', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-u>', '<C-o>10k', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-d>', '<C-o>10j', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-S-h>', '<C-o>^', { noremap = true, silent = true, desc = 'Move to start of line' })
+vim.keymap.set('i', '<C-S-l>', '<C-o>$', { noremap = true, silent = true, desc = 'Move to end of line' })
 
 -- Move to first non-blank character (Normal + Visual)
 vim.keymap.set({ "n", "v" }, "H", "^", { noremap = true, silent = true, desc = "Go to line start (non-blank)" })
