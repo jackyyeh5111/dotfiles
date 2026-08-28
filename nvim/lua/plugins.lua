@@ -529,6 +529,29 @@ local commentor =
     end
 }
 
+local bufferline = {
+    "akinsho/bufferline.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+        require("bufferline").setup({
+            options = {
+                mode = "buffers",
+                numbers = "none",
+                diagnostics = "nvim_lsp",
+                show_buffer_close_icons = false,
+                show_close_icon = false,
+                separator_style = "slant",
+            },
+            highlights = {
+                separator = { fg = "#292c33" },
+                separator_visible = { fg = "#292c33" },
+                separator_selected = { fg = "#292c33" },
+                buffer_selected = { bg = "#31323c", bold = true },
+            },
+        })
+    end,
+}
+
 local lualine = {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -562,6 +585,7 @@ return {
     devicons,
     colortheme,
     lualine,
+    bufferline,
     telescope,
     treesitter,
     lspconfig,

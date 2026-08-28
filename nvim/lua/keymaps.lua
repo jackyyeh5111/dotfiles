@@ -37,13 +37,13 @@ vim.g.maplocalleader = " "
 -- Remap Ctrl-^ to switch to last buffer
 -- vim.keymap.set('n', '<A-b>', ':b#<CR>', { noremap = true, silent = true })
 
--- Move between tabs
-vim.keymap.set('n', '<A-,>', ':tabnext<CR>', { silent = true })
-vim.keymap.set('n', '<A-m>', ':tabprevious<CR>', { silent = true })
+-- Move between buffers (shown in bufferline)
+vim.keymap.set('n', '<A-,>', ':BufferLineCycleNext<CR>', { silent = true })
+vim.keymap.set('n', '<A-m>', ':BufferLineCyclePrev<CR>', { silent = true })
 
--- Open / close tabs
-vim.keymap.set('n', '<A-t>', ':tabnew<CR>', { silent = true })
-vim.keymap.set('n', '<A-w>', ':tabclose<CR>', { silent = true })
+-- Open / close buffers
+vim.keymap.set('n', '<A-t>', ':enew<CR>', { silent = true })
+vim.keymap.set('n', '<A-w>', ':bdelete<CR>', { silent = true })
 
 -- Move text up and down
 keymap("n", "<A-j>", ":m .+1<CR>==", opts)
