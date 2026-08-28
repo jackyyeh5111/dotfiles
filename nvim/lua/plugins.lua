@@ -323,60 +323,6 @@ local toggleterm = {
   end,
 }
 
-local multicursor = {
-    "jake-stewart/multicursor.nvim",
-    branch = "1.0",
-    config = function()
-        local mc = require("multicursor-nvim")
-        mc.setup()
-
-        local set = vim.keymap.set
-
-        -- Add or skip cursor above/below the main cursor.
-        set({"n", "x"}, "<leader>k", function()
-            mc.lineAddCursor(-1)
-        end)
-        set({"n", "x"}, "<leader>j", function()
-            mc.lineAddCursor(1)
-        end)
-
-        -- Add or skip adding a new cursor by matching word/selection
-        set({"n", "x"}, "<leader>n", function() mc.matchAddCursor(1) end)
-        set({"n", "x"}, "<leader>s", function() mc.matchSkipCursor(1) end)
-        set({"n", "x"}, "<leader>N", function() mc.matchAddCursor(-1) end)
-        set({"n", "x"}, "<leader>S", function() mc.matchSkipCursor(-1) end)
-        
-        -- Mappings defined in a keymap layer only apply when there are
-        -- multiple cursors. This lets you have overlapping mappings.
-        mc.addKeymapLayer(function(layerSet)
-            layerSet("n", "j", function()
-                mc.lineAddCursor(1)
-            end)
-            layerSet("n", "k", function()
-                mc.lineAddCursor(-1)
-            end)
-            
-            -- Enable and clear cursors using escape.
-            layerSet("n", "<C-c>", function()
-                if not mc.cursorsEnabled() then
-                    mc.enableCursors()
-                else
-                    mc.clearCursors()
-                end
-            end)
-            layerSet("n", "<esc>", function()
-                if not mc.cursorsEnabled() then
-                    mc.enableCursors()
-                else
-                    mc.clearCursors()
-                end
-            end)
-
-        end)
-
-    end
-}
-
 local neo_tree = {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
@@ -499,6 +445,18 @@ local diffview = {
     end,
 }
 
+local visual_multi = {
+    "mg979/vim-visual-multi",
+    branch = "master",
+    event = "VeryLazy",
+    init = function()
+        vim.g.VM_maps = {
+            ["Add Cursor Down"] = "<C-j>",
+            ["Add Cursor Up"] = "<C-k>",
+        }
+    end,
+}
+
 local nvim_autopairs = {
     "windwp/nvim-autopairs",
     event = "InsertEnter",
@@ -595,10 +553,10 @@ return {
     lazygit,
     copilot,
     toggleterm,
-    multicursor,
     neo_tree,
     tmux_navigator,
     treesitter_context,
     diffview,
     nvim_autopairs,
+    visual_multi,
 }
