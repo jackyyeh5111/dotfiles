@@ -189,9 +189,8 @@ local lspconfig = {
         config = function()
             local servers = { "lua_ls", "pyright", "clangd" }
             for _, lsp in ipairs(servers) do
-                local cfg = vim.lsp.config[lsp]
-                if cfg then
-                    vim.lsp.start(cfg)
+                if vim.lsp.config[lsp] then
+                    vim.lsp.enable(lsp)
                 else
                     vim.notify(lsp .. " config not found", vim.log.levels.ERROR)
                 end
