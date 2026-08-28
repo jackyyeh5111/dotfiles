@@ -16,56 +16,111 @@ local colortheme = {
 -- Telescope config
 local telescope = {
     "nvim-telescope/telescope.nvim",
-    dependencies = {"nvim-lua/plenary.nvim"},
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+        -- FZF native matcher for drastically faster searching and better fuzzy matching
+        { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+        -- UI select extension to replace Neovim's default vim.ui.select (code actions, etc.)
+        "nvim-telescope/telescope-ui-select.nvim",
+    },
     config = function()
-        require("telescope").setup {
+        local telescope = require("telescope")
+        local actions = require("telescope.actions")
+        local action_layout = require("telescope.actions.layout")
+
+        telescope.setup {
             defaults = {
+                path_display = { "smart" },
                 mappings = {
                     i = {
-                        ["<C-j>"] = require("telescope.actions").move_selection_next,
-                        ["<C-k>"] = require("telescope.actions").move_selection_previous
+                        ["<C-j>"] = actions.move_selection_next,
+                        ["<C-k>"] = actions.move_selection_previous,
+                        -- Send all filtered items to quickfix list
+                        ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+                        ["<M-q>"] = actions.send_to_qflist + actions.open_qflist,
+                        -- Toggle preview window dynamically
+                        ["<M-p>"] = action_layout.toggle_preview,
                     }
                 },
 
-                -- this solve my preview no show issue
-                -- https://github.com/nvim-telescope/telescope.nvim/issues/1594#issuecomment-993447528
+                -- Auto-adapt: side-by-side on wide terminals, stacked on narrow ones
+                layout_strategy = "flex",
                 layout_config = {
-                    horizontal = {
-                        preview_cutoff = 0
-                    }
+                    -- Use nearly the whole screen, VSCode-quick-open style
+                    width = 0.95,
+                    height = 0.90,
+                    flex = {
+                        flip_columns = 130, -- switch to vertical layout below 130 columns
+                    },
+                    -- preview_cutoff = 0 works around the preview not showing:
+                    -- https://github.com/nvim-telescope/telescope.nvim/issues/1594#issuecomment-993447528
+                    horizontal = { preview_cutoff = 0, preview_width = 0.80 },
+                    vertical = { preview_cutoff = 0, preview_height = 0.80 },
                 }
-            }
+            },
+            extensions = {
+                fzf = {
+                    fuzzy = true,
+                    override_generic_sorter = true,
+                    override_file_sorter = true,
+                    case_mode = "smart_case",
+                },
+                ["ui-select"] = {
+                    require("telescope.themes").get_dropdown({}),
+                },
+            },
         }
+
+        telescope.load_extension("fzf")
+        telescope.load_extension("ui-select")
+
         local builtin = require("telescope.builtin")
-        vim.keymap.set("n", "<leader>p", builtin.find_files)
-        vim.keymap.set("n", "<leader>r", builtin.live_grep)
-        vim.keymap.set("n", "<leader>b", builtin.buffers)
-        vim.keymap.set('n', '<leader>h', builtin.command_history)
+
+        -- File & text search
+        vim.keymap.set("n", "<leader>pf", builtin.find_files, { desc = "Find files" })
+        vim.keymap.set("n", "<leader>ps", builtin.live_grep, { desc = "Search text across project" })
+        vim.keymap.set("n", "<leader>pw", builtin.grep_string, { desc = "Search word under cursor" })
+        vim.keymap.set("n", "<leader>pb", builtin.buffers, { desc = "List open buffers" })
+        vim.keymap.set("n", "<leader>ph", builtin.help_tags, { desc = "Search Vim help tags" })
+        vim.keymap.set("n", "<leader>pr", builtin.resume, { desc = "Resume last Telescope picker" })
+        vim.keymap.set("n", "<leader>h", builtin.command_history, { desc = "Command history" })
 
         -- Telescope LSP symbols
-        vim.keymap.set("n", "<leader>sd", builtin.lsp_document_symbols)
-        vim.keymap.set("n", "<leader>sw", builtin.lsp_workspace_symbols)
+        vim.keymap.set("n", "<leader>sd", builtin.lsp_document_symbols, { desc = "Document symbols" })
+        vim.keymap.set("n", "<leader>sw", builtin.lsp_workspace_symbols, { desc = "Workspace symbols" })
 
-        -- Go to definition, declaration, implementation, type definition
-        -- vim.keymap.set("n", "<leader>gd", builtin.lsp_definitions)
-        -- vim.keymap.set("n", "<leader>gi", builtin.lsp.buf.implementation, opts)
-        -- vim.keymap.set("n", "<leader>gt", builtin.lsp.buf.type_definition, opts)
-        --
-        -- -- Find references
-        -- vim.keymap.set("n", "<leader>gr", builtin.lsp.buf.references, opts)
-        --
-        -- -- Code actions
-        -- vim.keymap.set("n", "<leader>ca", builtin.lsp.buf.code_action, opts)
-        -- vim.keymap.set("n", "<leader>rn", builtin.lsp.buf.rename, opts)
-
-
+        -- Git pickers
+        vim.keymap.set("n", "<leader>gc", builtin.git_commits, { desc = "Git commits" })
+        vim.keymap.set("n", "<leader>gs", builtin.git_status, { desc = "Git status" })
     end
 }
 
 -- Treesitter config
 local treesitter = {
     "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate"
+    build = ":TSUpdate",
+    dependencies = {
+        { "nvim-treesitter/nvim-treesitter-textobjects", branch = "master" },
+    },
+    config = function()
+        require("nvim-treesitter.configs").setup({
+            ensure_installed = { "lua", "vim", "vimdoc", "python", "c", "cpp" },
+            highlight = { enable = true },
+            indent = { enable = true },
+            textobjects = {
+                select = {
+                    enable = true,
+                    lookahead = true, -- Automatically jump forward to textobj
+                    keymaps = {
+                        ["af"] = "@function.outer",
+                        ["if"] = "@function.inner",
+                        ["ac"] = "@class.outer",
+                        ["ic"] = "@class.inner",
+                    },
+                },
+            },
+        })
+    end
 }
 
 -- LSP configs
@@ -109,13 +164,14 @@ local lspconfig = {
             vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
             
             -- Go to definition, declaration, implementation, type definition
-            vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, opts)
+            -- (routed through Telescope for a multi-result picker + quickfix workflow)
+            vim.keymap.set("n", "<leader>gd", function() require("telescope.builtin").lsp_definitions() end, opts)
             vim.keymap.set("n", "<leader>gD", vim.lsp.buf.declaration, opts)
-            vim.keymap.set("n", "<leader>gi", vim.lsp.buf.implementation, opts)
-            vim.keymap.set("n", "<leader>gt", vim.lsp.buf.type_definition, opts)
+            vim.keymap.set("n", "<leader>gi", function() require("telescope.builtin").lsp_implementations() end, opts)
+            vim.keymap.set("n", "<leader>gt", function() require("telescope.builtin").lsp_type_definitions() end, opts)
 
             -- Find references
-            vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references, opts)
+            vim.keymap.set("n", "<leader>gr", function() require("telescope.builtin").lsp_references() end, opts)
 
             -- Code actions
             vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
@@ -290,16 +346,6 @@ local neo_tree = {
     branch = "v3.x",
     dependencies = {"nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim"},
 
-    size = function(term)
-            if term.direction == "horizontal" then
-                return vim.o.lines * 0.3      -- 30% of total editor height
-            elseif term.direction == "vertical" then
-                return vim.o.columns * 0.4    -- 40% of total width
-            else
-                return 20                     -- default for float
-            end
-        end,
-        
     config = function()
         require("neo-tree").setup {}
 
@@ -435,7 +481,7 @@ return {
     copilot,
     toggleterm,
     multicursor,
-    -- neo_tree,
+    neo_tree,
     tmux_navigator,
     treesitter_context,
     diffview,

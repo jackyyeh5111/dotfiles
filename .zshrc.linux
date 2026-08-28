@@ -278,3 +278,4 @@ export GST_PLUGIN_PATH=$HOME/memryx/MX_GStreamer/plugins
 plugins=(git zsh-autosuggestions)
 
 eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"

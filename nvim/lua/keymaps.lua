@@ -54,13 +54,14 @@ keymap("n", "<A-k>", ":m .-2<CR>==", opts)
 keymap("i", "jk", "<ESC>", opts)
 keymap("i", "kj", "<ESC>", opts)
 
+-- paste what I explicitly yanked
+vim.keymap.set("n", "p", '"0p')
+vim.keymap.set("n", "P", '"0P')
+
 -- Visual --
 -- Stay in indent mode
 keymap("v", "<", "<gv^", opts)
 keymap("v", ">", ">gv^", opts)
-
--- Paste without overwriting clipboard
-keymap("v", "p", '"_dP', opts) 
 
 -- Remap all delete/change operators (d, x, c, s) to use the black hole register ("_")
 -- so that deleted or changed text does not overwrite any registers, in normal, visual, and operator-pending modes.
@@ -130,4 +131,35 @@ vim.keymap.set('n', '<leader>ds', ':Gvdiffsplit<CR>', { noremap = true, silent =
 -- Quick save and quit
 vim.keymap.set('n', '<leader>q', ':q!', { noremap = true })
 vim.keymap.set('n', '<leader>a', ':qa!', { noremap = true })
+
+-- Tabs
+-- Hit <leader> + key once, then keep hitting the bare key to repeat the
+-- action. The bare key reverts to its normal Vim meaning after a short
+-- idle timeout.
+local TAB_REPEAT_TIMEOUT_MS = 1500
+
+local function tab_action(key, cmd, desc)
+  local clear_timer
+
+  local function repeat_action()
+    vim.cmd(cmd)
+    vim.keymap.set("n", key, repeat_action, { noremap = true, silent = true, desc = desc .. " (repeat)" })
+
+    if clear_timer then
+      clear_timer:stop()
+      clear_timer:close()
+    end
+    clear_timer = vim.defer_fn(function()
+      pcall(vim.keymap.del, "n", key)
+      clear_timer = nil
+    end, TAB_REPEAT_TIMEOUT_MS)
+  end
+
+  vim.keymap.set("n", "<leader>" .. key, repeat_action, { noremap = true, silent = true, desc = desc })
+end
+
+tab_action("t", "tabnew", "New tab")
+tab_action("w", "tabclose", "Close tab")
+tab_action("<Tab>", "tabnext", "Next tab")
+tab_action("<S-Tab>", "tabprevious", "Previous tab")
 
