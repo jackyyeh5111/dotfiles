@@ -24,12 +24,12 @@ vim.g.maplocalleader = " "
 -- keymap("n", "<C-j>", "<C-w>j", opts)
 -- keymap("n", "<C-k>", "<C-w>k", opts)
 -- keymap("n", "<C-l>", "<C-w>l", opts)
-
+--
 -- Resize with arrows
-keymap("n", "<C-Up>", ":resize -2<CR>", opts)
-keymap("n", "<C-Down>", ":resize +2<CR>", opts)
-keymap("n", "<C-Left>", ":vertical resize -2<CR>", opts)
-keymap("n", "<C-Right>", ":vertical resize +2<CR>", opts)
+-- keymap("n", "<C-Up>", ":resize -2<CR>", opts)
+-- keymap("n", "<C-Down>", ":resize +2<CR>", opts)
+-- keymap("n", "<C-Left>", ":vertical resize -2<CR>", opts)
+-- keymap("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 
 -- Navigate buffers
 -- keymap("n", "<A-l>", ":bnext<CR>", opts)
@@ -38,11 +38,11 @@ keymap("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 -- vim.keymap.set('n', '<A-b>', ':b#<CR>', { noremap = true, silent = true })
 
 -- Move between tabs
-vim.keymap.set('n', '<A-l>', ':tabnext<CR>', { silent = true })
-vim.keymap.set('n', '<A-h>', ':tabprevious<CR>', { silent = true })
+vim.keymap.set('n', '<A-,>', ':tabnext<CR>', { silent = true })
+vim.keymap.set('n', '<A-m>', ':tabprevious<CR>', { silent = true })
 
 -- Open / close tabs
-vim.keymap.set('n', '<A-n>', ':tabnew<CR>', { silent = true })
+vim.keymap.set('n', '<A-t>', ':tabnew<CR>', { silent = true })
 vim.keymap.set('n', '<A-w>', ':tabclose<CR>', { silent = true })
 
 -- Move text up and down
@@ -63,21 +63,6 @@ vim.keymap.set("n", "P", '"0P')
 keymap("v", "<", "<gv^", opts)
 keymap("v", ">", ">gv^", opts)
 
--- Remap all delete/change operators (d, x, c, s) to use the black hole register ("_")
--- so that deleted or changed text does not overwrite any registers, in normal, visual, and operator-pending modes.
-vim.keymap.set("n", "<leader>d", '"_d', { noremap = true, silent = true })
-vim.keymap.set("n", "cc", '"_cc', { noremap = true, silent = true })
-local del_ops = {"x", "c", "s" }
-for _, op in ipairs(del_ops) do
-    -- Normal mode
-    vim.keymap.set("n", op, '"_' .. op, { noremap = true, silent = true })
-    -- Visual mode
-    vim.keymap.set("v", op, '"_' .. op, { noremap = true, silent = true })
-    -- Operator-pending mode
-    vim.keymap.set("o", op, '"_' .. op, { noremap = true, silent = true })
-end
-
-
 -- Visual Block --
 -- Move text up and down
 keymap("x", "J", ":m '>+1<CR>gv=gv", opts)
@@ -94,14 +79,11 @@ vim.keymap.set('i', '<C-l>', '<C-o>l', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-u>', '<C-o>10k', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-d>', '<C-o>10j', { noremap = true, silent = true })
 
--- Make Ctrl + C act like ESC in all major modes
-vim.keymap.set({ 'i', 'v', 'c' }, '<C-c>', '<Esc>', { noremap = true, silent = true })
+-- Move to first non-blank character (Normal + Visual)
+vim.keymap.set({ "n", "v" }, "H", "^", { noremap = true, silent = true, desc = "Go to line start (non-blank)" })
 
--- Move to first non-blank character
-vim.keymap.set("n", "H", "^", { noremap = true, silent = true, desc = "Go to line start (non-blank)" })
-
--- Move to end of line
-vim.keymap.set("n", "L", "$", { noremap = true, silent = true, desc = "Go to line end" })
+-- Move to end of line (Normal + Visual)
+vim.keymap.set({ "n", "v" }, "L", "$", { noremap = true, silent = true, desc = "Go to line end" })
 
 -- Vertical and horizontal splits
 vim.keymap.set("n", "<A-\\>", ":vsplit<CR>", { noremap = true, silent = true, desc = "Vertical Split" })
@@ -131,35 +113,5 @@ vim.keymap.set('n', '<leader>ds', ':Gvdiffsplit<CR>', { noremap = true, silent =
 -- Quick save and quit
 vim.keymap.set('n', '<leader>q', ':q!', { noremap = true })
 vim.keymap.set('n', '<leader>a', ':qa!', { noremap = true })
-
--- Tabs
--- Hit <leader> + key once, then keep hitting the bare key to repeat the
--- action. The bare key reverts to its normal Vim meaning after a short
--- idle timeout.
-local TAB_REPEAT_TIMEOUT_MS = 1500
-
-local function tab_action(key, cmd, desc)
-  local clear_timer
-
-  local function repeat_action()
-    vim.cmd(cmd)
-    vim.keymap.set("n", key, repeat_action, { noremap = true, silent = true, desc = desc .. " (repeat)" })
-
-    if clear_timer then
-      clear_timer:stop()
-      clear_timer:close()
-    end
-    clear_timer = vim.defer_fn(function()
-      pcall(vim.keymap.del, "n", key)
-      clear_timer = nil
-    end, TAB_REPEAT_TIMEOUT_MS)
-  end
-
-  vim.keymap.set("n", "<leader>" .. key, repeat_action, { noremap = true, silent = true, desc = desc })
-end
-
-tab_action("t", "tabnew", "New tab")
-tab_action("w", "tabclose", "Close tab")
-tab_action("<Tab>", "tabnext", "Next tab")
-tab_action("<S-Tab>", "tabprevious", "Previous tab")
+vim.keymap.set('n', '<leader>w', ':w', { noremap = true })
 

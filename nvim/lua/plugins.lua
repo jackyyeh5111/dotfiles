@@ -33,14 +33,9 @@ local telescope = {
                 path_display = { "smart" },
                 mappings = {
                     i = {
-                        ["<C-j>"] = actions.move_selection_next,
-                        ["<C-k>"] = actions.move_selection_previous,
-                        -- Send all filtered items to quickfix list
-                        ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
-                        ["<M-q>"] = actions.send_to_qflist + actions.open_qflist,
                         -- Toggle preview window dynamically
                         ["<M-p>"] = action_layout.toggle_preview,
-                    }
+                    },
                 },
 
                 -- Auto-adapt: side-by-side on wide terminals, stacked on narrow ones
@@ -54,8 +49,8 @@ local telescope = {
                     },
                     -- preview_cutoff = 0 works around the preview not showing:
                     -- https://github.com/nvim-telescope/telescope.nvim/issues/1594#issuecomment-993447528
-                    horizontal = { preview_cutoff = 0, preview_width = 0.80 },
-                    vertical = { preview_cutoff = 0, preview_height = 0.80 },
+                    horizontal = { preview_cutoff = 0, preview_width = 0.3 },
+                    vertical = { preview_cutoff = 0, preview_height = 0.3},
                 }
             },
             extensions = {
