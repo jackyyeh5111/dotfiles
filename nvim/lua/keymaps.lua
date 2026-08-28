@@ -60,8 +60,19 @@ vim.keymap.set("n", "P", '"0P')
 
 -- Visual --
 -- Stay in indent mode
-keymap("v", "<", "<gv^", opts)
 keymap("v", ">", ">gv^", opts)
+
+-- Wrap visual selection with brackets and quotes
+keymap('v', '(', 'c()<Esc>P', { desc = 'Wrap selection with ()' })
+keymap('v', ')', 'c()<Esc>P', { desc = 'Wrap selection with ()' })
+keymap('v', '[', 'c[]<Esc>P', { desc = 'Wrap selection with []' })
+keymap('v', ']', 'c[]<Esc>P', { desc = 'Wrap selection with []' })
+keymap('v', '{', 'c{}<Esc>P', { desc = 'Wrap selection with {}' })
+keymap('v', '}', 'c{}<Esc>P', { desc = 'Wrap selection with {}' })
+keymap('v', '"', 'c""<Esc>P', { desc = 'Wrap selection with ""' })
+keymap('v', "'", "c''<Esc>P", { desc = "Wrap selection with ''" })
+keymap('v', '`', 'c``<Esc>P', { desc = 'Wrap selection with ``' })
+keymap('v', '<', 'c<><Esc>P', { desc = 'Wrap selection with <>' })
 
 -- Visual Block --
 -- Move text up and down
