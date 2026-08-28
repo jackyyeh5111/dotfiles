@@ -1,4 +1,4 @@
--- colorthem etheme config
+-- colorscheme config
 local colortheme = {
     "catppuccin/nvim",
     name = "catppuccin",
@@ -8,10 +8,50 @@ local colortheme = {
         require("catppuccin").setup({
             flavour = "mocha",
             transparent_background = true,
+            integrations = {
+                diffview = true,
+                gitsigns = true,
+            },
         })
         vim.cmd.colorscheme("catppuccin")
     end
 }
+
+-- The active colorscheme is set by catppuccin's config above. If catppuccin is
+-- ever disabled, uncomment this to fall back to a builtin scheme.
+-- vim.cmd.colorscheme("default")
+
+-- Most colorschemes ship diff colours that are too desaturated to tell apart.
+-- Vim also marks a modified line as DiffChange/DiffText on *both* sides of a
+-- diff, so without the per-window overrides below a changed line renders the
+-- same colour left and right instead of red-vs-green.
+-- Re-applied on every ColorScheme so these survive a theme switch.
+local function diff_highlights()
+    local hl = {
+        -- Whole-line backgrounds.
+        DiffAdd    = "#1e3a2a", -- green: line exists only on the right
+        DiffDelete = "#3d1f27", -- red:   line exists only on the left
+        DiffChange = "#1f2b3f", -- neutral fallback (non-diffview windows)
+        DiffText   = "#2f4a6b",
+
+        -- Per-side variants used by the diffview hook. "AsDelete" = left pane,
+        -- "AsAdd" = right pane. Text variants are brighter so the changed
+        -- region stands out against the rest of the line.
+        DiffviewDiffChangeAsDelete = "#3d1f27",
+        DiffviewDiffTextAsDelete   = "#6e2a38",
+        DiffviewDiffChangeAsAdd    = "#1e3a2a",
+        DiffviewDiffTextAsAdd      = "#2f6b42",
+    }
+    for group, bg in pairs(hl) do
+        vim.api.nvim_set_hl(0, group, { bg = bg })
+    end
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+    group = vim.api.nvim_create_augroup("UserDiffHighlights", { clear = true }),
+    callback = diff_highlights,
+})
+diff_highlights()
 
 -- Telescope config
 local telescope = {
@@ -415,7 +455,33 @@ local diffview = {
     "sindrets/diffview.nvim",
 
     config = function()
-        require("diffview").setup {}
+        require("diffview").setup {
+            enhanced_diff_hl = true,
+            hooks = {
+                -- Vim highlights a modified line as DiffChange/DiffText on both
+                -- sides, so it reads the same colour left and right. Repaint the
+                -- left pane ("a") in reds and the right pane ("b") in greens.
+                diff_buf_win_enter = function(_, winid, ctx)
+                    if not ctx.layout_name:match("^diff2") then return end
+
+                    if ctx.symbol == "a" then
+                        vim.wo[winid].winhl = table.concat({
+                            "DiffAdd:DiffviewDiffAddAsDelete",
+                            "DiffDelete:DiffviewDiffDeleteDim",
+                            "DiffChange:DiffviewDiffChangeAsDelete",
+                            "DiffText:DiffviewDiffTextAsDelete",
+                        }, ",")
+                    elseif ctx.symbol == "b" then
+                        vim.wo[winid].winhl = table.concat({
+                            "DiffDelete:DiffviewDiffDeleteDim",
+                            "DiffAdd:DiffAdd",
+                            "DiffChange:DiffviewDiffChangeAsAdd",
+                            "DiffText:DiffviewDiffTextAsAdd",
+                        }, ",")
+                    end
+                end,
+            },
+        }
         
         -- automatically close (hide) the file panel when you open Diffview, by calling
         -- vim.keymap.set("n", "<leader>do", function()
@@ -423,7 +489,7 @@ local diffview = {
         --     vim.cmd("DiffviewToggleFiles") -- automatically close the file panel
         -- end, { desc = "Open Diffview (no file panel)" })
 
-        vim.keymap.set('n', '<A-d>', ':DiffviewOpen<CR>', { noremap = true, silent = true, desc = "Diffview Open" })
+        vim.keymap.set('n', '<A-d>', ':DiffviewOpen -uno<CR>', { noremap = true, silent = true, desc = "Diffview Open" })
         -- vim.keymap.set('n', '<leader>do', ':Diffview<CR>', { noremap = true, silent = true, desc = "Diffview " })
         -- vim.keymap.set('n', '<leader>dc', ':DiffviewClose<CR>', { noremap = true, silent = true, desc = "Diffview Close" })
         -- vim.keymap.set("n", "<leader>df", ":DiffviewToggleFiles<CR>", { desc = "Toggle Diffview file panel" })
