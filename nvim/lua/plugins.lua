@@ -115,21 +115,20 @@ local telescope = {
         local builtin = require("telescope.builtin")
 
         -- File & text search
-        vim.keymap.set("n", "<leader>pf", builtin.find_files, { desc = "Find files" })
-        vim.keymap.set("n", "<leader>ps", builtin.live_grep, { desc = "Search text across project" })
-        vim.keymap.set("n", "<leader>pw", builtin.grep_string, { desc = "Search word under cursor" })
-        vim.keymap.set("n", "<leader>pb", builtin.buffers, { desc = "List open buffers" })
-        vim.keymap.set("n", "<leader>ph", builtin.help_tags, { desc = "Search Vim help tags" })
-        vim.keymap.set("n", "<leader>pr", builtin.resume, { desc = "Resume last Telescope picker" })
-        vim.keymap.set("n", "<leader>h", builtin.command_history, { desc = "Command history" })
+        vim.keymap.set("n", "<C-p>f", builtin.find_files, { desc = "Find files" })
+        vim.keymap.set("n", "<C-p>s", builtin.live_grep, { desc = "Search text across project" })
+        vim.keymap.set("n", "<C-p>w", builtin.grep_string, { desc = "Search word under cursor" })
+        vim.keymap.set("n", "<C-p>b", builtin.buffers, { desc = "List open buffers" })
+        vim.keymap.set("n", "<C-p>r", builtin.resume, { desc = "Resume last Telescope picker" })
+        vim.keymap.set("n", "<C-p>h", builtin.command_history, { desc = "Command history" })
 
         -- Telescope LSP symbols
-        vim.keymap.set("n", "<leader>sd", builtin.lsp_document_symbols, { desc = "Document symbols" })
-        vim.keymap.set("n", "<leader>sw", builtin.lsp_workspace_symbols, { desc = "Workspace symbols" })
+        vim.keymap.set("n", "<C-s>s", builtin.lsp_document_symbols, { desc = "Document symbols" })
+        vim.keymap.set("n", "<C-s>w", builtin.lsp_workspace_symbols, { desc = "Workspace symbols" })
 
         -- Git pickers
-        vim.keymap.set("n", "<leader>gc", builtin.git_commits, { desc = "Git commits" })
-        vim.keymap.set("n", "<leader>gs", builtin.git_status, { desc = "Git status" })
+        vim.keymap.set("n", "<C-p>gc", builtin.git_commits, { desc = "Git commits" })
+        vim.keymap.set("n", "<C-p>gs", builtin.git_status, { desc = "Git status" })
     end
 }
 
