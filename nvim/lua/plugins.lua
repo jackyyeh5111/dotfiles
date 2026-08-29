@@ -251,9 +251,27 @@ local toggleterm = {
   "akinsho/toggleterm.nvim",
 
   config = function()
+    -- Colored top border for the toggleterm window.
+    --
+    -- Note: WinSeparator is NOT usable here. With laststatus=2 (the default,
+    -- and what lualine leaves it at since globalstatus is off) Neovim draws no
+    -- horizontal separator between stacked windows at all -- the boundary is
+    -- just the upper window's statusline. WinSeparator's horizontal variant
+    -- only renders under laststatus=3. So the border is drawn as a winbar on
+    -- the terminal window instead, which always renders and stays scoped to
+    -- that window.
+    local function toggleterm_border_highlights()
+      vim.api.nvim_set_hl(0, "ToggleTermBorder", { fg = "#cba6f7", bold = true }) -- catppuccin mauve
+    end
+    vim.api.nvim_create_autocmd("ColorScheme", {
+      group = vim.api.nvim_create_augroup("UserToggleTermBorder", { clear = true }),
+      callback = toggleterm_border_highlights,
+    })
+    toggleterm_border_highlights()
+
     require("toggleterm").setup({
-      
-    -- size       
+
+    -- size
         size = function(term)
             if term.direction == "horizontal" then
                 return vim.o.lines * 0.5      -- 30% of total editor height
@@ -320,6 +338,10 @@ local toggleterm = {
       -- enable numbers and relative numbers on this terminal buffer
       vim.api.nvim_buf_set_option(0, "number", true)
       vim.api.nvim_buf_set_option(0, "relativenumber", true)
+
+      -- Draw the top border as a full-width rule across this window only.
+      -- %{repeat()} re-evaluates on every redraw, so it tracks window resizes.
+      vim.wo.winbar = "%#ToggleTermBorder#%{repeat('━', winwidth(0))}"
     end
 
     vim.cmd('autocmd! TermOpen term://* lua set_terminal()')
