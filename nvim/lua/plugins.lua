@@ -234,6 +234,10 @@ local gitsigns = {
 
         vim.keymap.set("n", "<leader>gp", ":Gitsigns preview_hunk<CR>")
         vim.keymap.set("n", "<leader>gb", ":Gitsigns toggle_current_line_blame<CR>")
+
+        vim.keymap.set("n", "<A-s>", ":Gitsigns stage_hunk<CR>", { desc = "Stage current hunk" })
+        vim.keymap.set("n", "<A-u>", ":Gitsigns undo_stage_hunk<CR>", { desc = "Undo stage hunk" })
+        vim.keymap.set("n", "<A-r>", ":Gitsigns reset_hunk<CR>", { desc = "Reset (discard) current hunk" })
     end,
     dependencies = { "nvim-lua/plenary.nvim" },  -- gitsigns depends on plenary
 }
@@ -402,8 +406,26 @@ local diffview = {
     "sindrets/diffview.nvim",
 
     config = function()
+        local actions = require("diffview.actions")
+
         require("diffview").setup {
             enhanced_diff_hl = true,
+            keymaps = {
+                -- Toggle the file panel (sidebar) with opt+b instead of the
+                -- default <leader>b, in every context that has that mapping.
+                view = {
+                    { "n", "<leader>b", false },
+                    { "n", "<A-b>", actions.toggle_files, { desc = "Toggle the file panel" } },
+                },
+                file_panel = {
+                    { "n", "<leader>b", false },
+                    { "n", "<A-b>", actions.toggle_files, { desc = "Toggle the file panel" } },
+                },
+                file_history_panel = {
+                    { "n", "<leader>b", false },
+                    { "n", "<A-b>", actions.toggle_files, { desc = "Toggle the file panel" } },
+                },
+            },
             hooks = {
                 -- Vim highlights a modified line as DiffChange/DiffText on both
                 -- sides, so it reads the same colour left and right. Repaint the
@@ -436,7 +458,14 @@ local diffview = {
         --     vim.cmd("DiffviewToggleFiles") -- automatically close the file panel
         -- end, { desc = "Open Diffview (no file panel)" })
 
-        vim.keymap.set('n', '<A-d>', ':DiffviewOpen -uno<CR>', { noremap = true, silent = true, desc = "Diffview Open" })
+        vim.keymap.set('n', '<A-d>', function()
+            local ok, lib = pcall(require, "diffview.lib")
+            if ok and lib.get_current_view() then
+                vim.cmd("DiffviewClose")
+            else
+                vim.cmd("DiffviewOpen -uno")
+            end
+        end, { noremap = true, silent = true, desc = "Diffview Toggle" })
         -- vim.keymap.set('n', '<leader>do', ':Diffview<CR>', { noremap = true, silent = true, desc = "Diffview " })
         -- vim.keymap.set('n', '<leader>dc', ':DiffviewClose<CR>', { noremap = true, silent = true, desc = "Diffview Close" })
         -- vim.keymap.set("n", "<leader>df", ":DiffviewToggleFiles<CR>", { desc = "Toggle Diffview file panel" })

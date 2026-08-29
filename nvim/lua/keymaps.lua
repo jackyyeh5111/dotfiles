@@ -18,13 +18,6 @@ vim.g.maplocalleader = " "
 --   term_mode = "t",
 --   command_mode = "c",
 
--- Normal --
--- Better window navigation
--- keymap("n", "<C-h>", "<C-w>h", opts)
--- keymap("n", "<C-j>", "<C-w>j", opts)
--- keymap("n", "<C-k>", "<C-w>k", opts)
--- keymap("n", "<C-l>", "<C-w>l", opts)
---
 -- Resize with arrows
 -- keymap("n", "<C-Up>", ":resize -2<CR>", opts)
 -- keymap("n", "<C-Down>", ":resize +2<CR>", opts)
@@ -104,6 +97,13 @@ vim.keymap.set({ "n", "v" }, "L", "$", { noremap = true, silent = true, desc = "
 -- Vertical and horizontal splits
 vim.keymap.set("n", "<A-\\>", ":vsplit<CR>", { noremap = true, silent = true, desc = "Vertical Split" })
 
+-- Navigate between window panes
+vim.keymap.set("n", "<A-h>", "<C-w>h", { noremap = true, silent = true, desc = "Go to left window" })
+vim.keymap.set("n", "<A-j>", "<C-w>j", { noremap = true, silent = true, desc = "Go to below window" })
+vim.keymap.set("n", "<A-k>", "<C-w>k", { noremap = true, silent = true, desc = "Go to above window" })
+vim.keymap.set("n", "<A-l>", "<C-w>l", { noremap = true, silent = true, desc = "Go to right window" })
+vim.keymap.set("n", "<A-o>", "<C-w>w", { noremap = true, silent = true, desc = "Cycle to next window" })
+
 -- Toggle wrap option
 vim.keymap.set("n", "<A-x>", function()
   vim.opt.wrap = not vim.opt.wrap:get()
@@ -117,8 +117,19 @@ vim.keymap.set("n", "<C-Left>",  ":vertical resize -5<CR>", { silent = true, des
 vim.keymap.set("n", "<C-Right>", ":vertical resize +5<CR>", { silent = true, desc = "Increase window width" })
 
 -- Jump to prev/next diff chunk
-vim.keymap.set('n', '<A-]>', ']c', { noremap = true, silent = true, desc = 'Next diff chunk' })
-vim.keymap.set('n', '<A-[>', '[c', { noremap = true, silent = true, desc = 'Previous diff chunk' })
+vim.keymap.set('n', '<A-[>', ']c', { noremap = true, silent = true, desc = 'Next diff chunk' })
+vim.keymap.set('n', '<A-]>', '[c', { noremap = true, silent = true, desc = 'Previous diff chunk' })
+
+-- Pull ("obtain") the current diff chunk from the other window, then save.
+-- Skips the write when the current buffer is read-only (e.g. Diffview's
+-- synthetic index/commit panes), since "do" has nothing to apply there.
+vim.keymap.set('n', "<A-'>", function()
+  if not vim.bo.modifiable then
+    return
+  end
+  vim.cmd('normal! do')
+  vim.cmd('silent! write')
+end, { noremap = true, silent = true, desc = 'Diff obtain (pull chunk from other pane) and save' })
 
 -- Exit diff view and return to single window
 vim.keymap.set('n', '<leader>o', ':only<CR>', { noremap = true, silent = true })
