@@ -62,6 +62,9 @@ vim.keymap.set("n", "P", '"0P')
 -- Stay in indent mode
 keymap("v", ">", ">gv^", opts)
 
+-- Yank to system clipboard with Cmd+C (requires terminal to forward <D-c> to nvim)
+keymap("v", "<D-c>", '"+y', opts)
+
 -- Wrap visual selection with brackets and quotes
 keymap('v', '(', 'c()<Esc>P', { desc = 'Wrap selection with ()' })
 keymap('v', ')', 'c()<Esc>P', { desc = 'Wrap selection with ()' })
@@ -126,5 +129,36 @@ vim.keymap.set('n', '<leader>ds', ':Gvdiffsplit<CR>', { noremap = true, silent =
 -- Quick save and quit
 vim.keymap.set('n', '<leader>q', ':q!', { noremap = true })
 vim.keymap.set('n', '<leader>a', ':qa!', { noremap = true })
-vim.keymap.set('n', '<leader>w', ':w', { noremap = true })
+vim.keymap.set('n', '<leader>w', ':wq', { noremap = true })
+
+-- Copy absolute file path (system clipboard + yank register, for the p/P remap above)
+vim.keymap.set('n', '<leader>yp', function()
+  local path = vim.fn.expand('%:p')
+  vim.fn.setreg('+', path)
+  vim.fn.setreg('0', path)
+  vim.notify('Copied: ' .. path)
+end, { noremap = true, silent = true, desc = 'Copy absolute file path' })
+
+-- Copy absolute file path with line number, e.g. /abs/path/file.lua:42
+vim.keymap.set('n', '<leader>yl', function()
+  local path = vim.fn.expand('%:p') .. ':' .. vim.fn.line('.')
+  vim.fn.setreg('+', path)
+  vim.fn.setreg('0', path)
+  vim.notify('Copied: ' .. path)
+end, { noremap = true, silent = true, desc = 'Copy absolute file path with line number' })
+
+-- Copy file path relative to the current git repo root, e.g. nvim/lua/keymaps.lua
+vim.keymap.set('n', '<leader>yr', function()
+  local abs_path = vim.fn.expand('%:p')
+  local dir = vim.fn.expand('%:p:h')
+  local root = vim.fn.systemlist('git -C ' .. vim.fn.shellescape(dir) .. ' rev-parse --show-toplevel')[1]
+  if vim.v.shell_error ~= 0 or not root then
+    vim.notify('Not inside a git repo', vim.log.levels.WARN)
+    return
+  end
+  local rel_path = abs_path:sub(#root + 2)
+  vim.fn.setreg('+', rel_path)
+  vim.fn.setreg('0', rel_path)
+  vim.notify('Copied: ' .. rel_path)
+end, { noremap = true, silent = true, desc = 'Copy file path relative to repo root' })
 
