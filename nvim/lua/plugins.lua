@@ -141,7 +141,7 @@ local treesitter = {
     },
     config = function()
         require("nvim-treesitter.configs").setup({
-            ensure_installed = { "lua", "vim", "vimdoc", "python", "c", "cpp" },
+            ensure_installed = { "lua", "vim", "vimdoc", "python", "c", "cpp", "markdown", "markdown_inline" },
             highlight = { enable = true },
             indent = { enable = true },
             textobjects = {
@@ -589,6 +589,15 @@ local bufferline = {
     end,
 }
 
+local render_markdown = {
+    "MeanderingProgrammer/render-markdown.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+    ft = { "markdown" },
+    config = function()
+        require("render-markdown").setup({})
+    end,
+}
+
 local lualine = {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -637,4 +646,5 @@ return {
     diffview,
     nvim_autopairs,
     visual_multi,
+    render_markdown,
 }
