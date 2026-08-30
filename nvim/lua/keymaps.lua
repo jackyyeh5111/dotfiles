@@ -131,11 +131,70 @@ vim.keymap.set('n', "<A-'>", function()
   vim.cmd('silent! write')
 end, { noremap = true, silent = true, desc = 'Diff obtain (pull chunk from other pane) and save' })
 
--- Exit diff view and return to single window
-vim.keymap.set('n', '<leader>o', ':only<CR>', { noremap = true, silent = true })
+-- Same, but for every chunk in the file at once: makes this file identical to
+-- the other pane, then saves. ":%diffget" is deliberately not used -- its range
+-- can't reach a hunk that sits *above* line 1 (lines the other side adds at the
+-- top), so it silently leaves that one behind. Copying the other buffer wholesale
+-- has no such blind spot.
+local function diff_obtain_all()
+  if not vim.wo.diff then
+    vim.notify('Not in diff mode', vim.log.levels.WARN)
+    return
+  end
+  if not vim.bo.modifiable then
+    return
+  end
 
--- Open Git diff view for current file
-vim.keymap.set('n', '<leader>ds', ':Gvdiffsplit<CR>', { noremap = true, silent = true, desc = 'Open Git diff view' })
+  local cur = vim.api.nvim_get_current_win()
+  local others = {}
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if win ~= cur and vim.wo[win].diff then
+      table.insert(others, win)
+    end
+  end
+  -- A 3-way diff (merge conflict) is ambiguous: no single "other side" to pull.
+  if #others ~= 1 then
+    vim.notify(
+      #others == 0 and 'No other diff window' or 'More than two diff windows',
+      vim.log.levels.WARN
+    )
+    return
+  end
+
+  local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(others[1]), 0, -1, false)
+  local row = vim.api.nvim_win_get_cursor(0)[1]
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+  vim.api.nvim_win_set_cursor(0, { math.min(row, math.max(#lines, 1)), 0 })
+  vim.cmd('silent! write')
+  vim.cmd('diffupdate')
+
+  -- Saving makes the file identical to the other side, so Diffview drops the
+  -- entry and swaps this window to the next file -- which would hide the buffer
+  -- (and its undo history) right after the edit. Hold this file in place so "u"
+  -- still undoes the pull (":w" then re-applies it). Diffview swaps more than
+  -- once, hence a standing autocmd rather than a one-shot; it lifts after 1.5s
+  -- so deliberate navigation is only ever fought for that instant.
+  local buf, win = vim.api.nvim_get_current_buf(), cur
+  local group = vim.api.nvim_create_augroup('DiffObtainAllKeepBuf', { clear = true })
+
+  vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinEnter' }, {
+    group = group,
+    callback = function()
+      vim.schedule(function()
+        if vim.api.nvim_win_is_valid(win) and vim.api.nvim_buf_is_valid(buf)
+          and vim.api.nvim_win_get_buf(win) ~= buf then
+          pcall(vim.api.nvim_win_set_buf, win, buf)
+        end
+      end)
+    end,
+  })
+  vim.defer_fn(function() pcall(vim.api.nvim_del_augroup_by_id, group) end, 1500)
+end
+
+vim.keymap.set('n', '<A-">', diff_obtain_all,
+  { noremap = true, silent = true, desc = 'Diff obtain all chunks in file and save' })
+vim.keymap.set('n', "<A-S-'>", diff_obtain_all,
+  { noremap = true, silent = true, desc = 'Diff obtain all chunks in file and save' })
 
 -- Quick save and quit
 vim.keymap.set('n', '<leader>q', ':q!', { noremap = true })

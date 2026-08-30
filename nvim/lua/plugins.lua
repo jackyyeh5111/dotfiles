@@ -430,6 +430,31 @@ local diffview = {
     config = function()
         local actions = require("diffview.actions")
 
+        -- "X" only restores the entry under the cursor. This is the bulk
+        -- version: reset every tracked file (staged and unstaged) back to HEAD.
+        -- Untracked files are left alone -- add a "git clean" if you ever want
+        -- those gone too. There is no undo, hence the confirm prompt.
+        local function discard_all()
+            local view = require("diffview.lib").get_current_view()
+            if not view then return end
+            if vim.fn.confirm("Discard ALL working-tree changes?", "&Yes\n&No", 2) ~= 1 then
+                return
+            end
+
+            vim.system(
+                { "git", "-C", view.adapter.ctx.toplevel,
+                    "restore", "--source=HEAD", "--staged", "--worktree", "--", "." },
+                {},
+                vim.schedule_wrap(function(res)
+                    if res.code ~= 0 then
+                        vim.notify(res.stderr, vim.log.levels.ERROR)
+                        return
+                    end
+                    vim.cmd("DiffviewRefresh")
+                end)
+            )
+        end
+
         require("diffview").setup {
             enhanced_diff_hl = true,
             keymaps = {
@@ -438,10 +463,12 @@ local diffview = {
                 view = {
                     { "n", "<leader>b", false },
                     { "n", "<A-b>", actions.toggle_files, { desc = "Toggle the file panel" } },
+                    { "n", "<leader>X", discard_all, { desc = "Discard all changes" } },
                 },
                 file_panel = {
                     { "n", "<leader>b", false },
                     { "n", "<A-b>", actions.toggle_files, { desc = "Toggle the file panel" } },
+                    { "n", "<leader>X", discard_all, { desc = "Discard all changes" } },
                 },
                 file_history_panel = {
                     { "n", "<leader>b", false },
