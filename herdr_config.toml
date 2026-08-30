@@ -86,17 +86,17 @@ prefix = "ctrl+a"
 # rename_tab = "prefix+shift+t"
 # previous_tab = "prefix+p"
 # next_tab = "prefix+n"
-next_tab = "ctrl+,"
-previous_tab = "ctrl+m"
+next_tab = "alt+,"
+previous_tab = "alt+m"
 # switch_tab = "prefix+1..9"
 # switch_workspace = ""   # optional indexed binding, e.g. "prefix+shift+1..9"
 # close_tab = "prefix+shift+x"
 # rename_pane = "prefix+shift+p"
 # edit_scrollback = "prefix+e"
-focus_pane_left = "ctrl+h"
-focus_pane_down = "ctrl+j"
-focus_pane_up = "ctrl+k"
-focus_pane_right = "ctrl+l"
+focus_pane_left = "alt+h"
+focus_pane_down = "alt+j"
+focus_pane_up = "alt+k"
+focus_pane_right = "alt+l"
 # cycle_pane_next = "prefix+tab"
 # cycle_pane_previous = "prefix+shift+tab"
 # last_pane = ""          # optional, unset by default; bind e.g. "prefix+tab" for global back-and-forth
@@ -136,6 +136,8 @@ split_vertical = "prefix+|"
 # directory = "~/.herdr/worktrees"
 
 [ui]
+sidebar_start_collapsed = true
+#sidebar_collapsed_mode = "hidden"
 # Sidebar width (auto-scaled based on workspace names, this sets the default)
 # sidebar_width = 26
 
