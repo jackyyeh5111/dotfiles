@@ -209,6 +209,18 @@ local lspconfig = {
         },
     },
 
+    -- Mason only auto-installs LSP servers on its own; this extension covers
+    -- the non-LSP CLI tools (formatters, linters, DAP servers) mason.nvim
+    -- also knows how to fetch -- here, the formatters conform.nvim shells
+    -- out to.
+    {
+        "WhoIsSethDaniel/mason-tool-installer.nvim",
+        lazy = false,
+        opts = {
+            ensure_installed = { "stylua", "black", "isort", "clang-format" },
+        },
+    },
+
     -- LSP client config
     {
         "neovim/nvim-lspconfig",
@@ -667,6 +679,33 @@ local which_key = {
     opts = {},
 }
 
+-- Formatting. Shells out to each filetype's standalone formatter (not the
+-- LSP server) so formatting is decoupled from whichever LSP happens to be
+-- attached and deterministic. Manual-only: no format_on_save, so ":w" never
+-- touches the buffer -- format explicitly with <leader>cf.
+local conform = {
+    "stevearc/conform.nvim",
+    cmd = { "ConformInfo" },
+    keys = {
+        {
+            "<leader>cf",
+            function()
+                require("conform").format({ async = true, lsp_format = "fallback" })
+            end,
+            mode = { "n", "v" },
+            desc = "Format buffer/selection",
+        },
+    },
+    opts = {
+        formatters_by_ft = {
+            lua = { "stylua" },
+            python = { "isort", "black" },
+            c = { "clang_format" },
+            cpp = { "clang_format" },
+        },
+    },
+}
+
 return {
     commentor,
     devicons,
@@ -678,6 +717,7 @@ return {
     blink_cmp,
     lspconfig,
     which_key,
+    conform,
     gitsigns,
     git_fugitive,
     lazygit,
