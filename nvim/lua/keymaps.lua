@@ -58,17 +58,66 @@ keymap("v", ">", ">gv^", opts)
 -- Yank to system clipboard with Cmd+C (requires terminal to forward <D-c> to nvim)
 keymap("v", "<D-c>", '"+y', opts)
 
--- Wrap visual selection with brackets and quotes
-keymap('v', '(', 'c()<Esc>P', { desc = 'Wrap selection with ()' })
-keymap('v', ')', 'c()<Esc>P', { desc = 'Wrap selection with ()' })
-keymap('v', '[', 'c[]<Esc>P', { desc = 'Wrap selection with []' })
-keymap('v', ']', 'c[]<Esc>P', { desc = 'Wrap selection with []' })
-keymap('v', '{', 'c{}<Esc>P', { desc = 'Wrap selection with {}' })
-keymap('v', '}', 'c{}<Esc>P', { desc = 'Wrap selection with {}' })
-keymap('v', '"', 'c""<Esc>P', { desc = 'Wrap selection with ""' })
-keymap('v', "'", "c''<Esc>P", { desc = "Wrap selection with ''" })
-keymap('v', '`', 'c``<Esc>P', { desc = 'Wrap selection with ``' })
-keymap('v', '<', 'c<><Esc>P', { desc = 'Wrap selection with <>' })
+-- Wrap the visual selection with a bracket/quote pair. Unlike the old
+-- "c()<Esc>P" trick (which only made sense charwise), this edits the buffer at
+-- the selection's exact byte positions, so it works for charwise (v), linewise
+-- (V) and blockwise (<C-v>) selections: the opening char lands at the start of
+-- the selection, the closing one right after its last character.
+local function wrap_selection(open, close)
+  return function()
+    local mode = vim.fn.mode()
+    vim.cmd('normal! \27') -- leave visual so the '< and '> marks are set
+
+    local sr, sc = unpack(vim.api.nvim_buf_get_mark(0, '<'))
+    local er, ec = unpack(vim.api.nvim_buf_get_mark(0, '>'))
+    sr, er = sr - 1, er - 1 -- marks are 1-indexed rows, 0-indexed cols
+
+    local function line(row)
+      return vim.api.nvim_buf_get_lines(0, row, row + 1, true)[1]
+    end
+    -- Byte index just past the character that starts at byte `col`, so a
+    -- multibyte last character isn't split by the closing char.
+    local function past(row, col)
+      local l = line(row)
+      if col >= #l then return #l end
+      return col + vim.str_utf_end(l, col + 1) + 1
+    end
+    local function put(row, col, text)
+      vim.api.nvim_buf_set_text(0, row, col, row, col, { text })
+    end
+
+    local cur_row, cur_col = sr, sc
+    if mode == 'V' then
+      -- Linewise: keep the leading indent outside the wrapper.
+      local indent = line(sr):find('%S')
+      cur_col = indent and indent - 1 or 0
+      put(er, #line(er), close)
+      put(sr, cur_col, open)
+    elseif mode == '\22' then -- blockwise
+      local lo, hi = math.min(sc, ec), math.max(sc, ec)
+      cur_col = lo
+      for row = er, sr, -1 do -- bottom-up: earlier rows keep their positions
+        local len = #line(row)
+        if lo < len then
+          put(row, math.min(past(row, hi), len), close)
+          put(row, lo, open)
+        end
+      end
+    else -- charwise
+      -- '> can sit past the end of the line (e.g. selection extended with $).
+      put(er, past(er, math.min(ec, math.max(#line(er) - 1, 0))), close)
+      put(sr, sc, open)
+    end
+
+    vim.api.nvim_win_set_cursor(0, { cur_row + 1, cur_col })
+  end
+end
+
+for _, pair in ipairs({ '()', '[]', '{}', '""', "''", '``', '<>' }) do
+  local open, close = pair:sub(1, 1), pair:sub(2, 2)
+  keymap('x', open, wrap_selection(open, close),
+    { noremap = true, silent = true, desc = 'Wrap selection with ' .. pair })
+end
 
 -- Visual Block --
 -- Move text up and down
