@@ -44,6 +44,10 @@ keymap("n", "<A-k>", ":m .-2<CR>==", opts)
 keymap("v", "<A-j>", ":m '>+1<CR>gv=gv", opts)
 keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", opts)
 
+-- Duplicate current line down/up, cursor follows the new copy
+keymap("n", "<A-S-j>", ":t.<CR>", opts)
+keymap("n", "<A-S-k>", ":t-1<CR>", opts)
+
 -- Insert --
 -- Press jk fast to exit insert mode 
 keymap("i", "jk", "<ESC>", opts)
