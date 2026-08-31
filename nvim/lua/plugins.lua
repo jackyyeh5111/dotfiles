@@ -160,6 +160,33 @@ local treesitter = {
     end
 }
 
+-- Completion engine. Draws its own popup (doesn't rely on the built-in
+-- ins-complete menu), pulls suggestions from LSP/path/snippets/buffer, and
+-- exposes get_lsp_capabilities() so lspconfig can tell each server what the
+-- client supports (snippet completions, etc). version = "1.*" pins to a
+-- tagged release so lazy.nvim fetches the prebuilt Rust fuzzy-matcher binary
+-- instead of requiring a local cargo/rustup toolchain to build it.
+local blink_cmp = {
+    "saghen/blink.cmp",
+    version = "1.*",
+    dependencies = { "rafamadriz/friendly-snippets" },
+    opts = {
+        keymap = { preset = "default" },
+        appearance = {
+            nerd_font_variant = "mono",
+        },
+        completion = {
+            documentation = { auto_show = true, auto_show_delay_ms = 200 },
+            list = { selection = { preselect = false } },
+        },
+        signature = { enabled = true },
+        sources = {
+            default = { "lsp", "path", "snippets", "buffer" },
+        },
+    },
+    opts_extend = { "sources.default" },
+}
+
 -- LSP configs
 local lspconfig = {
 
@@ -186,7 +213,15 @@ local lspconfig = {
     {
         "neovim/nvim-lspconfig",
         lazy = false,
+        dependencies = { "saghen/blink.cmp" },
         config = function()
+            -- Tell every LSP server that this client can render completion
+            -- items with snippet expansion, resolve documentation lazily,
+            -- etc -- without this, completion still works but falls back to
+            -- plain-text/less capable results from the server.
+            local capabilities = require("blink.cmp").get_lsp_capabilities()
+            vim.lsp.config("*", { capabilities = capabilities })
+
             local servers = { "lua_ls", "pyright", "clangd" }
             for _, lsp in ipairs(servers) do
                 if vim.lsp.config[lsp] then
@@ -634,6 +669,7 @@ return {
     bufferline,
     telescope,
     treesitter,
+    blink_cmp,
     lspconfig,
     gitsigns,
     git_fugitive,
