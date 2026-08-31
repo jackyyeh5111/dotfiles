@@ -57,6 +57,13 @@ keymap("i", "kj", "<ESC>", opts)
 vim.keymap.set("n", "p", '"0p')
 vim.keymap.set("n", "P", '"0P')
 
+-- clipboard=unnamedplus (options.lua) links the unnamed register to the
+-- system clipboard, so d/c normally overwrite it too. Route delete/change
+-- through the black hole register so they only delete, never copy.
+for _, lhs in ipairs({ "d", "D", "c", "C", "x", "X", "s", "S" }) do
+  keymap({ "n", "v" }, lhs, '"_' .. lhs, opts)
+end
+
 -- Visual --
 -- Stay in indent mode
 keymap("v", ">", ">gv^", opts)
