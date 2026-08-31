@@ -661,6 +661,12 @@ local lualine = {
     end,
 }
 
+local which_key = {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {},
+}
+
 return {
     commentor,
     devicons,
@@ -671,6 +677,7 @@ return {
     treesitter,
     blink_cmp,
     lspconfig,
+    which_key,
     gitsigns,
     git_fugitive,
     lazygit,
