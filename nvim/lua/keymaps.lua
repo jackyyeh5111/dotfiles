@@ -38,9 +38,11 @@ vim.keymap.set('n', '<A-S-Tab>', ':BufferLineCyclePrev<CR>', { silent = true })
 vim.keymap.set('n', '<A-t>', ':enew<CR>', { silent = true })
 vim.keymap.set('n', '<A-w>', ':bdelete<CR>', { silent = true })
 
--- Move text up and down
+-- Move text up and down (Normal + Visual)
 keymap("n", "<A-j>", ":m .+1<CR>==", opts)
 keymap("n", "<A-k>", ":m .-2<CR>==", opts)
+keymap("v", "<A-j>", ":m '>+1<CR>gv=gv", opts)
+keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", opts)
 
 -- Insert --
 -- Press jk fast to exit insert mode 
@@ -148,8 +150,6 @@ vim.keymap.set("n", "<A-\\>", ":vsplit<CR>", { noremap = true, silent = true, de
 
 -- Navigate between window panes
 vim.keymap.set("n", "<A-h>", "<C-w>h", { noremap = true, silent = true, desc = "Go to left window" })
-vim.keymap.set("n", "<A-j>", "<C-w>j", { noremap = true, silent = true, desc = "Go to below window" })
-vim.keymap.set("n", "<A-k>", "<C-w>k", { noremap = true, silent = true, desc = "Go to above window" })
 vim.keymap.set("n", "<A-l>", "<C-w>l", { noremap = true, silent = true, desc = "Go to right window" })
 vim.keymap.set("n", "<A-o>", "<C-w>w", { noremap = true, silent = true, desc = "Cycle to next window" })
 
