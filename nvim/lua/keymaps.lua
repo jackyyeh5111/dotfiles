@@ -277,6 +277,21 @@ vim.keymap.set('n', '<leader>yl', function()
   vim.notify('Copied: ' .. path)
 end, { noremap = true, silent = true, desc = 'Copy absolute file path with line number' })
 
+-- Open a file at a line, e.g. paste a path copied with <leader>yl:
+-- /abs/path/file.lua:42 or just a bare path with no line.
+vim.keymap.set('n', '<leader>o', function()
+  vim.ui.input({ prompt = 'Open file:line > ' }, function(input)
+    if not input or input == '' then return end
+    local path, line = input:match('^(.-):(%d+)$')
+    path = vim.fn.expand(path or input)
+    vim.cmd('edit ' .. vim.fn.fnameescape(path))
+    if line then
+      vim.api.nvim_win_set_cursor(0, { tonumber(line), 0 })
+      vim.cmd('normal! zz')
+    end
+  end)
+end, { noremap = true, silent = true, desc = 'Open file:line' })
+
 -- Copy file path relative to the current git repo root, e.g. nvim/lua/keymaps.lua
 vim.keymap.set('n', '<leader>yr', function()
   local abs_path = vim.fn.expand('%:p')

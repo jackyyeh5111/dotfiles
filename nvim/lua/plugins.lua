@@ -394,6 +394,40 @@ local toggleterm = {
   end,
 }
 
+-- Yazi terminal file manager, opened as a floating window inside nvim.
+-- <leader>- opens it scoped to the current file's directory (cursor lands on
+-- that file); picking a different file there opens it as the current nvim
+-- buffer. <A-y> reopens the same session (cwd, cursor position, selection)
+-- instead of starting fresh -- handy for "hop into yazi, create a file,
+-- come back" without losing your place.
+local yazi = {
+    "mikavilpas/yazi.nvim",
+    version = "*",
+    event = "VeryLazy",
+    dependencies = {
+        { "nvim-lua/plenary.nvim", lazy = true },
+    },
+    keys = {
+        {
+            "<leader>-",
+            mode = { "n", "v" },
+            "<cmd>Yazi<cr>",
+            desc = "Open yazi at the current file",
+        },
+        {
+            "<A-y>",
+            "<cmd>Yazi toggle<cr>",
+            desc = "Resume the last yazi session",
+        },
+    },
+    opts = {
+        open_for_directories = false,
+        keymaps = {
+            show_help = "<f1>",
+        },
+    },
+}
+
 local neo_tree = {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
@@ -702,6 +736,7 @@ return {
     lazygit,
     copilot,
     toggleterm,
+    yazi,
     neo_tree,
     treesitter_context,
     diffview,
