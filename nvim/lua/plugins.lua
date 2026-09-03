@@ -81,19 +81,15 @@ local telescope = {
                     },
                 },
 
-                -- Auto-adapt: side-by-side on wide terminals, stacked on narrow ones
-                layout_strategy = "flex",
+                -- Always stacked (results on top, preview below), regardless of terminal width
+                layout_strategy = "vertical",
                 layout_config = {
                     -- Use nearly the whole screen, VSCode-quick-open style
                     width = 0.95,
                     height = 0.90,
-                    flex = {
-                        flip_columns = 130, -- switch to vertical layout below 130 columns
-                    },
                     -- preview_cutoff = 0 works around the preview not showing:
                     -- https://github.com/nvim-telescope/telescope.nvim/issues/1594#issuecomment-993447528
-                    horizontal = { preview_cutoff = 0, preview_width = 0.3 },
-                    vertical = { preview_cutoff = 0, preview_height = 0.3},
+                    vertical = { preview_cutoff = 0, preview_height = 0.3 },
                 }
             },
             extensions = {

@@ -27,6 +27,8 @@ vim.g.maplocalleader = " "
 -- Navigate buffers
 -- keymap("n", "<A-l>", ":bnext<CR>", opts)
 -- keymap("n", "<A-h>", ":bprevious<CR>", opts)
+vim.keymap.set('n', '<Tab>', ':bnext<CR>')
+vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>')
 -- Remap Ctrl-^ to switch to last buffer
 -- vim.keymap.set('n', '<A-b>', ':b#<CR>', { noremap = true, silent = true })
 
@@ -35,7 +37,7 @@ vim.keymap.set('n', '<A-Tab>', ':BufferLineCycleNext<CR>', { silent = true })
 vim.keymap.set('n', '<A-S-Tab>', ':BufferLineCyclePrev<CR>', { silent = true })
 
 -- Open / close buffers
-vim.keymap.set('n', '<A-t>', ':enew<CR>', { silent = true })
+vim.keymap.set('n', '<A-n>', ':enew<CR>', { silent = true })
 vim.keymap.set('n', '<A-w>', ':bdelete<CR>', { silent = true })
 
 -- Move text up and down (Normal + Visual)
@@ -150,6 +152,12 @@ vim.keymap.set('i', '<C-d>', '<C-o>10j', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-S-h>', '<C-o>^', { noremap = true, silent = true, desc = 'Move to start of line' })
 vim.keymap.set('i', '<C-S-l>', '<C-o>$', { noremap = true, silent = true, desc = 'Move to end of line' })
 
+-- Jump up/down/left/right 5 lines (overrides default half-page scroll)
+vim.keymap.set({ "n", "v" }, "<C-j>", "5j", { noremap = true, silent = true, desc = "Jump down 5 lines" })
+vim.keymap.set({ "n", "v" }, "<C-k>", "5k", { noremap = true, silent = true, desc = "Jump up 5 lines" })
+vim.keymap.set({ "n", "v" }, "<C-h>", "5h", { noremap = true, silent = true, desc = "Jump left 5 lines" })
+vim.keymap.set({ "n", "v" }, "<C-l>", "5l", { noremap = true, silent = true, desc = "Jump right 5 lines" })
+
 -- Move to first non-blank character (Normal + Visual)
 vim.keymap.set({ "n", "v" }, "H", "^", { noremap = true, silent = true, desc = "Go to line start (non-blank)" })
 
@@ -259,7 +267,18 @@ vim.keymap.set('n', "<A-S-'>", diff_obtain_all,
 -- Quick save and quit
 vim.keymap.set('n', '<leader>q', ':q!', { noremap = true })
 vim.keymap.set('n', '<leader>a', ':qa!', { noremap = true })
-vim.keymap.set('n', '<leader>w', ':wq', { noremap = true })
+vim.keymap.set('n', '<leader>w', ':w', { noremap = true })
+
+-- Reload options + keymaps without restarting nvim. Can't just ":source $MYVIMRC" --
+-- that re-runs require("lazy").setup(...) in init.lua, which lazy.nvim refuses
+-- ("Resourcing your config is not supported"). Plugin spec changes still need
+-- :Lazy reload or a restart.
+vim.keymap.set('n', '<leader>R', function()
+  local config = vim.fn.stdpath('config')
+  vim.cmd('luafile ' .. config .. '/lua/options.lua')
+  vim.cmd('luafile ' .. config .. '/lua/keymaps.lua')
+  vim.notify('Reloaded options.lua and keymaps.lua')
+end, { noremap = true, silent = true, desc = 'Reload options & keymaps' })
 
 -- Copy absolute file path (system clipboard + yank register, for the p/P remap above)
 vim.keymap.set('n', '<leader>yp', function()
