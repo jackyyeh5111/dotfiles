@@ -243,9 +243,25 @@ vim.api.nvim_create_autocmd('WinEnter', {
   end,
 })
 
--- Jump to prev/next diff chunk
-vim.keymap.set('n', '<A-[>', ']c', { noremap = true, silent = true, desc = 'Next diff chunk' })
-vim.keymap.set('n', '<A-]>', '[c', { noremap = true, silent = true, desc = 'Previous diff chunk' })
+-- Jump to prev/next diff chunk. ]c/[c stop at the first/last chunk instead of
+-- wrapping -- 'wrapscan' doesn't apply to them, only to searches and ]s/[s.
+-- They also don't throw a catchable error when they can't move: the error is
+-- swallowed inside :normal!, so pcall always reports success. Detect "didn't
+-- move" by comparing the cursor position instead, and if it didn't, retry
+-- from the opposite end of the file to wrap around.
+local function diff_jump(motion, wrap_to)
+  local before = vim.api.nvim_win_get_cursor(0)
+  vim.cmd('normal! ' .. motion)
+  local after = vim.api.nvim_win_get_cursor(0)
+  if before[1] == after[1] and before[2] == after[2] then
+    vim.cmd('normal! ' .. wrap_to .. motion)
+  end
+end
+
+vim.keymap.set('n', '<A-[>', function() diff_jump(']c', 'gg') end,
+  { noremap = true, silent = true, desc = 'Next diff chunk (wraps)' })
+vim.keymap.set('n', '<A-]>', function() diff_jump('[c', 'G') end,
+  { noremap = true, silent = true, desc = 'Previous diff chunk (wraps)' })
 
 -- Pull ("obtain") the current diff chunk from the other window, then save.
 -- Skips the write when the current buffer is read-only (e.g. Diffview's
