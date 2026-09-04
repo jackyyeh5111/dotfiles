@@ -81,19 +81,15 @@ local telescope = {
                     },
                 },
 
-                -- Auto-adapt: side-by-side on wide terminals, stacked on narrow ones
-                layout_strategy = "flex",
+                -- Always stacked (results on top, preview below), regardless of terminal width
+                layout_strategy = "vertical",
                 layout_config = {
                     -- Use nearly the whole screen, VSCode-quick-open style
                     width = 0.95,
                     height = 0.90,
-                    flex = {
-                        flip_columns = 130, -- switch to vertical layout below 130 columns
-                    },
                     -- preview_cutoff = 0 works around the preview not showing:
                     -- https://github.com/nvim-telescope/telescope.nvim/issues/1594#issuecomment-993447528
-                    horizontal = { preview_cutoff = 0, preview_width = 0.3 },
-                    vertical = { preview_cutoff = 0, preview_height = 0.3},
+                    vertical = { preview_cutoff = 0, preview_height = 0.3 },
                 }
             },
             extensions = {
@@ -392,6 +388,40 @@ local toggleterm = {
     vim.cmd('autocmd! TermOpen term://* lua set_terminal()')
     
   end,
+}
+
+-- Yazi terminal file manager, opened as a floating window inside nvim.
+-- <leader>- opens it scoped to the current file's directory (cursor lands on
+-- that file); picking a different file there opens it as the current nvim
+-- buffer. <A-y> reopens the same session (cwd, cursor position, selection)
+-- instead of starting fresh -- handy for "hop into yazi, create a file,
+-- come back" without losing your place.
+local yazi = {
+    "mikavilpas/yazi.nvim",
+    version = "*",
+    event = "VeryLazy",
+    dependencies = {
+        { "nvim-lua/plenary.nvim", lazy = true },
+    },
+    keys = {
+        {
+            "<leader>-",
+            mode = { "n", "v" },
+            "<cmd>Yazi<cr>",
+            desc = "Open yazi at the current file",
+        },
+        {
+            "<A-y>",
+            "<cmd>Yazi toggle<cr>",
+            desc = "Resume the last yazi session",
+        },
+    },
+    opts = {
+        open_for_directories = false,
+        keymaps = {
+            show_help = "<f1>",
+        },
+    },
 }
 
 local neo_tree = {
@@ -702,6 +732,7 @@ return {
     lazygit,
     copilot,
     toggleterm,
+    yazi,
     neo_tree,
     treesitter_context,
     diffview,
