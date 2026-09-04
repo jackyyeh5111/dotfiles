@@ -595,6 +595,31 @@ local visual_multi = {
             ["Add Cursor Down"] = "<D-A-j>",
             ["Add Cursor Up"] = "<D-A-k>",
         }
+
+        -- VM_maps only accepts one key per action, and "Exit" already owns <Esc>.
+        -- Add <C-c> as a second exit key by hooking the autocmd VM fires right
+        -- after it sets up its buffer-local mappings, and remove it again on
+        -- exit -- VM only unmaps its own buffer-local keys, not ours, so
+        -- leaving this mapped after exit calls <Plug>(VM-Exit) against a
+        -- buffer whose VM state has already been torn down (E716: Key not
+        -- present in Dictionary: "Vars").
+        local buf
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "visual_multi_mappings",
+            callback = function()
+                buf = vim.api.nvim_get_current_buf()
+                vim.keymap.set("n", "<C-c>", "<Plug>(VM-Exit)",
+                    { buffer = buf, desc = "Exit visual-multi" })
+            end,
+        })
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "visual_multi_exit",
+            callback = function()
+                if buf and vim.api.nvim_buf_is_valid(buf) then
+                    pcall(vim.keymap.del, "n", "<C-c>", { buffer = buf })
+                end
+            end,
+        })
     end,
 }
 
