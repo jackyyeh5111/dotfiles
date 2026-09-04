@@ -149,6 +149,18 @@ local treesitter = {
                         ["ic"] = "@class.inner",
                     },
                 },
+                move = {
+                    enable = true,
+                    set_jumps = true, -- so <C-o>/<C-i> can jump back/forward through these too
+                    goto_next_start = {
+                        ["<A-m>"] = "@function.outer",
+                        ["<A-c>"] = "@class.outer",
+                    },
+                    goto_previous_start = {
+                        ["<A-M>"] = "@function.outer",
+                        ["<A-C>"] = "@class.outer",
+                    },
+                },
             },
         })
     end
