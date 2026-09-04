@@ -190,6 +190,54 @@ vim.keymap.set("n", "<C-Down>",  ":resize -5<CR>",         { silent = true, desc
 vim.keymap.set("n", "<C-Left>",  ":vertical resize -5<CR>", { silent = true, desc = "Decrease window width" })
 vim.keymap.set("n", "<C-Right>", ":vertical resize +5<CR>", { silent = true, desc = "Increase window width" })
 
+-- Enlarge the focused window to 80% of the screen, shrinking the other pane
+-- to 20%. Works for exactly two windows in the current tab, whether they're
+-- split top/bottom or side by side (detected from window position).
+local function focus_pane(ratio)
+  ratio = ratio or 0.8
+  local win = vim.api.nvim_get_current_win()
+  local wins = vim.api.nvim_tabpage_list_wins(0)
+  if #wins ~= 2 then
+    vim.notify('Focus pane: needs exactly 2 windows', vim.log.levels.WARN)
+    return
+  end
+  local other = wins[1] == win and wins[2] or wins[1]
+  local row_cur = vim.api.nvim_win_get_position(win)[1]
+  local row_other = vim.api.nvim_win_get_position(other)[1]
+
+  if row_cur ~= row_other then
+    -- Stacked top/bottom: split the combined height.
+    local total = vim.api.nvim_win_get_height(win) + vim.api.nvim_win_get_height(other)
+    local cur_size = math.floor(total * ratio)
+    vim.api.nvim_win_set_height(win, cur_size)
+    vim.api.nvim_win_set_height(other, total - cur_size)
+  else
+    -- Side by side: split the combined width.
+    local total = vim.api.nvim_win_get_width(win) + vim.api.nvim_win_get_width(other)
+    local cur_size = math.floor(total * ratio)
+    vim.api.nvim_win_set_width(win, cur_size)
+    vim.api.nvim_win_set_width(other, total - cur_size)
+  end
+end
+
+local pane_focused = false
+vim.keymap.set('n', '<A-.>', function()
+  pane_focused = not pane_focused
+  focus_pane(pane_focused and 0.8 or 0.5)
+end, { noremap = true, silent = true, desc = 'Focus pane: toggle 80/20 <-> 50/50' })
+
+-- While focus mode is on, keep the 80/20 split glued to whichever window has
+-- the cursor: jumping to the other pane (<A-h>/<A-l>/<C-w>w/...) re-applies
+-- 80% there instead of leaving the old split in place.
+vim.api.nvim_create_autocmd('WinEnter', {
+  group = vim.api.nvim_create_augroup('FocusPaneAutoResize', { clear = true }),
+  callback = function()
+    if not pane_focused then return end
+    if #vim.api.nvim_tabpage_list_wins(0) ~= 2 then return end
+    focus_pane(0.8)
+  end,
+})
+
 -- Jump to prev/next diff chunk
 vim.keymap.set('n', '<A-[>', ']c', { noremap = true, silent = true, desc = 'Next diff chunk' })
 vim.keymap.set('n', '<A-]>', '[c', { noremap = true, silent = true, desc = 'Previous diff chunk' })
