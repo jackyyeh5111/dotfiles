@@ -178,11 +178,16 @@ vim.keymap.set("n", "<A-h>", "<C-w>h", { noremap = true, silent = true, desc = "
 vim.keymap.set("n", "<A-l>", "<C-w>l", { noremap = true, silent = true, desc = "Go to right window" })
 vim.keymap.set("n", "<A-o>", "<C-w>w", { noremap = true, silent = true, desc = "Cycle to next window" })
 
--- Toggle wrap option
+-- Toggle wrap option in all windows (across all tabs) together
 vim.keymap.set("n", "<A-x>", function()
-  vim.opt.wrap = not vim.opt.wrap:get()
-  print("Wrap " .. (vim.opt.wrap:get() and "enabled" or "disabled"))
-end, { desc = "Toggle text wrap" })
+  local new_wrap = not vim.wo.wrap
+  for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
+    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
+      vim.wo[win].wrap = new_wrap
+    end
+  end
+  print("Wrap " .. (new_wrap and "enabled" or "disabled"))
+end, { desc = "Toggle text wrap in all windows" })
 
 -- Resize splits easily with arrow keys
 vim.keymap.set("n", "<C-Up>",    ":resize +5<CR>",         { silent = true, desc = "Increase window height" })
