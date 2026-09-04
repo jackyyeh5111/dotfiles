@@ -121,12 +121,32 @@ local telescope = {
             return vim.loop.cwd()
         end
 
+        -- Submodules are separate repos with their own (often huge) history/
+        -- files; keep Telescope from descending into them by reading their
+        -- paths straight out of .gitmodules, so this stays correct even as
+        -- submodules are added/removed.
+        local function submodule_ignore_patterns(root)
+            local out = vim.fn.systemlist(
+                "git -C " .. vim.fn.shellescape(root) .. " config --file .gitmodules --get-regexp path 2>/dev/null"
+            )
+            local patterns = {}
+            for _, line in ipairs(out) do
+                local path = line:match("^submodule%.%S+%.path%s+(.+)$")
+                if path then
+                    table.insert(patterns, "^" .. vim.pesc(path) .. "/")
+                end
+            end
+            return patterns
+        end
+
         -- File & text search
         vim.keymap.set("n", "<leader>pf", function()
-            builtin.find_files({ cwd = git_root() })
+            local root = git_root()
+            builtin.find_files({ cwd = root, file_ignore_patterns = submodule_ignore_patterns(root) })
         end, { desc = "Find files" })
         vim.keymap.set("n", "<leader>ps", function()
-            builtin.live_grep({ cwd = git_root() })
+            local root = git_root()
+            builtin.live_grep({ cwd = root, file_ignore_patterns = submodule_ignore_patterns(root) })
         end, { desc = "Search text across project" })
         vim.keymap.set("n", "<leader>pb", builtin.buffers, { desc = "List open buffers" })
         vim.keymap.set("n", "<leader>ph", builtin.command_history, { desc = "Command history" })
