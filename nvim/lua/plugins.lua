@@ -140,16 +140,16 @@ local telescope = {
         end
 
         -- File & text search
-        vim.keymap.set("n", "<leader>pf", function()
+        vim.keymap.set("n", "<leader>ff", function()
             local root = git_root()
             builtin.find_files({ cwd = root, file_ignore_patterns = submodule_ignore_patterns(root) })
         end, { desc = "Find files" })
-        vim.keymap.set("n", "<leader>ps", function()
+        vim.keymap.set("n", "<leader>fs", function()
             local root = git_root()
             builtin.live_grep({ cwd = root, file_ignore_patterns = submodule_ignore_patterns(root) })
         end, { desc = "Search text across project" })
-        vim.keymap.set("n", "<leader>pb", builtin.buffers, { desc = "List open buffers" })
-        vim.keymap.set("n", "<leader>ph", builtin.command_history, { desc = "Command history" })
+        vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "List open buffers" })
+        vim.keymap.set("n", "<leader>fh", builtin.command_history, { desc = "Command history" })
 
         -- Telescope LSP symbols
         vim.keymap.set("n", "<leader>ss", builtin.lsp_document_symbols, { desc = "Document symbols" })
@@ -590,6 +590,10 @@ local diffview = {
                 -- sides, so it reads the same colour left and right. Repaint the
                 -- left pane ("a") in reds and the right pane ("b") in greens.
                 diff_buf_win_enter = function(_, winid, ctx)
+                    -- Diff-mode folds unchanged regions by default (e.g. "+--384
+                    -- lines: ..."). Open every fold so all lines show by default.
+                    vim.wo[winid].foldlevel = 99
+
                     if not ctx.layout_name:match("^diff2") then return end
 
                     if ctx.symbol == "a" then
