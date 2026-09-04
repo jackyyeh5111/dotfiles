@@ -110,9 +110,24 @@ local telescope = {
 
         local builtin = require("telescope.builtin")
 
+        -- Resolve to the current file's git repo root, falling back to cwd
+        -- when not inside a git repo, so pickers always search from the
+        -- project root regardless of which subdirectory nvim was opened in.
+        local function git_root()
+            local root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
+            if vim.v.shell_error == 0 and root and root ~= "" then
+                return root
+            end
+            return vim.loop.cwd()
+        end
+
         -- File & text search
-        vim.keymap.set("n", "<leader>pf", builtin.find_files, { desc = "Find files" })
-        vim.keymap.set("n", "<leader>ps", builtin.live_grep, { desc = "Search text across project" })
+        vim.keymap.set("n", "<leader>pf", function()
+            builtin.find_files({ cwd = git_root() })
+        end, { desc = "Find files" })
+        vim.keymap.set("n", "<leader>ps", function()
+            builtin.live_grep({ cwd = git_root() })
+        end, { desc = "Search text across project" })
         vim.keymap.set("n", "<leader>pb", builtin.buffers, { desc = "List open buffers" })
         vim.keymap.set("n", "<leader>ph", builtin.command_history, { desc = "Command history" })
 
