@@ -5,8 +5,14 @@ local term_opts = { silent = true }
 -- Shorten function name
 local keymap = vim.keymap.set
 
+-- Merge a description into the shared opts table (without mutating it), so
+-- which-key.nvim can show a label for keymaps below that reuse `opts`.
+local function desc(text)
+  return vim.tbl_extend("force", opts, { desc = text })
+end
+
 --Remap space as leader key
-keymap("", "<Space>", "<Nop>", opts)
+keymap("", "<Space>", "<Nop>", desc("Leader key (no-op)"))
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -27,51 +33,51 @@ vim.g.maplocalleader = " "
 -- Navigate buffers
 -- keymap("n", "<A-l>", ":bnext<CR>", opts)
 -- keymap("n", "<A-h>", ":bprevious<CR>", opts)
-vim.keymap.set('n', '<Tab>', ':bnext<CR>')
-vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>')
+vim.keymap.set('n', '<Tab>', ':bnext<CR>', { silent = true, desc = 'Next buffer' })
+vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>', { silent = true, desc = 'Previous buffer' })
 -- Remap Ctrl-^ to switch to last buffer
 -- vim.keymap.set('n', '<A-b>', ':b#<CR>', { noremap = true, silent = true })
 
 -- Move between buffers (shown in bufferline)
-vim.keymap.set('n', '<A-Tab>', ':BufferLineCycleNext<CR>', { silent = true })
-vim.keymap.set('n', '<A-S-Tab>', ':BufferLineCyclePrev<CR>', { silent = true })
+vim.keymap.set('n', '<A-Tab>', ':BufferLineCycleNext<CR>', { silent = true, desc = 'Next buffer (bufferline)' })
+vim.keymap.set('n', '<A-S-Tab>', ':BufferLineCyclePrev<CR>', { silent = true, desc = 'Previous buffer (bufferline)' })
 
 -- Open / close buffers
-vim.keymap.set('n', '<A-n>', ':enew<CR>', { silent = true })
-vim.keymap.set('n', '<A-w>', ':bdelete<CR>', { silent = true })
+vim.keymap.set('n', '<A-n>', ':enew<CR>', { silent = true, desc = 'New buffer' })
+vim.keymap.set('n', '<A-w>', ':bdelete<CR>', { silent = true, desc = 'Delete buffer' })
 
 -- Move text up and down (Normal + Visual)
-keymap("n", "<A-j>", ":m .+1<CR>==", opts)
-keymap("n", "<A-k>", ":m .-2<CR>==", opts)
-keymap("v", "<A-j>", ":m '>+1<CR>gv=gv", opts)
-keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", opts)
+keymap("n", "<A-j>", ":m .+1<CR>==", desc("Move line down"))
+keymap("n", "<A-k>", ":m .-2<CR>==", desc("Move line up"))
+keymap("v", "<A-j>", ":m '>+1<CR>gv=gv", desc("Move selection down"))
+keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", desc("Move selection up"))
 
 -- Duplicate current line down/up, cursor follows the new copy
-keymap("n", "<A-S-j>", ":t.<CR>", opts)
-keymap("n", "<A-S-k>", ":t-1<CR>", opts)
+keymap("n", "<A-S-j>", ":t.<CR>", desc("Duplicate line below"))
+keymap("n", "<A-S-k>", ":t-1<CR>", desc("Duplicate line above"))
 
 -- Insert --
--- Press jk fast to exit insert mode 
-keymap("i", "jk", "<ESC>", opts)
-keymap("i", "kj", "<ESC>", opts)
+-- Press jk fast to exit insert mode
+keymap("i", "jk", "<ESC>", desc("Exit insert mode"))
+keymap("i", "kj", "<ESC>", desc("Exit insert mode"))
 
 -- paste what I explicitly yanked
-vim.keymap.set("n", "p", '"0p')
-vim.keymap.set("n", "P", '"0P')
+vim.keymap.set("n", "p", '"0p', { desc = 'Paste after (from yank register)' })
+vim.keymap.set("n", "P", '"0P', { desc = 'Paste before (from yank register)' })
 
 -- clipboard=unnamedplus (options.lua) links the unnamed register to the
 -- system clipboard, so d/c normally overwrite it too. Route delete/change
 -- through the black hole register so they only delete, never copy.
 for _, lhs in ipairs({ "d", "D", "c", "C", "x", "X", "s", "S" }) do
-  keymap({ "n", "v" }, lhs, '"_' .. lhs, opts)
+  keymap({ "n", "v" }, lhs, '"_' .. lhs, desc(lhs .. ' (no yank, black hole register)'))
 end
 
 -- Visual --
 -- Stay in indent mode
-keymap("v", ">", ">gv^", opts)
+keymap("v", ">", ">gv^", desc("Indent and reselect"))
 
 -- Yank to system clipboard with Cmd+C (requires terminal to forward <D-c> to nvim)
-keymap("v", "<D-c>", '"+y', opts)
+keymap("v", "<D-c>", '"+y', desc("Yank to system clipboard"))
 
 -- Wrap the visual selection with a bracket/quote pair. Unlike the old
 -- "c()<Esc>P" trick (which only made sense charwise), this edits the buffer at
@@ -136,19 +142,19 @@ end
 
 -- Visual Block --
 -- Move text up and down
-keymap("x", "J", ":m '>+1<CR>gv=gv", opts)
-keymap("x", "K", ":m '<-2<CR>gv=gv", opts)
+keymap("x", "J", ":m '>+1<CR>gv=gv", desc("Move selection down"))
+keymap("x", "K", ":m '<-2<CR>gv=gv", desc("Move selection up"))
 
 -- Move cursor in insert mode with Ctrl + hjkl
-vim.keymap.set('i', '<C-h>', '<Left>', { noremap = true, silent = true })
-vim.keymap.set('i', '<C-j>', '<Down>', { noremap = true, silent = true })
-vim.keymap.set('i', '<C-k>', '<Up>', { noremap = true, silent = true })
-vim.keymap.set('i', '<C-w>', '<C-o>w', { noremap = true, silent = true })
-vim.keymap.set('i', '<C-b>', '<C-o>b', { noremap = true, silent = true })
-vim.keymap.set('i', '<C-e>', '<C-o>e', { noremap = true, silent = true })
-vim.keymap.set('i', '<C-l>', '<Right>', { noremap = true, silent = true })
-vim.keymap.set('i', '<C-u>', '<C-o>10k', { noremap = true, silent = true })
-vim.keymap.set('i', '<C-d>', '<C-o>10j', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-h>', '<Left>', { noremap = true, silent = true, desc = 'Cursor left' })
+vim.keymap.set('i', '<C-j>', '<Down>', { noremap = true, silent = true, desc = 'Cursor down' })
+vim.keymap.set('i', '<C-k>', '<Up>', { noremap = true, silent = true, desc = 'Cursor up' })
+vim.keymap.set('i', '<C-w>', '<C-o>w', { noremap = true, silent = true, desc = 'Cursor forward one word' })
+vim.keymap.set('i', '<C-b>', '<C-o>b', { noremap = true, silent = true, desc = 'Cursor back one word' })
+vim.keymap.set('i', '<C-e>', '<C-o>e', { noremap = true, silent = true, desc = 'Cursor to end of word' })
+vim.keymap.set('i', '<C-l>', '<Right>', { noremap = true, silent = true, desc = 'Cursor right' })
+vim.keymap.set('i', '<C-u>', '<C-o>10k', { noremap = true, silent = true, desc = 'Cursor up 10 lines' })
+vim.keymap.set('i', '<C-d>', '<C-o>10j', { noremap = true, silent = true, desc = 'Cursor down 10 lines' })
 vim.keymap.set('i', '<C-S-h>', '<C-o>^', { noremap = true, silent = true, desc = 'Move to start of line' })
 vim.keymap.set('i', '<C-S-l>', '<C-o>$', { noremap = true, silent = true, desc = 'Move to end of line' })
 
@@ -265,9 +271,9 @@ vim.keymap.set('n', "<A-S-'>", diff_obtain_all,
   { noremap = true, silent = true, desc = 'Diff obtain all chunks in file and save' })
 
 -- Quick save and quit
-vim.keymap.set('n', '<leader>q', ':q!', { noremap = true })
-vim.keymap.set('n', '<leader>a', ':qa!', { noremap = true })
-vim.keymap.set('n', '<leader>w', ':w', { noremap = true })
+vim.keymap.set('n', '<leader>q', ':q!', { noremap = true, desc = 'Quit (discard changes)' })
+vim.keymap.set('n', '<leader>a', ':qa!', { noremap = true, desc = 'Quit all (discard changes)' })
+vim.keymap.set('n', '<leader>w', ':w', { noremap = true, desc = 'Save file' })
 
 -- Reload options + keymaps without restarting nvim. Can't just ":source $MYVIMRC" --
 -- that re-runs require("lazy").setup(...) in init.lua, which lazy.nvim refuses

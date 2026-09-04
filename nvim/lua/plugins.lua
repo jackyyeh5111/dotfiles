@@ -238,21 +238,28 @@ local lspconfig = {
             end
 
             -- Hover documentation
-            vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
+            vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
             
             -- Go to definition, declaration, implementation, type definition
             -- (routed through Telescope for a multi-result picker + quickfix workflow)
-            vim.keymap.set("n", "<leader>gd", function() require("telescope.builtin").lsp_definitions() end, opts)
-            vim.keymap.set("n", "<leader>gD", vim.lsp.buf.declaration, opts)
-            vim.keymap.set("n", "<leader>gi", function() require("telescope.builtin").lsp_implementations() end, opts)
-            vim.keymap.set("n", "<leader>gt", function() require("telescope.builtin").lsp_type_definitions() end, opts)
+            vim.keymap.set("n", "<leader>gd", function() require("telescope.builtin").lsp_definitions() end,
+                { noremap = true, silent = true, desc = "Go to definition (Telescope)" })
+            vim.keymap.set("n", "<leader>gD", vim.lsp.buf.declaration,
+                { noremap = true, silent = true, desc = "Go to declaration" })
+            vim.keymap.set("n", "<leader>gi", function() require("telescope.builtin").lsp_implementations() end,
+                { noremap = true, silent = true, desc = "Go to implementations (Telescope)" })
+            vim.keymap.set("n", "<leader>gt", function() require("telescope.builtin").lsp_type_definitions() end,
+                { noremap = true, silent = true, desc = "Go to type definition (Telescope)" })
 
             -- Find references
-            vim.keymap.set("n", "<leader>gr", function() require("telescope.builtin").lsp_references() end, opts)
+            vim.keymap.set("n", "<leader>gr", function() require("telescope.builtin").lsp_references() end,
+                { noremap = true, silent = true, desc = "Find references (Telescope)" })
 
             -- Code actions
-            vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-            vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+            vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action,
+                { noremap = true, silent = true, desc = "Code action" })
+            vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename,
+                { noremap = true, silent = true, desc = "Rename symbol" })
         end,
     }
 }
@@ -273,8 +280,8 @@ local gitsigns = {
             },
         })
 
-        vim.keymap.set("n", "<leader>gp", ":Gitsigns preview_hunk<CR>")
-        vim.keymap.set("n", "<leader>gb", ":Gitsigns toggle_current_line_blame<CR>")
+        vim.keymap.set("n", "<leader>gp", ":Gitsigns preview_hunk<CR>", { desc = "Preview git hunk" })
+        vim.keymap.set("n", "<leader>gb", ":Gitsigns toggle_current_line_blame<CR>", { desc = "Toggle line blame" })
 
         vim.keymap.set("n", "<A-s>", ":Gitsigns stage_hunk<CR>", { desc = "Stage current hunk" })
         vim.keymap.set("n", "<A-u>", ":Gitsigns undo_stage_hunk<CR>", { desc = "Undo stage hunk" })
@@ -432,7 +439,7 @@ local neo_tree = {
     config = function()
         require("neo-tree").setup {}
 
-        vim.keymap.set('n', '<leader>e', ':Neotree filesystem toggle left<CR>')
+        vim.keymap.set('n', '<leader>e', ':Neotree filesystem toggle left<CR>', { desc = 'Toggle file explorer' })
     end
 }
 
