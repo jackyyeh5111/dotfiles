@@ -654,6 +654,12 @@ local visual_multi = {
             ["Add Cursor Up"] = "<D-A-k>",
         }
 
+        -- VM hijacks the whole statusline by default (g:VM_set_statusline == 2),
+        -- which blanks out lualine entirely while multi-cursor is active. Turn
+        -- that off so lualine keeps rendering (see the VM-aware component in
+        -- the lualine config below) instead of VM's own statusline.
+        vim.g.VM_set_statusline = 0
+
         -- VM_maps only accepts one key per action, and "Exit" already owns <Esc>.
         -- Add <C-c> as a second exit key by hooking the autocmd VM fires right
         -- after it sets up its buffer-local mappings, and remove it again on
@@ -753,7 +759,24 @@ local lualine = {
                 theme = "catppuccin-mocha",
             },
             sections = {
-                lualine_a = { "mode" },
+                lualine_a = {
+                    "mode",
+                    -- vim-visual-multi never leaves normal mode (mode()
+                    -- stays "n" the whole time you have multiple cursors),
+                    -- so the plain "mode" component above is stuck on
+                    -- NORMAL and can't tell extend/cursor/insert apart.
+                    -- Read VM's own state instead.
+                    function()
+                        if not vim.b.visual_multi then
+                            return ""
+                        end
+                        local m = vim.fn.mode()
+                        if m:match("^[iR]") then
+                            return "VM-INSERT"
+                        end
+                        return (vim.g.Vm and vim.g.Vm.extend_mode == 1) and "VM-EXTEND" or "VM-CURSOR"
+                    end,
+                },
                 lualine_b = {},
                 lualine_c = {},
                 lualine_x = {},
@@ -805,6 +828,31 @@ local conform = {
     },
 }
 
+-- Highlights TODO/FIXME/HACK/etc. comments and lists them via Telescope.
+local todo_comments = {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    event = "BufReadPost",
+    config = function()
+        require("todo-comments").setup({
+            -- Catppuccin mocha's pink, softer than the plugin's default
+            -- saturated red/blue so TODO stands out without being harsh.
+            colors = {
+                pink = { "#f5c2e7" },
+            },
+            keywords = {
+                TODO = { icon = " ", color = "pink" },
+            },
+        })
+
+        vim.keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<CR>", { desc = "Find TODOs" })
+        vim.keymap.set("n", "]t", function() require("todo-comments").jump_next() end,
+            { desc = "Next TODO comment" })
+        vim.keymap.set("n", "[t", function() require("todo-comments").jump_prev() end,
+            { desc = "Previous TODO comment" })
+    end,
+}
+
 return {
     commentor,
     devicons,
@@ -829,4 +877,5 @@ return {
     nvim_autopairs,
     visual_multi,
     render_markdown,
+    todo_comments,
 }
