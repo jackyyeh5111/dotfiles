@@ -377,7 +377,7 @@ local toggleterm = {
             end
         end,
   
-      open_mapping = [[<C-t>]],
+      open_mapping = [[<leader>t]],
       hide_numbers = true,
       shade_filetypes = {},
       shade_terminals = true,
@@ -632,7 +632,14 @@ local diffview = {
         -- vim.keymap.set('n', '<leader>do', ':Diffview<CR>', { noremap = true, silent = true, desc = "Diffview " })
         -- vim.keymap.set('n', '<leader>dc', ':DiffviewClose<CR>', { noremap = true, silent = true, desc = "Diffview Close" })
         -- vim.keymap.set("n", "<leader>df", ":DiffviewToggleFiles<CR>", { desc = "Toggle Diffview file panel" })
-        vim.keymap.set("n", "<A-f>", ":DiffviewFileHistory %<CR>", { desc = "View file history of current file" })
+        vim.keymap.set("n", "<A-f>", function()
+            local ok, lib = pcall(require, "diffview.lib")
+            if ok and lib.get_current_view() then
+                vim.cmd("DiffviewClose")
+            else
+                vim.cmd("DiffviewFileHistory %")
+            end
+        end, { noremap = true, silent = true, desc = "Toggle file history of current file" })
 
     end,
 }
