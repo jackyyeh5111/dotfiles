@@ -281,3 +281,7 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 alias cl='claude code'
+
+# zsh's default Ctrl+U deletes the whole line; rebind to match bash/readline
+# (delete from cursor to start of line only)
+bindkey '^U' backward-kill-line

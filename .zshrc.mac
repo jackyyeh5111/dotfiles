@@ -211,3 +211,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 alias vim="nvim"
+
+# zsh's default Ctrl+U deletes the whole line; rebind to match bash/readline
+# (delete from cursor to start of line only)
+bindkey '^U' backward-kill-line
