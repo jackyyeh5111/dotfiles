@@ -817,7 +817,7 @@ local lualine = {
                 lualine_c = {},
                 lualine_x = {},
                 lualine_y = {},
-                lualine_z = {},
+                lualine_z = { "searchcount", "selectioncount", "progress" },
             },
             inactive_sections = {
                 lualine_a = {},
