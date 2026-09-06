@@ -652,6 +652,28 @@ local visual_multi = {
         vim.g.VM_maps = {
             ["Add Cursor Down"] = "<D-A-j>",
             ["Add Cursor Up"] = "<D-A-k>",
+            -- \\A default: "Select All" selects all occurrences of the word
+            -- under the cursor (normal mode), "Visual All" does the same for
+            -- the current visual selection (visual mode). Both share \\A by
+            -- default, so both need remapping to keep <M-CR> working in
+            -- either mode.
+            ["Select All"] = "<M-CR>",
+            ["Visual All"] = "<M-CR>",
+            -- Visual Cursors (\\c default): from a visual selection, drops one
+            -- cursor per line at the column where the selection started, and
+            -- (for linewise/V selections, via VM_autoremove_empty_lines which
+            -- defaults on) automatically skips lines with no character there.
+            -- Exactly the "cursor per selected line, skip empty lines" behavior.
+            ["Visual Cursors"] = "<M-I>",
+        }
+
+        -- Match the global H/L remap (keymaps.lua: H -> ^, L -> $) inside VM's
+        -- own motion handling, since VM intercepts h/j/k/l/etc. itself while
+        -- multiple cursors are active and doesn't fall back to normal buffer
+        -- mappings for them.
+        vim.g.VM_custom_motions = {
+            H = "^",
+            L = "$",
         }
 
         -- VM hijacks the whole statusline by default (g:VM_set_statusline == 2),
