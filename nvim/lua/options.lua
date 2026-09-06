@@ -50,3 +50,25 @@ vim.opt.iskeyword:append "-"                           -- hyphenated words recog
 vim.opt.formatoptions:remove({ "c", "r", "o" })        -- don't insert the current comment leader automatically for auto-wrapping comments using 'textwidth', hitting <Enter> in insert mode, or hitting 'o' or 'O' in normal mode.
 vim.opt.runtimepath:remove("/usr/share/vim/vimfiles")  -- separate vim plugins from neovim in case vim still in use
 
+-- clipboard=unnamedplus only mirrors "" into "+ for Vim's own yank/delete/put
+-- dispatch. A plugin that writes to "" via a raw setreg() call (e.g.
+-- vim-visual-multi's multi-cursor yank, which joins per-cursor text and
+-- calls setreg() directly, bypassing that dispatch) never reaches the
+-- system clipboard on its own. Poll for unnamed-register changes on
+-- SafeState (fires whenever Vim goes idle) and mirror them by hand; the
+-- content check keeps this a no-op (no clipboard-provider call) unless the
+-- register actually changed.
+local last_unnamed_reg
+vim.api.nvim_create_autocmd("SafeState", {
+  callback = function()
+    if not vim.o.clipboard:find("unnamedplus") then
+      return
+    end
+    local reg = vim.fn.getreg('"')
+    if reg ~= last_unnamed_reg then
+      last_unnamed_reg = reg
+      vim.fn.setreg("+", reg, vim.fn.getregtype('"'))
+    end
+  end,
+})
+
