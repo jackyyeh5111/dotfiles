@@ -53,6 +53,20 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 diff_highlights()
 
+-- vim-visual-multi's extend-mode selection (VM_Extend) should look the same
+-- as Neovim's builtin visual-mode selection (Visual). Link rather than copy
+-- the color so they stay in sync automatically if Visual is ever retuned.
+-- Re-applied on ColorScheme since it resets highlight links too.
+local function selection_highlights()
+    vim.api.nvim_set_hl(0, "VM_Extend", { link = "Visual" })
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+    group = vim.api.nvim_create_augroup("UserSelectionHighlights", { clear = true }),
+    callback = selection_highlights,
+})
+selection_highlights()
+
 -- Telescope config
 local telescope = {
     "nvim-telescope/telescope.nvim",
