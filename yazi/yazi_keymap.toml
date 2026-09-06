@@ -1,0 +1,9 @@
+[[mgr.prepend_keymap]]
+on   = "<C-r>"
+run  = "toggle_all --state=off"
+desc = "Deselect all"
+
+[[mgr.prepend_keymap]]
+on   = "u"
+run  = "plugin undo"
+desc = "Undo last trash"

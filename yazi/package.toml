@@ -1,0 +1,7 @@
+[[plugin.deps]]
+use = "0xHouss/undo"
+rev = "99ebf23"
+hash = "77be1ec453e7ef9f6869aeb482773ff8"
+
+[flavor]
+deps = []
