@@ -864,6 +864,67 @@ local conform = {
     },
 }
 
+-- Harpoon2: mark a handful of files (typically the ones you're actively
+-- bouncing between in a task) and jump straight to them by slot, skipping
+-- the fuzzy-find/tree-navigate step entirely.
+local harpoon = {
+    "ThePrimeagen/harpoon",
+    branch = "harpoon2",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+        local harpoon = require("harpoon")
+        harpoon:setup()
+
+        vim.keymap.set("n", "<leader>ha", function() harpoon:list():add() end,
+            { desc = "Harpoon: add file" })
+        vim.keymap.set("n", "<leader>he", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end,
+            { desc = "Harpoon: toggle quick menu" })
+
+        for i = 1, 4 do
+            vim.keymap.set("n", "<A-" .. i .. ">", function() harpoon:list():select(i) end,
+                { desc = "Harpoon: jump to file " .. i })
+        end
+
+        vim.keymap.set("n", "<A-S-n>", function() harpoon:list():next({ ui_nav_wrap = true }) end,
+            { desc = "Harpoon: cycle to next file (wraps)" })
+        vim.keymap.set("n", "<A-S-p>", function() harpoon:list():prev({ ui_nav_wrap = true }) end,
+            { desc = "Harpoon: cycle to previous file (wraps)" })
+
+        -- Route the quick menu through Telescope instead of harpoon's floating
+        -- window, so it gets fuzzy filtering, preview, and the same <C-j>/<C-k>
+        -- selection-move mappings as every other picker (see telescope config
+        -- above). <CR> opens the file, <C-d> removes it from the list.
+        local function toggle_telescope(list)
+            local conf = require("telescope.config").values
+            local paths = {}
+            for _, item in ipairs(list.items) do
+                table.insert(paths, item.value)
+            end
+
+            require("telescope.pickers").new({}, {
+                prompt_title = "Harpoon",
+                finder = require("telescope.finders").new_table({ results = paths }),
+                previewer = conf.file_previewer({}),
+                sorter = conf.generic_sorter({}),
+                attach_mappings = function(prompt_bufnr, map)
+                    local function remove_from_list()
+                        local state = require("telescope.actions.state")
+                        local selection = state.get_selected_entry()
+                        list:remove_at(selection.index)
+                        state.get_current_picker(prompt_bufnr):refresh(
+                            require("telescope.finders").new_table({ results = paths }))
+                    end
+                    map("i", "<C-d>", remove_from_list)
+                    map("n", "<C-d>", remove_from_list)
+                    return true
+                end,
+            }):find()
+        end
+        vim.keymap.set("n", "<leader>hh", function() toggle_telescope(harpoon:list()) end,
+            { desc = "Harpoon: list (Telescope)" })
+    end,
+}
+
 -- Highlights TODO/FIXME/HACK/etc. comments and lists them via Telescope.
 local todo_comments = {
     "folke/todo-comments.nvim",
@@ -910,6 +971,7 @@ return {
     neo_tree,
     treesitter_context,
     diffview,
+    harpoon,
     nvim_autopairs,
     visual_multi,
     render_markdown,
