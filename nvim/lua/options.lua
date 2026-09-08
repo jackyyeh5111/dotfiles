@@ -60,11 +60,35 @@ vim.opt.runtimepath:remove("/usr/share/vim/vimfiles")  -- separate vim plugins f
 -- terminal, so it rides the same connection nvim is already drawing on:
 -- no X server, nothing to go stale, nothing that can block the editor.
 -- Reading back (for p) needs Ghostty's `clipboard-read = allow`.
+--
+-- herdr is the exception. It runs each pane in its own terminal emulator and
+-- relays OSC 52 clipboard *writes* outward, but it has no code path at all for
+-- answering the read query -- so asking it for the clipboard hangs nvim on
+-- "waiting for OSC response from the terminal" until you press Ctrl-C. Inside
+-- herdr, serve paste out of what we last copied instead of asking the
+-- terminal; outside it, query for real so a Cmd+C made outside nvim is
+-- reachable with p. Copy stays OSC 52 in both cases, so a yank always makes it
+-- to the Mac pasteboard.
 local osc52 = require("vim.ui.clipboard.osc52")
+local in_herdr = vim.env.HERDR_ENV ~= nil
+
+local osc52_copy = osc52.copy("+")
+local last_copy = { { "" }, "v" }
+local function copy(lines, regtype)
+  last_copy = { lines, regtype }
+  osc52_copy(lines, regtype)
+end
+local function paste_last_copy()
+  return last_copy
+end
+
 vim.g.clipboard = {
-  name = "osc52",
-  copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("+") },
-  paste = { ["+"] = osc52.paste("+"), ["*"] = osc52.paste("+") },
+  name = in_herdr and "osc52-herdr" or "osc52",
+  copy = { ["+"] = copy, ["*"] = copy },
+  paste = {
+    ["+"] = in_herdr and paste_last_copy or osc52.paste("+"),
+    ["*"] = in_herdr and paste_last_copy or osc52.paste("+"),
+  },
 }
 
 -- clipboard=unnamedplus only mirrors "" into "+ for Vim's own yank/delete/put
