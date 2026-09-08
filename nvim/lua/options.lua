@@ -92,41 +92,73 @@ vim.g.clipboard = {
 }
 
 -- clipboard=unnamedplus only mirrors "" into "+ for Vim's own yank/delete/put
--- dispatch. vim-visual-multi's multi-cursor yank joins per-cursor text and
--- calls setreg() directly on "", bypassing that dispatch, so it never
--- reaches the system clipboard on its own. Mirror it by hand on SafeState,
--- but only while VM is actually active (tracked via the same VM autocmd
--- events plugins.lua uses for its <C-c> exit binding) -- this used to run
--- unconditionally on every SafeState tick, so a plain yank paid for a
--- second, redundant clipboard-provider round trip on top of the one
--- unnamedplus already does natively. That matters here because the
--- underlying xclip/X11-forwarding link (SSH to a remote box) has been
--- observed to wedge: a stale clipboard-owner process can leave a later
--- read hanging indefinitely. Scoping this to VM-only cuts the extra round
--- trips back down to the case that actually needs them, and pcall keeps a
--- wedged provider call from raising into SafeState and breaking other
--- autocmds on it.
+-- dispatch. vim-visual-multi writes "" with a raw setreg() instead -- a
+-- multi-cursor yank joins the per-cursor text and fills the register by hand
+-- (Edit.fill_register) -- so it bypasses that dispatch and never reaches the
+-- system clipboard on its own. Mirror it here, but only around VM: outside
+-- VM an ordinary yank already reaches "+ natively, and mirroring on every
+-- SafeState tick would buy a second, redundant clipboard-provider round trip
+-- per idle.
+--
+-- Three details in VM's own bookkeeping decide whether this works, and
+-- getting any of them wrong means a VM yank silently never reaches Cmd+V:
+--
+--   * 'clipboard' cannot be tested while VM is running. VM does
+--     `set clipboard=` on entry ("force default register",
+--     vm/variables.vim) and restores it only in vm#variables#reset() on the
+--     way out -- so "VM is active" and "'clipboard' contains unnamedplus"
+--     are mutually exclusive, and requiring both is a gate that never opens.
+--   * The session has to be tracked with visual_multi_start, not
+--     visual_multi_mappings. VM re-applies its mappings (and re-fires that
+--     event) on every mode change *within* a session, and change_mode() is
+--     part of the yank-at-cursors path itself -- so anything that resets
+--     per-session state on visual_multi_mappings gets reset again in the
+--     middle of `y$`, after the register was already written. Only
+--     visual_multi_start fires once per session (vm#comp#init, reached from
+--     vm#init_buffer, which returns early once b:visual_multi is set).
+--   * SafeState alone is not enough. VM's exit sequence rewrites "" from its
+--     own backup (Funcs.restore_regs) after the last yank, and the exit can
+--     land in the same input batch as the yank, so nothing guarantees an
+--     idle tick in between. Mirror once more on visual_multi_exit, which VM
+--     fires last (vm#comp#exit), by which point 'clipboard' is back and ""
+--     holds the yanked text.
+--
+-- pcall keeps a wedged provider call from raising into SafeState and
+-- breaking other autocmds on it.
+local last_unnamed_reg
+local function mirror_unnamed_reg()
+  local reg = vim.fn.getreg('"')
+  if reg == last_unnamed_reg then
+    return
+  end
+  last_unnamed_reg = reg
+  pcall(vim.fn.setreg, "+", reg, vim.fn.getregtype('"'))
+end
+
 local vm_active = false
 vim.api.nvim_create_autocmd("User", {
-  pattern = "visual_multi_mappings",
-  callback = function() vm_active = true end,
+  pattern = "visual_multi_start",
+  callback = function()
+    vm_active = true
+    -- Baseline the change check against "" as it is on entry, so only what
+    -- this VM session writes gets mirrored. Carrying the previous session's
+    -- value over instead would misread "same text as last time" as "nothing
+    -- to do" and leave a Cmd+C made in between sitting on the pasteboard.
+    last_unnamed_reg = vim.fn.getreg('"')
+  end,
 })
 vim.api.nvim_create_autocmd("User", {
   pattern = "visual_multi_exit",
-  callback = function() vm_active = false end,
-})
-
-local last_unnamed_reg
-vim.api.nvim_create_autocmd("SafeState", {
   callback = function()
-    if not vm_active or not vim.o.clipboard:find("unnamedplus") then
-      return
-    end
-    local reg = vim.fn.getreg('"')
-    if reg ~= last_unnamed_reg then
-      last_unnamed_reg = reg
-      pcall(vim.fn.setreg, "+", reg, vim.fn.getregtype('"'))
-    end
+    vm_active = false
+    mirror_unnamed_reg()
   end,
 })
 
+vim.api.nvim_create_autocmd("SafeState", {
+  callback = function()
+    if vm_active then
+      mirror_unnamed_reg()
+    end
+  end,
+})
