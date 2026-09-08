@@ -61,9 +61,14 @@ keymap("n", "<A-S-k>", ":t-1<CR>", desc("Duplicate line above"))
 keymap("i", "jk", "<ESC>", desc("Exit insert mode"))
 keymap("i", "kj", "<ESC>", desc("Exit insert mode"))
 
--- paste what I explicitly yanked
-vim.keymap.set("n", "p", '"0p', { desc = 'Paste after (from yank register)' })
-vim.keymap.set("n", "P", '"0P', { desc = 'Paste before (from yank register)' })
+-- p/P deliberately left unmapped. They used to be '"0p'/'"0P' ("paste what I
+-- explicitly yanked"), but register 0 is only ever written by Vim's own yank
+-- -- a copy made outside the editor (Cmd+C on the Mac) lands in "+ and never
+-- in "0, so that mapping made an outside copy impossible to paste with p.
+-- The intent behind it is already covered by the black hole mappings below:
+-- d/c/x can't clobber the paste source any more, so plain p (which is "+p
+-- under clipboard=unnamedplus) pastes the last yank *and* the system
+-- clipboard, which is the same thing here.
 
 -- clipboard=unnamedplus (options.lua) links the unnamed register to the
 -- system clipboard, so d/c normally overwrite it too. Route delete/change
