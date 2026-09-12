@@ -881,7 +881,7 @@ local harpoon = {
             { desc = "Harpoon: toggle quick menu" })
 
         for i = 1, 4 do
-            vim.keymap.set("n", "<A-" .. i .. ">", function() harpoon:list():select(i) end,
+            vim.keymap.set("n", "<A-S-" .. i .. ">", function() harpoon:list():select(i) end,
                 { desc = "Harpoon: jump to file " .. i })
         end
 

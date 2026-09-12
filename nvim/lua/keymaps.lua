@@ -187,6 +187,8 @@ vim.keymap.set("n", "<A-\\>", ":vsplit<CR>", { noremap = true, silent = true, de
 vim.keymap.set("n", "<A-h>", "<C-w>h", { noremap = true, silent = true, desc = "Go to left window" })
 vim.keymap.set("n", "<A-l>", "<C-w>l", { noremap = true, silent = true, desc = "Go to right window" })
 vim.keymap.set("n", "<A-o>", "<C-w>w", { noremap = true, silent = true, desc = "Cycle to next window" })
+vim.keymap.set("n", "<A-1>", "1<C-w>w", { noremap = true, silent = true, desc = "Go to window 1" })
+vim.keymap.set("n", "<A-2>", "2<C-w>w", { noremap = true, silent = true, desc = "Go to window 2" })
 
 -- Toggle wrap option in all windows (across all tabs) together
 vim.keymap.set("n", "<A-x>", function()
@@ -208,10 +210,25 @@ vim.keymap.set("n", "<C-Right>", ":vertical resize +5<CR>", { silent = true, des
 -- Enlarge the focused window to 80% of the screen, shrinking the other pane
 -- to 20%. Works for exactly two windows in the current tab, whether they're
 -- split top/bottom or side by side (detected from window position).
+--
+-- Only normal (non-floating) windows count: plugins like
+-- nvim-treesitter-context show the enclosing function/class in a floating
+-- window that also shows up in nvim_tabpage_list_wins(), which would
+-- otherwise push the count past 2 as soon as one is visible.
+local function list_normal_wins()
+  local wins = {}
+  for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if vim.api.nvim_win_get_config(w).relative == '' then
+      table.insert(wins, w)
+    end
+  end
+  return wins
+end
+
 local function focus_pane(ratio)
   ratio = ratio or 0.8
   local win = vim.api.nvim_get_current_win()
-  local wins = vim.api.nvim_tabpage_list_wins(0)
+  local wins = list_normal_wins()
   if #wins ~= 2 then
     vim.notify('Focus pane: needs exactly 2 windows', vim.log.levels.WARN)
     return
@@ -248,7 +265,7 @@ vim.api.nvim_create_autocmd('WinEnter', {
   group = vim.api.nvim_create_augroup('FocusPaneAutoResize', { clear = true }),
   callback = function()
     if not pane_focused then return end
-    if #vim.api.nvim_tabpage_list_wins(0) ~= 2 then return end
+    if #list_normal_wins() ~= 2 then return end
     focus_pane(0.8)
   end,
 })
