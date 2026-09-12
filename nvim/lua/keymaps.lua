@@ -145,6 +145,11 @@ for _, pair in ipairs({ '()', '[]', '{}', '""', "''", '``', '<>' }) do
     { noremap = true, silent = true, desc = 'Wrap selection with ' .. pair })
 end
 
+-- Bracket Select: select text between the nearest enclosing (), {}, [], ""
+-- or '' pair; press again to expand to the next enclosing pair.
+keymap({ 'n', 'x' }, '<A-a>', require('bracket_select').select,
+  { noremap = true, silent = true, desc = 'Select inside nearest brackets/quotes (repeat to expand)' })
+
 -- Visual Block --
 -- Move text up and down
 keymap("x", "J", ":m '>+1<CR>gv=gv", desc("Move selection down"))
