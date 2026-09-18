@@ -178,6 +178,7 @@ local telescope = {
 -- Treesitter config
 local treesitter = {
     "nvim-treesitter/nvim-treesitter",
+    branch = "master",
     build = ":TSUpdate",
     dependencies = {
         { "nvim-treesitter/nvim-treesitter-textobjects", branch = "master" },

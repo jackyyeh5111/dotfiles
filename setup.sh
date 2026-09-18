@@ -23,6 +23,13 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CURRENT_STEP="(startup)"
 
+# ~/.local/bin holds user-installed tools (fd symlink, pip --user scripts
+# like virtualenvwrapper). .zshrc.linux adds it to PATH too, but add it here
+# as well so this script's own run can see them and pip doesn't warn about
+# installing scripts outside PATH.
+export PATH="$HOME/.local/bin:$PATH"
+mkdir -p "$HOME/.local/bin"
+
 die() {
   echo "" >&2
   echo "✗ ERROR: $*" >&2
