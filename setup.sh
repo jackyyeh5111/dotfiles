@@ -23,6 +23,13 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CURRENT_STEP="(startup)"
 
+# ~/.local/bin holds user-installed tools (fd symlink, pip --user scripts
+# like virtualenvwrapper). .zshrc.linux adds it to PATH too, but add it here
+# as well so this script's own run can see them and pip doesn't warn about
+# installing scripts outside PATH.
+export PATH="$HOME/.local/bin:$PATH"
+mkdir -p "$HOME/.local/bin"
+
 die() {
   echo "" >&2
   echo "✗ ERROR: $*" >&2
@@ -260,7 +267,12 @@ setup_rust() {
 
 setup_virtualenvwrapper() {
   step "Installing virtualenvwrapper"
-  pip3 install --user --upgrade virtualenvwrapper
+  # --break-system-packages: newer Debian/Ubuntu (PEP 668) block system-wide
+  # pip installs by default. virtualenvwrapper is an exception worth making —
+  # it's sourced from .zshrc and bootstraps other venvs via `workon`, so it
+  # inherently can't live inside a venv itself. This still installs to
+  # --user (~/.local), not system site-packages.
+  pip3 install --user --break-system-packages --upgrade virtualenvwrapper
   if [[ ! -x "$HOME/.local/bin/virtualenvwrapper.sh" ]]; then
     die "virtualenvwrapper.sh not found in ~/.local/bin after pip install — check pip3's user install path with 'python3 -m site --user-base'"
   fi
@@ -339,8 +351,9 @@ setup_yazi() {
   unzip -q "$zip" -d "$extract_dir"
 
   local bin_dir
-  bin_dir="$(find "$extract_dir" -maxdepth 1 -type d -name 'yazi-*')"
-  [[ -n "$bin_dir" ]] || die "Unexpected yazi archive layout — inspect $extract_dir manually"
+  bin_dir="$(find "$extract_dir" -mindepth 1 -maxdepth 1 -type d -name 'yazi-*')"
+  [[ -n "$bin_dir" && "$(wc -l <<<"$bin_dir")" -eq 1 ]] \
+    || die "Unexpected yazi archive layout (expected exactly one yazi-* dir under $extract_dir) — inspect it manually"
 
   sudo install -m 755 "$bin_dir/yazi" /usr/local/bin/yazi
   sudo install -m 755 "$bin_dir/ya" /usr/local/bin/ya
