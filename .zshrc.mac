@@ -138,6 +138,7 @@ alias ryseg="rsync -avzh --progress ~/memryx/mx_examples/video_inference/segment
 
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+source /usr/local/opt/fzf/shell/key-bindings.zsh
 alias vimf='vim $(fzf)'
 alias cdf='cd $(find * -type d | fzf)'
 alias fzfp='fzf --preview="cat {}'
