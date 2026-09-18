@@ -160,7 +160,7 @@ source $(which virtualenvwrapper.sh)
 alias tk='tmux kill-server'
 alias ta='tmux attach -t'
 alias kill9='sudo kill -9 '
-alias cdmix='cd /home/jackyyeh/memryx/MIX && source setup_env.sh'
+alias cdmix='cd /home/jackyyeh/memryx/MIX && source .venv/bin/activate && source setup_env.sh'
 alias cdpytest='workon no_pip_memryx && setupmix && cd ~/memryx/MIX/runtime/tests'
 alias cdtest='cd /home/jackyyeh/memryx/MX_API/build/mx_accl'
 alias initmgr='cd /run &&  sudo mkdir -p mxa_manager && cd mxa_manager && sudo touch 10000.sock 10001.sock 10002.sock && cd /run && sudo chmod -R 777 mxa_manager'
@@ -277,6 +277,7 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 alias cl='claude code'
+alias yz='yazi'
 
 # zsh's default Ctrl+U deletes the whole line; rebind to match bash/readline
 # (delete from cursor to start of line only)
