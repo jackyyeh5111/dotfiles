@@ -622,6 +622,32 @@ local diffview = {
             )
         end
 
+        -- Opening/closing the file panel equalizes every window ("wincmd =" on
+        -- open, 'equalalways' on close), wiping out any custom split between
+        -- the diff panes (e.g. the 80/20 from <A-.>). Remember the ratio of the
+        -- side-by-side panes before toggling and restore it afterwards.
+        local function toggle_files_keep_ratio()
+            local view = require("diffview.lib").get_current_view()
+            local wins = {}
+            for _, w in ipairs(view and view.cur_layout and view.cur_layout.windows or {}) do
+                if w:is_valid() then table.insert(wins, w.id) end
+            end
+
+            local ratio
+            if #wins == 2
+                and vim.api.nvim_win_get_position(wins[1])[1] == vim.api.nvim_win_get_position(wins[2])[1] then
+                local w1 = vim.api.nvim_win_get_width(wins[1])
+                ratio = w1 / (w1 + vim.api.nvim_win_get_width(wins[2]))
+            end
+
+            actions.toggle_files()
+
+            if not ratio then return end
+            if not (vim.api.nvim_win_is_valid(wins[1]) and vim.api.nvim_win_is_valid(wins[2])) then return end
+            local total = vim.api.nvim_win_get_width(wins[1]) + vim.api.nvim_win_get_width(wins[2])
+            vim.api.nvim_win_set_width(wins[1], math.floor(total * ratio + 0.5))
+        end
+
         require("diffview").setup {
             enhanced_diff_hl = true,
             keymaps = {
@@ -629,17 +655,17 @@ local diffview = {
                 -- default <leader>b, in every context that has that mapping.
                 view = {
                     { "n", "<leader>b", false },
-                    { "n", "<A-b>", actions.toggle_files, { desc = "Toggle the file panel" } },
+                    { "n", "<A-b>", toggle_files_keep_ratio, { desc = "Toggle the file panel" } },
                     { "n", "<leader>X", discard_all, { desc = "Discard all changes" } },
                 },
                 file_panel = {
                     { "n", "<leader>b", false },
-                    { "n", "<A-b>", actions.toggle_files, { desc = "Toggle the file panel" } },
+                    { "n", "<A-b>", toggle_files_keep_ratio, { desc = "Toggle the file panel" } },
                     { "n", "<leader>X", discard_all, { desc = "Discard all changes" } },
                 },
                 file_history_panel = {
                     { "n", "<leader>b", false },
-                    { "n", "<A-b>", actions.toggle_files, { desc = "Toggle the file panel" } },
+                    { "n", "<A-b>", toggle_files_keep_ratio, { desc = "Toggle the file panel" } },
                 },
             },
             hooks = {
