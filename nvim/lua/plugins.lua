@@ -648,6 +648,19 @@ local diffview = {
             vim.api.nvim_win_set_width(wins[1], math.floor(total * ratio + 0.5))
         end
 
+        -- <CR> on a file opens its diff and hides the panel to give the diff
+        -- the full width. On a folder it still just expands/collapses it.
+        local function open_entry_close_panel()
+            local view = require("diffview.lib").get_current_view()
+            local item = view and view.panel:get_item_at_cursor()
+            if not item or type(item.collapsed) == "boolean" then
+                actions.select_entry()
+                return
+            end
+            actions.focus_entry()
+            toggle_files_keep_ratio()
+        end
+
         require("diffview").setup {
             enhanced_diff_hl = true,
             keymaps = {
@@ -660,6 +673,7 @@ local diffview = {
                 },
                 file_panel = {
                     { "n", "<leader>b", false },
+                    { "n", "<cr>", open_entry_close_panel, { desc = "Open the diff and close the file panel" } },
                     { "n", "<A-b>", toggle_files_keep_ratio, { desc = "Toggle the file panel" } },
                     { "n", "<leader>X", discard_all, { desc = "Discard all changes" } },
                 },
