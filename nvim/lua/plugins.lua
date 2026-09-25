@@ -153,6 +153,48 @@ local telescope = {
             return patterns
         end
 
+        -- Inside a Diffview tab, a plain :edit from find_files would replace one
+        -- pane with a bare buffer (no diff). Instead, pick among the view's own
+        -- changed files and let Diffview open the selection in its 2-pane layout.
+        local function diffview_files_picker(view)
+            local pickers = require("telescope.pickers")
+            local finders = require("telescope.finders")
+            local conf = require("telescope.config").values
+            local actions = require("telescope.actions")
+            local action_state = require("telescope.actions.state")
+
+            local paths = {}
+            for _, file in view.files:iter() do
+                table.insert(paths, file.path)
+            end
+
+            pickers.new({}, {
+                prompt_title = "Diffview files",
+                finder = finders.new_table({ results = paths }),
+                sorter = conf.generic_sorter({}),
+                attach_mappings = function(prompt_bufnr)
+                    actions.select_default:replace(function()
+                        local entry = action_state.get_selected_entry()
+                        actions.close(prompt_bufnr)
+                        if entry then
+                            view:set_file_by_path(entry[1], true, true)
+                        end
+                    end)
+                    return true
+                end,
+            }):find()
+        end
+
+        vim.keymap.set("n", "<leader>fd", function()
+            local ok, lib = pcall(require, "diffview.lib")
+            local view = ok and lib.get_current_view()
+            if not (view and view.set_file_by_path) then
+                vim.notify("Not in a Diffview tab", vim.log.levels.WARN)
+                return
+            end
+            diffview_files_picker(view)
+        end, { desc = "Find files in Diffview" })
+
         -- File & text search
         vim.keymap.set("n", "<leader>ff", function()
             local root = git_root()
