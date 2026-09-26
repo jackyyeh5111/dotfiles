@@ -567,6 +567,12 @@ local treesitter_context = {
                 },
             },
         }
+
+        vim.keymap.set("n", "<leader>sc", function()
+            local tsc = require("treesitter-context")
+            tsc.toggle()
+            vim.notify("Treesitter context " .. (tsc.enabled() and "enabled" or "disabled"))
+        end, { desc = "Toggle sticky context (function/if header)" })
     end
 }
 
