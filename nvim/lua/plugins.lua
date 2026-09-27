@@ -245,11 +245,11 @@ local treesitter = {
                     enable = true,
                     set_jumps = true, -- so <C-o>/<C-i> can jump back/forward through these too
                     goto_next_start = {
-                        ["<A-m>"] = "@function.outer",
+                        ["m"] = "@function.outer",
                         ["<A-c>"] = "@class.outer",
                     },
                     goto_previous_start = {
-                        ["<A-M>"] = "@function.outer",
+                        ["M"] = "@function.outer",
                         ["<A-C>"] = "@class.outer",
                     },
                 },
