@@ -79,6 +79,7 @@ end
 
 -- Visual --
 -- Stay in indent mode
+keymap("v", "<", "<gv^", desc("Dedent and reselect"))
 keymap("v", ">", ">gv^", desc("Indent and reselect"))
 
 -- Yank to system clipboard with Cmd+C (requires terminal to forward <D-c> to nvim)
@@ -139,7 +140,7 @@ local function wrap_selection(open, close)
   end
 end
 
-for _, pair in ipairs({ '()', '[]', '{}', '""', "''", '``', '<>' }) do
+for _, pair in ipairs({ '()', '[]', '{}', '""', "''", '``' }) do
   local open, close = pair:sub(1, 1), pair:sub(2, 2)
   keymap('x', open, wrap_selection(open, close),
     { noremap = true, silent = true, desc = 'Wrap selection with ' .. pair })
