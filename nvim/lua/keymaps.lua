@@ -312,10 +312,22 @@ local function diff_jump(motion, wrap_to)
   end
 end
 
-vim.keymap.set('n', '<A-[>', function() diff_jump(']c', 'gg') end,
-  { noremap = true, silent = true, desc = 'Next diff chunk (wraps)' })
-vim.keymap.set('n', '<A-]>', function() diff_jump('[c', 'G') end,
-  { noremap = true, silent = true, desc = 'Previous diff chunk (wraps)' })
+-- In a file with merge-conflict markers, jump between conflicts instead:
+-- Diffview's 1-pane merge layout isn't in diff mode, so ]c/[c find nothing.
+local conflict_start = [[^<<<<<<< ]]
+
+local function diff_or_conflict_jump(motion, wrap_to, search_flags)
+  if vim.fn.search(conflict_start, 'nw') > 0 then
+    vim.fn.search(conflict_start, search_flags)
+  else
+    diff_jump(motion, wrap_to)
+  end
+end
+
+vim.keymap.set('n', '<A-[>', function() diff_or_conflict_jump(']c', 'gg', 'w') end,
+  { noremap = true, silent = true, desc = 'Next diff chunk / conflict (wraps)' })
+vim.keymap.set('n', '<A-]>', function() diff_or_conflict_jump('[c', 'G', 'bw') end,
+  { noremap = true, silent = true, desc = 'Previous diff chunk / conflict (wraps)' })
 
 -- Pull ("obtain") the current diff chunk from the other window, then save.
 -- Skips the write when the current buffer is read-only (e.g. Diffview's

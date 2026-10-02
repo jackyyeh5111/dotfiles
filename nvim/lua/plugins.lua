@@ -669,6 +669,16 @@ local diffview = {
 
         require("diffview").setup {
             enhanced_diff_hl = true,
+            view = {
+                -- Merge conflicts open as a single pane: just the working file
+                -- with its conflict markers. ]x/[x and <leader>co/ct/cb/ca/dx
+                -- still resolve them. g<C-x> cycles to the 3/4-way layouts
+                -- when you need to see OURS/THEIRS side by side.
+                merge_tool = {
+                    layout = "diff1_plain",
+                    disable_diagnostics = true,
+                },
+            },
             keymaps = {
                 -- Toggle the file panel (sidebar) with opt+b instead of the
                 -- default <leader>b, in every context that has that mapping.
