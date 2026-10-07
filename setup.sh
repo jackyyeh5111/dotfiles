@@ -279,6 +279,22 @@ setup_virtualenvwrapper() {
 }
 
 # ============================================================================
+# uv (Python package/project manager)
+# ============================================================================
+
+setup_uv() {
+  step "Installing uv"
+  if have uv; then
+    echo "  uv already installed: $(uv --version)"
+    return
+  fi
+  # UV_NO_MODIFY_PATH: the installer would otherwise append PATH lines to the
+  # shell rc files, which are symlinks into this repo. ~/.local/bin (where uv
+  # lands) is already on PATH via the zshrc.
+  curl -LsSf https://astral.sh/uv/install.sh | env UV_NO_MODIFY_PATH=1 sh
+}
+
+# ============================================================================
 # Docker
 # ============================================================================
 
@@ -467,6 +483,7 @@ main() {
   setup_zoxide
   setup_rust
   setup_virtualenvwrapper
+  setup_uv
   setup_docker
 
   setup_neovim

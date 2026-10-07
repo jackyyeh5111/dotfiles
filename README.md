@@ -30,6 +30,7 @@ automatically.
 - starship prompt, zoxide
 - Rust (rustup)
 - virtualenvwrapper
+- uv (official install script)
 - Docker (official convenience script)
 - Neovim (latest official release build, not the apt package)
 - yazi (latest official release build)
@@ -53,6 +54,7 @@ Same set, via Homebrew, minus what macOS already provides:
 - starship prompt, zoxide
 - Rust (rustup, so `~/.cargo/env` exists for `.zshrc.mac`)
 - virtualenvwrapper (brew formula, so it lands in `$(brew --prefix)/bin`)
+- uv (official install script)
 - Docker Desktop (cask)
 - Neovim, yazi, herdr (brew), Claude Code (install script)
 - Ghostty (cask — unlike Linux, it's automated here)
