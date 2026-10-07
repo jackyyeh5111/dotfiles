@@ -153,6 +153,48 @@ local telescope = {
             return patterns
         end
 
+        -- Inside a Diffview tab, pick among the view's own changed files and let
+        -- Diffview open the selection in its 2-pane layout. (<leader>ff works
+        -- there too -- see DiffviewKeepTwoPanes -- but lists every file.)
+        local function diffview_files_picker(view)
+            local pickers = require("telescope.pickers")
+            local finders = require("telescope.finders")
+            local conf = require("telescope.config").values
+            local actions = require("telescope.actions")
+            local action_state = require("telescope.actions.state")
+
+            local paths = {}
+            for _, file in view.files:iter() do
+                table.insert(paths, file.path)
+            end
+
+            pickers.new({}, {
+                prompt_title = "Diffview files",
+                finder = finders.new_table({ results = paths }),
+                sorter = conf.generic_sorter({}),
+                attach_mappings = function(prompt_bufnr)
+                    actions.select_default:replace(function()
+                        local entry = action_state.get_selected_entry()
+                        actions.close(prompt_bufnr)
+                        if entry then
+                            view:set_file_by_path(entry[1], true, true)
+                        end
+                    end)
+                    return true
+                end,
+            }):find()
+        end
+
+        vim.keymap.set("n", "<leader>fd", function()
+            local ok, lib = pcall(require, "diffview.lib")
+            local view = ok and lib.get_current_view()
+            if not (view and view.set_file_by_path) then
+                vim.notify("Not in a Diffview tab", vim.log.levels.WARN)
+                return
+            end
+            diffview_files_picker(view)
+        end, { desc = "Find files in Diffview" })
+
         -- File & text search
         vim.keymap.set("n", "<leader>ff", function()
             local root = git_root()
@@ -203,11 +245,11 @@ local treesitter = {
                     enable = true,
                     set_jumps = true, -- so <C-o>/<C-i> can jump back/forward through these too
                     goto_next_start = {
-                        ["<A-m>"] = "@function.outer",
+                        ["m"] = "@function.outer",
                         ["<A-c>"] = "@class.outer",
                     },
                     goto_previous_start = {
-                        ["<A-M>"] = "@function.outer",
+                        ["M"] = "@function.outer",
                         ["<A-C>"] = "@class.outer",
                     },
                 },
@@ -525,6 +567,12 @@ local treesitter_context = {
                 },
             },
         }
+
+        vim.keymap.set("n", "<leader>sc", function()
+            local tsc = require("treesitter-context")
+            tsc.toggle()
+            vim.notify("Treesitter context " .. (tsc.enabled() and "enabled" or "disabled"))
+        end, { desc = "Toggle sticky context (function/if header)" })
     end
 }
 
@@ -580,24 +628,74 @@ local diffview = {
             )
         end
 
+        -- Opening/closing the file panel equalizes every window ("wincmd =" on
+        -- open, 'equalalways' on close), wiping out any custom split between
+        -- the diff panes (e.g. the 80/20 from <A-.>). Remember the ratio of the
+        -- side-by-side panes before toggling and restore it afterwards.
+        local function toggle_files_keep_ratio()
+            local view = require("diffview.lib").get_current_view()
+            local wins = {}
+            for _, w in ipairs(view and view.cur_layout and view.cur_layout.windows or {}) do
+                if w:is_valid() then table.insert(wins, w.id) end
+            end
+
+            local ratio
+            if #wins == 2
+                and vim.api.nvim_win_get_position(wins[1])[1] == vim.api.nvim_win_get_position(wins[2])[1] then
+                local w1 = vim.api.nvim_win_get_width(wins[1])
+                ratio = w1 / (w1 + vim.api.nvim_win_get_width(wins[2]))
+            end
+
+            actions.toggle_files()
+
+            if not ratio then return end
+            if not (vim.api.nvim_win_is_valid(wins[1]) and vim.api.nvim_win_is_valid(wins[2])) then return end
+            local total = vim.api.nvim_win_get_width(wins[1]) + vim.api.nvim_win_get_width(wins[2])
+            vim.api.nvim_win_set_width(wins[1], math.floor(total * ratio + 0.5))
+        end
+
+        -- <CR> on a file opens its diff and hides the panel to give the diff
+        -- the full width. On a folder it still just expands/collapses it.
+        local function open_entry_close_panel()
+            local view = require("diffview.lib").get_current_view()
+            local item = view and view.panel:get_item_at_cursor()
+            if not item or type(item.collapsed) == "boolean" then
+                actions.select_entry()
+                return
+            end
+            actions.focus_entry()
+            toggle_files_keep_ratio()
+        end
+
         require("diffview").setup {
             enhanced_diff_hl = true,
+            view = {
+                -- Merge conflicts open as a single pane: just the working file
+                -- with its conflict markers. ]x/[x and <leader>co/ct/cb/ca/dx
+                -- still resolve them. g<C-x> cycles to the 3/4-way layouts
+                -- when you need to see OURS/THEIRS side by side.
+                merge_tool = {
+                    layout = "diff1_plain",
+                    disable_diagnostics = true,
+                },
+            },
             keymaps = {
                 -- Toggle the file panel (sidebar) with opt+b instead of the
                 -- default <leader>b, in every context that has that mapping.
                 view = {
                     { "n", "<leader>b", false },
-                    { "n", "<A-b>", actions.toggle_files, { desc = "Toggle the file panel" } },
+                    { "n", "<A-b>", toggle_files_keep_ratio, { desc = "Toggle the file panel" } },
                     { "n", "<leader>X", discard_all, { desc = "Discard all changes" } },
                 },
                 file_panel = {
                     { "n", "<leader>b", false },
-                    { "n", "<A-b>", actions.toggle_files, { desc = "Toggle the file panel" } },
+                    { "n", "<cr>", open_entry_close_panel, { desc = "Open the diff and close the file panel" } },
+                    { "n", "<A-b>", toggle_files_keep_ratio, { desc = "Toggle the file panel" } },
                     { "n", "<leader>X", discard_all, { desc = "Discard all changes" } },
                 },
                 file_history_panel = {
                     { "n", "<leader>b", false },
-                    { "n", "<A-b>", actions.toggle_files, { desc = "Toggle the file panel" } },
+                    { "n", "<A-b>", toggle_files_keep_ratio, { desc = "Toggle the file panel" } },
                 },
             },
             hooks = {
@@ -655,6 +753,126 @@ local diffview = {
                 vim.cmd("DiffviewFileHistory %")
             end
         end, { noremap = true, silent = true, desc = "Toggle file history of current file" })
+
+        -- Keep the 2-pane before/after layout whenever a file gets opened into
+        -- a Diffview pane by other means (<leader>ff, <leader>gd, :e, ...).
+        -- Files already in the change list are handed to Diffview. Any other
+        -- file is added to the list as an extra entry (status " ", or "?" if
+        -- untracked) so Diffview renders it like the rest -- identical panes
+        -- if it's unmodified. Extras stay listed until the view is closed.
+        local dv_async = require("diffview.async")
+        local FileEntry = require("diffview.scene.file_entry").FileEntry
+        local DiffView = require("diffview.scene.views.diff.diff_view").DiffView
+
+        local function make_extra_entry(view, rel, status)
+            return FileEntry.with_layout(DiffView.get_default_layout(), {
+                adapter = view.adapter,
+                path = rel,
+                status = status,
+                kind = "working",
+                revs = { a = view.left, b = view.right },
+            })
+        end
+
+        local function find_entry(files, rel)
+            for _, f in files:iter() do
+                if f.path == rel then return f end
+            end
+        end
+
+        -- Insert in path order, matching git's, so that when an extra becomes
+        -- modified, the refresh sees the same entry at the same spot rather
+        -- than a delete + insert (which would jump away to another file).
+        local function insert_sorted(list, entry)
+            local i = #list + 1
+            for j, f in ipairs(list) do
+                if f.path > entry.path then i = j break end
+            end
+            table.insert(list, i, entry)
+        end
+
+        -- Diffview rebuilds its file list from git on every refresh (save,
+        -- index change, tab enter). Re-add the extras each time so they stay.
+        local function extras_of(view)
+            if view._extra_paths then return view._extra_paths end
+            view._extra_paths = {}
+            local orig = view.get_updated_files
+            view.get_updated_files = dv_async.wrap(function(self, callback)
+                orig(self, function(err, files)
+                    if not err and files then
+                        for rel, status in pairs(self._extra_paths) do
+                            if not find_entry(files, rel) then
+                                insert_sorted(files.working, make_extra_entry(self, rel, status))
+                            end
+                        end
+                    end
+                    callback(err, files)
+                end)
+            end, 2)
+            return view._extra_paths
+        end
+
+        local function open_in_diffview(view, rel, cursor)
+            local entry = find_entry(view.files, rel)
+            if not entry then
+                -- Looked up here, not in the refresh: that runs in a fast
+                -- event where blocking calls like :wait() aren't allowed.
+                local tracked = vim.system(
+                    { "git", "-C", view.adapter.ctx.toplevel, "ls-files", "--error-unmatch", "--", rel }
+                ):wait().code == 0
+                local status = tracked and " " or "?"
+                entry = make_extra_entry(view, rel, status)
+                extras_of(view)[rel] = status
+                insert_sorted(view.files.working, entry)
+                view.files:update_file_trees()
+                view.panel:update_components()
+                view.panel:render()
+                view.panel:redraw()
+            end
+
+            view.emitter:once("file_open_post", function()
+                vim.schedule(function()
+                    local main = view.cur_layout:get_main_win().id
+                    vim.api.nvim_set_current_win(main)
+                    pcall(vim.api.nvim_win_set_cursor, main, cursor)
+                    vim.cmd("normal! zz")
+                end)
+            end)
+            view:set_file(entry, true, true)
+        end
+
+        local function layout_owns(layout, buf)
+            for _, w in ipairs(layout.windows) do
+                if w.file and w.file.bufnr == buf then return true end
+            end
+            return false
+        end
+
+        vim.api.nvim_create_autocmd("BufWinEnter", {
+            group = vim.api.nvim_create_augroup("DiffviewKeepTwoPanes", { clear = true }),
+            callback = function(ev)
+                if vim.bo[ev.buf].buftype ~= "" then return end
+                local view = require("diffview.lib").get_current_view()
+                if not (view and view.class == DiffView and view.cur_layout) then return end
+                local win = vim.api.nvim_get_current_win()
+                if not vim.tbl_contains(vim.tbl_map(function(w) return w.id end, view.cur_layout.windows), win) then
+                    return
+                end
+                if layout_owns(view.cur_layout, ev.buf) then return end
+
+                -- Let the jump finish first (LSP sets the cursor after loading).
+                vim.schedule(function()
+                    if not (vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == ev.buf) then return end
+                    if view ~= require("diffview.lib").get_current_view() then return end
+                    if layout_owns(view.cur_layout, ev.buf) then return end
+
+                    local rel = vim.fs.relpath(vim.fn.resolve(view.adapter.ctx.toplevel),
+                        vim.fn.resolve(vim.api.nvim_buf_get_name(ev.buf)))
+                    if not rel then return end -- outside the repo
+                    open_in_diffview(view, rel, vim.api.nvim_win_get_cursor(win))
+                end)
+            end,
+        })
 
     end,
 }

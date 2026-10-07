@@ -79,6 +79,7 @@ end
 
 -- Visual --
 -- Stay in indent mode
+keymap("v", "<", "<gv^", desc("Dedent and reselect"))
 keymap("v", ">", ">gv^", desc("Indent and reselect"))
 
 -- Yank to system clipboard with Cmd+C (requires terminal to forward <D-c> to nvim)
@@ -139,7 +140,7 @@ local function wrap_selection(open, close)
   end
 end
 
-for _, pair in ipairs({ '()', '[]', '{}', '""', "''", '``', '<>' }) do
+for _, pair in ipairs({ '()', '[]', '{}', '""', "''", '``' }) do
   local open, close = pair:sub(1, 1), pair:sub(2, 2)
   keymap('x', open, wrap_selection(open, close),
     { noremap = true, silent = true, desc = 'Wrap selection with ' .. pair })
@@ -201,11 +202,32 @@ vim.keymap.set("n", "<A-x>", function()
   print("Wrap " .. (new_wrap and "enabled" or "disabled"))
 end, { desc = "Toggle text wrap in all windows" })
 
--- Resize splits easily with arrow keys
-vim.keymap.set("n", "<C-Up>",    ":resize +5<CR>",         { silent = true, desc = "Increase window height" })
-vim.keymap.set("n", "<C-Down>",  ":resize -5<CR>",         { silent = true, desc = "Decrease window height" })
+-- Resize splits easily with arrow keys.
+--
+-- A window with nothing above/below it (e.g. either pane of a side-by-side
+-- Diffview) has no neighbour to trade rows with, so ":resize" hands them to
+-- the command line instead, growing 'cmdheight' and leaving a big blank band
+-- at the bottom of the screen. Only resize height when there's a neighbour.
+local function resize_height(delta)
+  local cur = vim.fn.winnr()
+  if vim.fn.winnr('j') == cur and vim.fn.winnr('k') == cur then return end
+  vim.cmd('resize ' .. delta)
+end
+vim.keymap.set("n", "<C-Up>",    function() resize_height('+5') end, { silent = true, desc = "Increase window height" })
+vim.keymap.set("n", "<C-Down>",  function() resize_height('-5') end, { silent = true, desc = "Decrease window height" })
 vim.keymap.set("n", "<C-Left>",  ":vertical resize -5<CR>", { silent = true, desc = "Decrease window width" })
 vim.keymap.set("n", "<C-Right>", ":vertical resize +5<CR>", { silent = true, desc = "Increase window width" })
+
+-- Dragging the bottom statusline with the mouse grows 'cmdheight' the same
+-- way. Snap it back after any resize.
+vim.api.nvim_create_autocmd('WinResized', {
+  group = vim.api.nvim_create_augroup('KeepCmdheight', { clear = true }),
+  callback = function()
+    if vim.o.cmdheight > 1 then
+      vim.o.cmdheight = 1
+    end
+  end,
+})
 
 -- Enlarge the focused window to 80% of the screen, shrinking the other pane
 -- to 20%. Works for exactly two windows in the current tab, whether they're
@@ -233,6 +255,10 @@ local function focus_pane(ratio)
     vim.notify('Focus pane: needs exactly 2 windows', vim.log.levels.WARN)
     return
   end
+  -- The current window must be one of the two panes. From a float (e.g.
+  -- Telescope's prompt) this would otherwise resize the float itself to 80%
+  -- and squash the real pane, pushing the freed rows into 'cmdheight'.
+  if not vim.tbl_contains(wins, win) then return end
   local other = wins[1] == win and wins[2] or wins[1]
   local row_cur = vim.api.nvim_win_get_position(win)[1]
   local row_other = vim.api.nvim_win_get_position(other)[1]
@@ -265,6 +291,7 @@ vim.api.nvim_create_autocmd('WinEnter', {
   group = vim.api.nvim_create_augroup('FocusPaneAutoResize', { clear = true }),
   callback = function()
     if not pane_focused then return end
+    if vim.api.nvim_win_get_config(0).relative ~= '' then return end
     if #list_normal_wins() ~= 2 then return end
     focus_pane(0.8)
   end,
@@ -285,10 +312,22 @@ local function diff_jump(motion, wrap_to)
   end
 end
 
-vim.keymap.set('n', '<A-[>', function() diff_jump(']c', 'gg') end,
-  { noremap = true, silent = true, desc = 'Next diff chunk (wraps)' })
-vim.keymap.set('n', '<A-]>', function() diff_jump('[c', 'G') end,
-  { noremap = true, silent = true, desc = 'Previous diff chunk (wraps)' })
+-- In a file with merge-conflict markers, jump between conflicts instead:
+-- Diffview's 1-pane merge layout isn't in diff mode, so ]c/[c find nothing.
+local conflict_start = [[^<<<<<<< ]]
+
+local function diff_or_conflict_jump(motion, wrap_to, search_flags)
+  if vim.fn.search(conflict_start, 'nw') > 0 then
+    vim.fn.search(conflict_start, search_flags)
+  else
+    diff_jump(motion, wrap_to)
+  end
+end
+
+vim.keymap.set('n', '<A-[>', function() diff_or_conflict_jump(']c', 'gg', 'w') end,
+  { noremap = true, silent = true, desc = 'Next diff chunk / conflict (wraps)' })
+vim.keymap.set('n', '<A-]>', function() diff_or_conflict_jump('[c', 'G', 'bw') end,
+  { noremap = true, silent = true, desc = 'Previous diff chunk / conflict (wraps)' })
 
 -- Pull ("obtain") the current diff chunk from the other window, then save.
 -- Skips the write when the current buffer is read-only (e.g. Diffview's
