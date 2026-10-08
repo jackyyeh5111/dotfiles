@@ -116,6 +116,9 @@ alias souz="source ~/.zshrc"
 alias vimv='vim ~/.vimrc'
 alias souv='source ~/.vimrc'
 
+# ssh-clipboard syncs the Mac clipboard into the desktop display :0, not the ssh -Y forwarded one
+alias claude='DISPLAY=:0 claude'
+
 alias cdrun="cd /home/jackyyeh/memryx/MIX/runtime"
 alias cdaccl='cd ~/memryx/MX_API/build/mx_accl'
 alias cdmg='cd ~/memryx/MX_API/build/mxa_manager'
