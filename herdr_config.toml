@@ -241,7 +241,7 @@ sidebar_start_collapsed = true
 # allow_nested = false
 # Experimental local Kitty graphics rendering for attached clients.
 # Requires a Kitty graphics-compatible outer terminal.
-# kitty_graphics = false
+kitty_graphics = true
 # Save recent pane screen history across full server restarts.
 pane_history = true
 # While prefix mode is active, temporarily switch the macOS host input
