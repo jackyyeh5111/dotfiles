@@ -135,6 +135,7 @@ alias cdlinux="cd ~/Desktop/Courses/linux2025"
 alias sshser='ssh -t memryx-jacky "cd ~/memryx/MX_API/build/mx_server; zsh -i"'
 alias rymxapi="cd ~/memryx/MX_API && rsync -avz --progress  --include='*/' --include='*.cpp' --include='*.h' --include='*.hpp' --include='*.py' --exclude='*'  mx_accl mxa_manager samples  memryx-jacky:/home/jackyyeh/memryx/MX_API/"
 alias ryseg="rsync -avzh --progress ~/memryx/mx_examples/video_inference/segmentation_yolov8/src/cpp*  memryx-jacky:/home/jackyyeh/memryx/mx_examples/video_inference/segmentation_yolov8/src/"
+alias cl='claude'
 
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
