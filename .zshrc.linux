@@ -118,11 +118,12 @@ alias souv='source ~/.vimrc'
 
 # ssh-clipboard syncs the Mac clipboard into the desktop display :0, not the ssh -Y forwarded one
 alias claude='DISPLAY=:0 claude'
+alias cl='claude'
 
 alias cdrun="cd /home/jackyyeh/memryx/MIX/runtime"
 alias cdaccl='cd ~/memryx/MX_API/build/mx_accl'
 alias cdmg='cd ~/memryx/MX_API/build/mxa_manager'
-alias cdpy='cd ~/memryx/MX_API/mx_accl/pymodule/tests && workon mx2p2' 
+alias cdpy='cd ~/memryx/MX_API/mx_accl/pymodule/tests && workon mx3p0' 
 alias cdpp='cd ~/memryx/MxPrepost && workon no_pip_memryx'
 alias cdapi='cd ~/memryx/MX_API'
 alias u='cd ..'
