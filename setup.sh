@@ -407,6 +407,17 @@ link_dotfiles() {
   link "$DOTFILES_DIR/yazi/yazi_init.lua"    "$HOME/.config/yazi/init.lua"
   link "$DOTFILES_DIR/yazi/package.toml"     "$HOME/.config/yazi/package.toml"
   link "$DOTFILES_DIR/yazi/plugins"          "$HOME/.config/yazi/plugins"
+
+  # Claude Code: skills are linked one by one because ~/.claude/skills/synced
+  # is managed by Claude itself and must stay a real directory.
+  link "$DOTFILES_DIR/claude/settings.json"         "$HOME/.claude/settings.json"
+  link "$DOTFILES_DIR/claude/keybindings.json"      "$HOME/.claude/keybindings.json"
+  link "$DOTFILES_DIR/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+  link "$DOTFILES_DIR/claude/hooks"                 "$HOME/.claude/hooks"
+  local skill
+  for skill in "$DOTFILES_DIR"/claude/skills/*/; do
+    link "${skill%/}" "$HOME/.claude/skills/$(basename "$skill")"
+  done
 }
 
 # ============================================================================

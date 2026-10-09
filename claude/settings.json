@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash '/home/jackyyeh/.claude/hooks/herdr-agent-state.sh' session",
+            "command": "bash ~/.claude/hooks/herdr-agent-state.sh session",
             "timeout": 10
           }
         ]
@@ -27,7 +27,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "bash /home/jackyyeh/.claude/statusline-command.sh"
+    "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
