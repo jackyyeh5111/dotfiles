@@ -35,13 +35,20 @@
     "pyright-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": true,
-    "next-steps@claude-community": true
+    "next-steps@claude-community": true,
+    "blast-radius@claude-code-playground-mods": true
   },
   "extraKnownMarketplaces": {
     "claude-community": {
       "source": {
         "source": "github",
         "repo": "anthropics/claude-plugins-community"
+      }
+    },
+    "claude-code-playground-mods": {
+      "source": {
+        "source": "directory",
+        "path": "/home/jackyyeh/.local/share/claude-code-playground/claude-code/mods"
       }
     }
   },
