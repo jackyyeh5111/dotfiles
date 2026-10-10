@@ -36,7 +36,7 @@
     "rust-analyzer-lsp@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": true,
     "next-steps@claude-community": true,
-    "blast-radius@claude-code-playground-mods": true
+    "prompt-select@jacky-mods": true
   },
   "extraKnownMarketplaces": {
     "claude-community": {
@@ -45,10 +45,10 @@
         "repo": "anthropics/claude-plugins-community"
       }
     },
-    "claude-code-playground-mods": {
+    "jacky-mods": {
       "source": {
         "source": "directory",
-        "path": "/home/jackyyeh/.local/share/claude-code-playground/claude-code/mods"
+        "path": "/home/jackyyeh/dotfiles/claude/mods"
       }
     }
   },
@@ -57,7 +57,7 @@
       "effortLevel": "high"
     },
     "claude-opus-5-5": {
-      "effortLevel": "high"
+      "effortLevel": "medium"
     }
   },
   "tui": "fullscreen",
