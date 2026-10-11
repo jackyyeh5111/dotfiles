@@ -1,13 +1,15 @@
 ---
 name: jacky-commit-msg
-description: "Writes or rewrites a git commit message or PR description in simple, everyday words with an airy, easy-to-scan layout (Problem / Fix / Tests, each heading followed by a blank line and short indented sentences), adding a tiny pure-text diagram or a 1–3 line code example only when it explains the bug better than prose. Short, but long enough to carry the full meaning. Use whenever the user asks to write, reword, amend, or clean up a commit message or PR message/description, e.g. 'modify last commit msg', 'write the PR msg', 'make the commit message clearer', 'commit msg looks too crowded'."
+description: "Writes or rewrites a git commit message or PR description in simple, everyday words with an airy, easy-to-scan layout (Problem / Fix, plus Tests only when a test matters, each heading followed by a blank line and short indented sentences), adding a tiny pure-text diagram or a 1–3 line code example only when prose can't explain it. The first draft must already be short and plain; the user should never need to ask to simplify it. Use whenever the user asks to write, reword, amend, or clean up a commit message or PR message/description, e.g. 'modify last commit msg', 'write the PR msg', 'make the commit message clearer', 'commit msg looks too crowded'."
 user-invocable: true
 argument-hint: "[commit ref or PR number; default: HEAD]"
 ---
 
 # Commit / PR Message
 
-Write a message anyone on the team can read once and understand, even if they don't know the code: what broke, why, what changed, and how it's proven.
+Write a message anyone on the team can read once and understand, even if they don't know the code: what broke, why, and what changed.
+
+**The first draft you show must already be the simple one.** The user should never have to say "make it simpler". If you're unsure, go shorter and plainer.
 
 ## Process
 
@@ -16,50 +18,37 @@ Write a message anyone on the team can read once and understand, even if they do
 2. **Write the message in this shape:**
 
    ```
-   <Subject: imperative, specific, ≤ ~72 chars>
+   <Subject: imperative, plain words, what the user gets, ≤ ~50 chars>
 
    Problem:
 
      <what the user sees going wrong, in one short sentence>
-     <the trigger>
-     <the root cause>
+     <the root cause, in one or two short sentences>
 
-     <optional: why the existing mechanism didn't cover it>
+     <optional: a second, separate problem>
 
    Fix:
 
      <what now happens, one short sentence per change>
-     <what still works as before, if anyone might worry>
-
-   Tests:
-
-     <what the test does and that it passes>
    ```
 
    Layout rules:
    - Put a blank line after each heading, and between headings.
    - Indent every body line by 2 spaces under its heading.
    - One short, complete sentence per line. End it with a period.
-   - Use a blank line inside a section to split a separate thought
-     (e.g. the root cause vs. "send_input() already does this").
+   - Use a blank line inside a section to split a separate thought.
    - No `-` bullets and no `Component:` prefixes; they make it look busy.
 
-   Drop any section that has nothing to say. For a trivial change, a subject plus 1–3 lines is enough.
+   For a trivial change, a subject plus 1–3 lines is enough.
 
-3. **Diagram only when it beats prose.** It works well for a deadlock, a race, an ordering bug, or a data flow. Keep it 2–4 lines, plain ASCII, aligned, with one actor per line, indented like the rest of the section:
+3. **Tests: leave the section out by default.** Add it only when a test is
+   worth a reader's attention, for example a new regression test that
+   reproduces this exact bug. Never add it just to say "builds", "all
+   tests pass", or that you checked it by hand.
 
-   ```
-     manual_output_loop: pop() waits for a buffer -> never comes
-     ~MxModel:           join(manual_output_loop) -> waits forever
-   ```
-
-   Never use markdown tables, box-drawing art, or anything wider than ~72 columns.
-
-4. **Add a simple example when it makes things clearer.** If a reader
-   would understand faster by seeing a call, add a 1–3 line snippet
-   showing what failed or what now works. Put it right after the
-   sentence it supports, indented 4 spaces, with a blank line above
-   and below:
+4. **Diagram or example: almost never.** Add a 2–4 line plain-ASCII diagram
+   or a 1–3 line code snippet only when the sentences alone can't make the
+   bug clear. If the Problem section already reads clearly, skip it.
 
    ```
      Passing a list of arrays failed with a TypeError:
@@ -67,10 +56,16 @@ Write a message anyone on the team can read once and understand, even if they do
        outputs = accl.run([x1, x2], stream_id=0)   # TypeError
    ```
 
-   Skip it when the sentences are already obvious. Use at most one
-   example per section, and keep it short with simple names (`x1`, `x2`).
+   Never use markdown tables, box-drawing art, or anything wider than ~72 columns.
 
-5. **Check the length.** Aim for about 6–12 sentences in the body (blank lines don't count). If you're over that, cut repetition and explanation of obvious code before you cut causes or caveats. If you're under, make sure the root cause and test intent are still stated, not just implied.
+5. **Simplify before showing it.** The body should be about 3–7 sentences
+   (blank lines don't count). Then go through it line by line:
+   - Cut any line a teammate could skip and still get the point.
+   - Replace mechanism words with what they mean: "blocks signals with
+     pthread_sigmask and waits in sigwait()" becomes "the main thread
+     waits for Ctrl+C".
+   - Drop "what still works as before" unless someone would really worry.
+   - Drop anything that already lives in a code comment.
 
 6. **Apply it.**
    - Commit: write the message to a file in the scratchpad, then `git commit --amend -F <file>` (or `-F` on a new commit). First check `git branch -r --contains HEAD`: if the commit is already pushed, say that amending needs a force-push, and ask before rewriting it.
@@ -80,37 +75,65 @@ Write a message anyone on the team can read once and understand, even if they do
 
 ## Word choice
 
-- Write for someone who knows what the API does but not how it's built.
-  Describe what they would see ("run() only accepted one numpy array",
-  "failed with a TypeError"), not the internals that cause it.
-- Leave out internal types and plumbing (`py::array_t<float>`, "pybind
-  lambda", "BindObjMT") unless the fix can't be understood without them.
-- Keep public names a reader would grep for (`run()`, `send_input()`,
-  test names), but don't narrate the code line by line.
-- Use everyday words: "accepts", "fails", "waits forever", "still works".
+- Write for someone who knows what the tool or API does but not how it's
+  built. Describe what they would see ("Ctrl+C could hang", "failed with
+  a TypeError"), not the internals that cause it.
+- Leave out internal types, system calls, and plumbing (`py::array_t`,
+  `sigwait()`, "signal mask", "BindObjMT") unless the fix can't be
+  understood without them.
+- Keep public names a reader would grep for (`run()`, `send_input()`),
+  but don't narrate the code line by line.
+- Use everyday words: "accepts", "fails", "hangs", "waits forever", "still works".
 - Wrap lines at ~72 columns.
 - Don't use filler ("This commit…", "In order to…") or hedging, and don't repeat the subject in the body.
 
-## Example
+## Example: too detailed vs. right
+
+Too detailed (the user had to ask twice to simplify this):
 
 ```
-Let MxAcclMT.run() accept a list of inputs
+Stop mxa_manager on the main thread instead of in a signal handler
 
 Problem:
 
-  run() only accepted one numpy array.
-  Passing a list of arrays failed with a TypeError.
-  So models with more than one input could not use run().
+  Pressing Ctrl+C could hang mxa_manager instead of stopping it.
+  The SIGINT handler deleted the whole server inside the handler.
+  The handler runs on whichever thread the signal interrupts.
+  If that thread holds a lock, teardown waits on it forever:
 
-  send_input() already accepts both a list and a single array.
+    worker:   holds a lock -> interrupted by SIGINT, runs the handler
+    handler:  delete server -> waits for that lock -> never released
+
+  SIGTERM (plain kill, systemd stop) skipped cleanup entirely.
 
 Fix:
 
-  run() now accepts the same input types as send_input().
-  Passing a single array still works as before.
+  SIGINT and SIGTERM are blocked before the server starts.
+  All worker threads inherit this, so no worker is ever interrupted.
+  The main thread waits for either signal with sigwait().
+  It then returns from main(), and the server shuts down normally.
 
 Tests:
 
-  test_pre_passthrough sends 5 inputs through run() and passes.
-  All 25 TestAcclMT tests pass.
+  main_linux.cpp builds on its own against the committed server code.
+```
+
+Right (write this the first time):
+
+```
+Stop mxa_manager safely on Ctrl+C
+
+Problem:
+
+  Ctrl+C could hang mxa_manager instead of stopping it.
+  The Ctrl+C handler could run on a worker thread holding a lock.
+  The handler then deleted the server, which waited on that lock forever.
+
+  A plain kill (SIGTERM) did not clean up at all.
+
+Fix:
+
+  The main thread now waits for Ctrl+C or kill.
+  Then it shuts the server down normally.
+  Worker threads are never interrupted by these signals.
 ```
