@@ -5,6 +5,11 @@
   },
   "plugins": [
     {
+      "name": "prompt-select",
+      "source": "./prompt-select",
+      "description": "Shift+arrow selects text in the prompt box; copy-on-select, type/paste/backspace replaces it."
+    },
+    {
       "name": "slash-fuzzy",
       "source": "./slash-fuzzy",
       "description": "Fuzzy-find slash commands and skills in the '/' typeahead (e.g. /jcm -> /jacky-commit-msg)."
