@@ -1,0 +1,13 @@
+{
+  "name": "jacky-mods",
+  "owner": {
+    "name": "Jacky Yeh"
+  },
+  "plugins": [
+    {
+      "name": "slash-fuzzy",
+      "source": "./slash-fuzzy",
+      "description": "Fuzzy-find slash commands and skills in the '/' typeahead (e.g. /jcm -> /jacky-commit-msg)."
+    }
+  ]
+}

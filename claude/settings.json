@@ -36,7 +36,8 @@
     "rust-analyzer-lsp@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": true,
     "next-steps@claude-community": true,
-    "prompt-select@jacky-mods": true
+    "prompt-select@jacky-mods": true,
+    "slash-fuzzy@jacky-mods": true
   },
   "extraKnownMarketplaces": {
     "claude-community": {
