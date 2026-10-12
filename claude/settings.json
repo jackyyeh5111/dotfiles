@@ -38,7 +38,8 @@
     "next-steps@claude-community": true,
     "prompt-select@jacky-mods": true,
     "slash-fuzzy@jacky-mods": true,
-    "code-simplifier@claude-plugins-official": true
+    "code-simplifier@claude-plugins-official": true,
+    "code-bg@jacky-mods": true
   },
   "extraKnownMarketplaces": {
     "claude-community": {

@@ -1,0 +1,1 @@
+{ "name": "code-bg", "version": "0.1.0", "description": "Draws a shaded background behind fenced code blocks in Claude's replies" }

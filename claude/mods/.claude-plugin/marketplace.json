@@ -13,6 +13,11 @@
       "name": "slash-fuzzy",
       "source": "./slash-fuzzy",
       "description": "Fuzzy-find slash commands and skills in the '/' typeahead (e.g. /jcm -> /jacky-commit-msg)."
+    },
+    {
+      "name": "code-bg",
+      "source": "./code-bg",
+      "description": "Shaded panels behind code blocks in replies, with a language label and a copy chip."
     }
   ]
 }
