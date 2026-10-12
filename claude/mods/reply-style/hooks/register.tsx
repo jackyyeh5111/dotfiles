@@ -6,8 +6,14 @@ const CODE_BG = '#353b45'
 const CHIP = { bg: '#4b5263', fg: '#abb2bf', hoverBg: '#61afef', hoverFg: '#282c34' }
 // Language label: One Dark's comment grey, quiet next to the chip.
 const LANG_FG = '#7f848e'
+// Header colors by level: One Dark blue for # and ##, cyan for ###, plain text below that.
+const HEADING_FG: Record<number, string> = { 1: '#61afef', 2: '#61afef', 3: '#56b6c2' }
+const HEADING_DEFAULT_FG = '#abb2bf'
 
-type Segment = { kind: 'text'; text: string } | { kind: 'code'; language?: string; source: string }
+type Segment =
+  | { kind: 'text'; text: string }
+  | { kind: 'code'; language?: string; source: string }
+  | { kind: 'heading'; level: number; text: string }
 
 // Split markdown into prose and fenced code; an unclosed fence (mid-stream) runs to the end.
 export function splitFences(markdown: string): Segment[] {
@@ -46,12 +52,41 @@ export function splitFences(markdown: string): Segment[] {
   return segments
 }
 
+// Pull `#` header lines out of prose so they can be drawn in color; inline ** and ` marks are dropped.
+export function splitHeadings(segments: Segment[]): Segment[] {
+  return segments.flatMap(segment => {
+    if (segment.kind !== 'text') return [segment]
+
+    const out: Segment[] = []
+    let buffer: string[] = []
+    const flush = () => {
+      const text = buffer.join('\n')
+      if (text.trim()) out.push({ kind: 'text', text })
+      buffer = []
+    }
+
+    for (const line of segment.text.split('\n')) {
+      const match = line.match(/^ {0,3}(#{1,6})\s+(.*?)(?:\s+#+)?\s*$/)
+      if (!match) {
+        buffer.push(line)
+        continue
+      }
+      flush()
+      const text = (match[2] ?? '').replace(/\*\*|__|`/g, '')
+      out.push({ kind: 'heading', level: match[1]?.length ?? 1, text })
+    }
+
+    flush()
+    return out
+  })
+}
+
 export const register: Register = on => {
   on('ui.render', { component: 'AssistantMessage' }, ($, e, next) => {
     if (e.props.isSummary) return next(e)
 
-    const segments = splitFences(e.props.text)
-    if (!segments.some(s => s.kind === 'code')) return next(e)
+    const segments = splitHeadings(splitFences(e.props.text))
+    if (!segments.some(s => s.kind !== 'text')) return next(e)
 
     const { Box, Button, Code, Markdown, Text } = $.ui.resolve(e)
 
@@ -62,10 +97,20 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column" gap={1}>
-        {segments.map((s, i) =>
-          s.kind === 'text' ? (
-            <Markdown text={s.text} />
-          ) : (
+        {segments.map((s, i) => {
+          if (s.kind === 'text') return <Markdown text={s.text} />
+
+          if (s.kind === 'heading') {
+            const color = HEADING_FG[s.level] ?? HEADING_DEFAULT_FG
+            // # and ## get a colored bar on the left so sections stand out when scrolling.
+            return (
+              <Text color={color} bold underline={s.level === 1}>
+                {s.level <= 2 ? `▌ ${s.text}` : s.text}
+              </Text>
+            )
+          }
+
+          return (
             <Box flexDirection="column" backgroundColor={CODE_BG} paddingX={1}>
               <Box key={`chip-${i}`}>
                 <Box flexGrow={1}>
@@ -87,8 +132,8 @@ export const register: Register = on => {
               </Box>
               <Code source={s.source} language={s.language} />
             </Box>
-          ),
-        )}
+          )
+        })}
       </Box>
     )
   })

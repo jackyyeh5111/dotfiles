@@ -15,9 +15,9 @@
       "description": "Fuzzy-find slash commands and skills in the '/' typeahead (e.g. /jcm -> /jacky-commit-msg)."
     },
     {
-      "name": "code-bg",
-      "source": "./code-bg",
-      "description": "Shaded panels behind code blocks in replies, with a language label and a copy chip."
+      "name": "reply-style",
+      "source": "./reply-style",
+      "description": "Colored headers and shaded code blocks (with a language label and copy chip) in replies."
     }
   ]
 }
