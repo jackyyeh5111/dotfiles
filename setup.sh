@@ -413,6 +413,7 @@ link_dotfiles() {
   # is managed by Claude itself and must stay a real directory.
   link "$DOTFILES_DIR/claude/settings.json"         "$HOME/.claude/settings.json"
   link "$DOTFILES_DIR/claude/keybindings.json"      "$HOME/.claude/keybindings.json"
+  link "$DOTFILES_DIR/claude/CLAUDE.md"             "$HOME/.claude/CLAUDE.md"
   link "$DOTFILES_DIR/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
   link "$DOTFILES_DIR/claude/hooks"                 "$HOME/.claude/hooks"
   # settings.json needs a mods path that is the same on Linux and macOS, and
