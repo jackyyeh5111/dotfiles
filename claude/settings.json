@@ -49,7 +49,7 @@
     "jacky-mods": {
       "source": {
         "source": "directory",
-        "path": "/home/jackyyeh/dotfiles/claude/mods"
+        "path": "~/dotfiles/claude/mods"
       }
     }
   },
