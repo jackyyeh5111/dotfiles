@@ -188,6 +188,7 @@ vim.keymap.set("n", "<A-\\>", ":vsplit<CR>", { noremap = true, silent = true, de
 vim.keymap.set("n", "<A-h>", "<C-w>h", { noremap = true, silent = true, desc = "Go to left window" })
 vim.keymap.set("n", "<A-l>", "<C-w>l", { noremap = true, silent = true, desc = "Go to right window" })
 vim.keymap.set("n", "<A-o>", "<C-w>w", { noremap = true, silent = true, desc = "Cycle to next window" })
+vim.keymap.set("n", "<A-;>", "<C-w>p", { noremap = true, silent = true, desc = "Go to last window" })
 vim.keymap.set("n", "<A-1>", "1<C-w>w", { noremap = true, silent = true, desc = "Go to window 1" })
 vim.keymap.set("n", "<A-2>", "2<C-w>w", { noremap = true, silent = true, desc = "Go to window 2" })
 
