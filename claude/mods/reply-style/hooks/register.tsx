@@ -4,6 +4,9 @@ import { type Inline, type ListItem, parseInline, splitBlocks, splitFences } fro
 
 // Panel color behind code blocks; pick one that sits a shade off your terminal background.
 const CODE_BG = '#353b45'
+// Behind your own prompts: a muted navy, as bright as the grey panels but
+// tinted toward the bullet blue, so it stands out by hue rather than glare.
+const PROMPT_BG = '#2f4260'
 // Copy chip: a raised One Dark grey at rest, the palette's blue on hover.
 const CHIP = { bg: '#4b5263', fg: '#abb2bf', hoverBg: '#61afef', hoverFg: '#282c34' }
 // Language label: One Dark's comment grey, quiet next to the chip.
@@ -19,6 +22,24 @@ const BULLETS = ['•', '◦', '▪']
 const bulletFor = (item: ListItem) => (item.ordered ? item.marker : (BULLETS[item.depth] ?? '•'))
 
 export const register: Register = on => {
+  // Your own prompts get a navy row; notifications and other senders keep the built-in look.
+  on('ui.render', { component: 'UserMessage' }, ($, e, next) => {
+    const kind = e.props.origin.kind
+    if (kind !== 'composer' && kind !== 'bridge') return next(e)
+
+    const { Box, Text } = $.ui.resolve(e)
+    return (
+      <Box flexDirection="row" backgroundColor={PROMPT_BG} paddingRight={1}>
+        <Text color={BULLET_FG} bold>
+          {'❯ '}
+        </Text>
+        <Box flexShrink={1}>
+          <Text>{e.props.text}</Text>
+        </Box>
+      </Box>
+    )
+  })
+
   on('ui.render', { component: 'AssistantMessage' }, ($, e, next) => {
     if (e.props.isSummary) return next(e)
 

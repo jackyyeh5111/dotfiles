@@ -126,6 +126,14 @@ split_horizontal = ["prefix+minus", "ctrl+'"]
 # key = "prefix+alt+g"
 # type = "pane"
 # command = "lazygit"
+[[keys.command]]
+key = "ctrl+shift+m"
+type = "shell"
+command = "python3 ~/dotfiles/herdr_move_tab.py left"
+[[keys.command]]
+key = ["ctrl+<", "ctrl+shift+,"]
+type = "shell"
+command = "python3 ~/dotfiles/herdr_move_tab.py right"
 
 # Legacy indexed shortcut config is still parsed for compatibility.
 # Prefer switch_tab, switch_workspace, and focus_agent for new configs.
