@@ -13,6 +13,11 @@
       "name": "slash-fuzzy",
       "source": "./slash-fuzzy",
       "description": "Fuzzy-find slash commands and skills in the '/' typeahead (e.g. /jcm -> /jacky-commit-msg)."
+    },
+    {
+      "name": "reply-style",
+      "source": "./reply-style",
+      "description": "Colored headers and shaded code blocks (with a language label and copy chip) in replies."
     }
   ]
 }
