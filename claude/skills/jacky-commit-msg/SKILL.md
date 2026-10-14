@@ -71,7 +71,10 @@ Write a message anyone on the team can read once and understand, even if they do
    - Commit: write the message to a file in the scratchpad, then `git commit --amend -F <file>` (or `-F` on a new commit). First check `git branch -r --contains HEAD`: if the commit is already pushed, say that amending needs a force-push, and ask before rewriting it.
    - PR: `gh pr edit <n> --body-file <file>`, or print the message for the user to paste.
    - No attribution line: leave out `Co-Authored-By: Claude ...` and the "Generated with Claude Code" footer.
-   - Show the final message in the reply.
+   - Show the final message in the reply, in a code block. Put one space on
+     each blank line inside it: Claude Code's terminal drops truly empty
+     lines from code blocks. Only the reply needs this; the commit file
+     keeps real empty lines.
 
 ## Word choice
 

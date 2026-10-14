@@ -39,8 +39,8 @@ vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>', { silent = true, desc = 'Previo
 -- vim.keymap.set('n', '<A-b>', ':b#<CR>', { noremap = true, silent = true })
 
 -- Move between buffers (shown in bufferline)
-vim.keymap.set('n', '<A-Tab>', ':BufferLineCycleNext<CR>', { silent = true, desc = 'Next buffer (bufferline)' })
-vim.keymap.set('n', '<A-S-Tab>', ':BufferLineCyclePrev<CR>', { silent = true, desc = 'Previous buffer (bufferline)' })
+vim.keymap.set('n', '<A-m>', ':BufferLineCyclePrev<CR>', { silent = true, desc = 'Previous buffer (bufferline)' })
+vim.keymap.set('n', '<A-,>', ':BufferLineCycleNext<CR>', { silent = true, desc = 'Next buffer (bufferline)' })
 
 -- Open / close buffers
 vim.keymap.set('n', '<A-n>', ':enew<CR>', { silent = true, desc = 'New buffer' })

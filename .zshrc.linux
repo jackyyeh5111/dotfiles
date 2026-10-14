@@ -106,6 +106,7 @@ alias gd="git diff"
 alias gb="git branch"
 alias gck="git checkout"
 alias gh="git checkout HEAD"
+alias gl='git log --oneline'
 alias dp="docker ps"
 alias de="docker exec"
 alias di="docker image"
