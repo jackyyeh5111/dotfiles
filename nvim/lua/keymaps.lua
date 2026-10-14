@@ -39,10 +39,8 @@ vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>', { silent = true, desc = 'Previo
 -- vim.keymap.set('n', '<A-b>', ':b#<CR>', { noremap = true, silent = true })
 
 -- Move between buffers (shown in bufferline)
--- Only fire when the terminal tells Ctrl+M apart from Enter; otherwise
--- Ctrl+M just arrives as <CR>, and Enter keeps working as usual.
-vim.keymap.set('n', '<C-m>', ':BufferLineCycleNext<CR>', { silent = true, desc = 'Next buffer (bufferline)' })
-vim.keymap.set('n', '<C-S-m>', ':BufferLineCyclePrev<CR>', { silent = true, desc = 'Previous buffer (bufferline)' })
+vim.keymap.set('n', '<A-m>', ':BufferLineCyclePrev<CR>', { silent = true, desc = 'Previous buffer (bufferline)' })
+vim.keymap.set('n', '<A-,>', ':BufferLineCycleNext<CR>', { silent = true, desc = 'Next buffer (bufferline)' })
 
 -- Open / close buffers
 vim.keymap.set('n', '<A-n>', ':enew<CR>', { silent = true, desc = 'New buffer' })
