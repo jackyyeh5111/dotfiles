@@ -153,3 +153,31 @@ test('a reply with nothing to style is drawn by the built-in renderer', async ($
   expect(builtIn).toBe(1)
   await ui.unmount()
 })
+
+test('draws your own prompt on a navy row', async $ => {
+  const ui = await $.ui.mount({
+    plugin: 'reply-style',
+    surface: 'terminal',
+    component: 'UserMessage',
+    props: { text: 'fix the build', origin: { kind: 'composer' }, isExpanded: true },
+  })
+  expect((await ui.find({ type: 'Box' }))?.props.backgroundColor).toBe('#2f4260')
+  expect(await ui.find({ type: 'Text', text: 'fix the build' })).toBeDefined()
+  await ui.unmount()
+})
+
+test('a task notification keeps the built-in row', async ($, on) => {
+  let builtIn = 0
+  on('ui.render', ($, e) => {
+    builtIn++
+    return $.ui.resolve(e).Text({ children: 'built-in' })
+  })
+  const ui = await $.ui.mount({
+    plugin: 'reply-style',
+    surface: 'terminal',
+    component: 'UserMessage',
+    props: { text: 'task done', origin: { kind: 'task-notification' }, isExpanded: true },
+  })
+  expect(builtIn).toBe(1)
+  await ui.unmount()
+})
