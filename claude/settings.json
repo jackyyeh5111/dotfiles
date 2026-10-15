@@ -64,6 +64,10 @@
     }
   },
   "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
   "theme": "dark",
   "fileCheckpointingEnabled": true,
   "agentPushNotifEnabled": false,
@@ -95,5 +99,6 @@
       "**Org-specific CLIs**: None configured",
       "routine under /home/jackyyeh/memryx/MX_API/ prefix: build, test, and debug commands (cmake, make/gmake, gdb, ldd, file) local to this repo"
     ]
-  }
+  },
+  "voiceEnabled": true
 }

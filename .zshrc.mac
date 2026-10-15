@@ -116,6 +116,9 @@ alias gb="git branch"
 alias gck="git checkout"
 alias gh='git checkout HEAD'
 alias glo='git log --oneline'
+alias gl='git log'
+alias gpull='git pull'
+alias gpush='git push'
 alias cdu="cd /Users/jackyyeh/Desktop/Courses/UIUC"
 alias cdf484="cd ~/Desktop/Courses/UIUC/ECE484-Principles-Of-Safe-Autonomy/ECE484-Principles-Of-Safe-Autonomy-2023Fall-Final"
 alias vimz="vim ~/.zshrc"
@@ -146,6 +149,7 @@ alias fzfp='fzf --preview="cat {}'
 
 # copy current working directory
 alias cpw='pwd | pbcopy'
+alias hr='herdr'
 
 ### use fzf for preview git diff ###
 # Navigate files with arrows
