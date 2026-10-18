@@ -259,6 +259,7 @@ alias vim=nvim
 alias vi='nvim'
 alias v=nvim
 export PATH="$PATH:$HOME/.local/share/nvim/mason/bin"
+alias cdab='cd /home/jackyyeh/memryx/MX_API/tools/acclBench'
 
 # nvm setting
 #export NVM_DIR="$HOME/.nvm"
@@ -291,3 +292,5 @@ alias yz='yazi'
 # zsh's default Ctrl+U deletes the whole line; rebind to match bash/readline
 # (delete from cursor to start of line only)
 bindkey '^U' backward-kill-line
+
+export DRIVER_PATH=/home/jackyyeh/memryx/MX_API/driver
