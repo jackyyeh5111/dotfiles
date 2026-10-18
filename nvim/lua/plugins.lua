@@ -742,6 +742,16 @@ local diffview = {
                 vim.cmd("DiffviewOpen -uno")
             end
         end, { noremap = true, silent = true, desc = "Diffview Toggle" })
+        -- Review the last commit without resetting it: the right side is still
+        -- the real file on disk, so it stays editable.
+        vim.keymap.set('n', '<A-D>', function()
+            local ok, lib = pcall(require, "diffview.lib")
+            if ok and lib.get_current_view() then
+                vim.cmd("DiffviewClose")
+            else
+                vim.cmd("DiffviewOpen HEAD~1 -uno")
+            end
+        end, { noremap = true, silent = true, desc = "Diffview last commit Toggle" })
         -- vim.keymap.set('n', '<leader>do', ':Diffview<CR>', { noremap = true, silent = true, desc = "Diffview " })
         -- vim.keymap.set('n', '<leader>dc', ':DiffviewClose<CR>', { noremap = true, silent = true, desc = "Diffview Close" })
         -- vim.keymap.set("n", "<leader>df", ":DiffviewToggleFiles<CR>", { desc = "Toggle Diffview file panel" })
@@ -1036,7 +1046,11 @@ local lualine = {
                 lualine_c = {},
                 lualine_x = {},
                 lualine_y = {},
-                lualine_z = { "searchcount", "selectioncount", "progress" },
+                lualine_z = {
+                    -- "[2/10]" in a diff: current chunk / total chunks.
+                    function() return require("diff_position").label() end,
+                    "searchcount", "selectioncount", "progress",
+                },
             },
             inactive_sections = {
                 lualine_a = {},

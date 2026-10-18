@@ -1,0 +1,1 @@
+{ "name": "prompt-select", "version": "0.1.0", "description": "Shift+arrow / shift+home/end selects text in the prompt box; copy-on-select, type/paste/backspace replaces it" }

@@ -68,9 +68,10 @@ apt_install() {
 # link <source-in-dotfiles-repo> <destination-path>
 # Backs up whatever is currently at destination (if anything) before
 # symlinking, so real user data is never silently clobbered.
+# Prefix with SUDO=sudo for destinations the user can't write to.
 link() {
-  local src="$1" dest="$2"
-  mkdir -p "$(dirname "$dest")"
+  local src="$1" dest="$2" sudo="${SUDO-}"
+  $sudo mkdir -p "$(dirname "$dest")"
   if [[ -L "$dest" && "$(readlink -f "$dest" 2>/dev/null || true)" == "$(readlink -f "$src")" ]]; then
     echo "  already linked: $dest"
     return
@@ -78,9 +79,9 @@ link() {
   if [[ -e "$dest" || -L "$dest" ]]; then
     local backup="${dest}.bak.$(date +%Y%m%d%H%M%S)"
     echo "  backing up existing $dest -> $backup"
-    mv "$dest" "$backup"
+    $sudo mv "$dest" "$backup"
   fi
-  ln -sv "$src" "$dest"
+  $sudo ln -sv "$src" "$dest"
 }
 
 # ============================================================================
@@ -423,6 +424,21 @@ link_dotfiles() {
   link "$DOTFILES_DIR/yazi/yazi_init.lua"    "$HOME/.config/yazi/init.lua"
   link "$DOTFILES_DIR/yazi/package.toml"     "$HOME/.config/yazi/package.toml"
   link "$DOTFILES_DIR/yazi/plugins"          "$HOME/.config/yazi/plugins"
+
+  # Claude Code: skills are linked one by one because ~/.claude/skills/synced
+  # is managed by Claude itself and must stay a real directory.
+  link "$DOTFILES_DIR/claude/settings.json"         "$HOME/.claude/settings.json"
+  link "$DOTFILES_DIR/claude/keybindings.json"      "$HOME/.claude/keybindings.json"
+  link "$DOTFILES_DIR/claude/CLAUDE.md"             "$HOME/.claude/CLAUDE.md"
+  link "$DOTFILES_DIR/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+  link "$DOTFILES_DIR/claude/hooks"                 "$HOME/.claude/hooks"
+  # settings.json needs a mods path that is the same on Linux and macOS, and
+  # Claude Code doesn't expand ~ there, so the marketplace lives under /opt.
+  SUDO=sudo link "$DOTFILES_DIR/claude/mods" /opt/claude-mods
+  local skill
+  for skill in "$DOTFILES_DIR"/claude/skills/*/; do
+    link "${skill%/}" "$HOME/.claude/skills/$(basename "$skill")"
+  done
 }
 
 # ============================================================================

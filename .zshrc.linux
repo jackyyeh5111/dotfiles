@@ -107,6 +107,10 @@ alias gd="git diff"
 alias gb="git branch"
 alias gck="git checkout"
 alias gh="git checkout HEAD"
+alias glo='git log --oneline'
+alias gl='git log'
+alias gpull='git pull'
+alias gpush='git push'
 alias dp="docker ps"
 alias de="docker exec"
 alias di="docker image"
@@ -117,10 +121,14 @@ alias souz="source ~/.zshrc"
 alias vimv='vim ~/.vimrc'
 alias souv='source ~/.vimrc'
 
+# ssh-clipboard syncs the Mac clipboard into the desktop display :0, not the ssh -Y forwarded one
+alias claude='DISPLAY=:0 claude'
+alias cl='claude'
+
 alias cdrun="cd /home/jackyyeh/memryx/MIX/runtime"
 alias cdaccl='cd ~/memryx/MX_API/build/mx_accl'
 alias cdmg='cd ~/memryx/MX_API/build/mxa_manager'
-alias cdpy='cd ~/memryx/MX_API/mx_accl/pymodule/tests && workon mx2p2' 
+alias cdpy='cd ~/memryx/MX_API/mx_accl/pymodule/tests && workon mx3p0' 
 alias cdpp='cd ~/memryx/MxPrepost && workon no_pip_memryx'
 alias cdapi='cd ~/memryx/MX_API'
 alias u='cd ..'
