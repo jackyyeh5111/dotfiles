@@ -474,6 +474,33 @@ bootstrap_yazi_plugins() {
 }
 
 # ============================================================================
+# Install Claude Code mods from the jacky-mods marketplace (best-effort)
+# ============================================================================
+
+# settings.json only marks the mods as enabled. Claude Code then copies each
+# one into ~/.claude/plugins/cache on its own, but its cache cleanup can wipe
+# that copy right after install while the plugin still shows as installed.
+# The mod then silently never loads. `claude plugin install` puts the files
+# back (and is a no-op for settings.json), so run it for every mod and check
+# the files are really there.
+bootstrap_claude_mods() {
+  step "Installing Claude Code mods from jacky-mods (best-effort)"
+  claude plugin marketplace update jacky-mods >/dev/null 2>&1 \
+    || echo "  WARN: could not refresh the jacky-mods marketplace (/opt/claude-mods)"
+
+  local mod
+  for mod in $(python3 -c 'import json,sys; print(*(p["name"] for p in json.load(open(sys.argv[1]))["plugins"]))' \
+                 "$DOTFILES_DIR/claude/mods/.claude-plugin/marketplace.json"); do
+    claude plugin install "$mod@jacky-mods" >/dev/null 2>&1 || true
+    if [[ -n "$(ls -A "$HOME/.claude/plugins/cache/jacky-mods/$mod" 2>/dev/null)" ]]; then
+      echo "  installed: $mod"
+    else
+      echo "  WARN: $mod has no files in ~/.claude/plugins/cache — run: claude plugin install $mod@jacky-mods"
+    fi
+  done
+}
+
+# ============================================================================
 # Main
 # ============================================================================
 
@@ -509,6 +536,7 @@ main() {
 
   bootstrap_nvim_plugins
   bootstrap_yazi_plugins
+  bootstrap_claude_mods
 
   step "Done"
   cat <<'EOF'
