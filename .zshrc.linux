@@ -121,8 +121,13 @@ alias souz="source ~/.zshrc"
 alias vimv='vim ~/.vimrc'
 alias souv='source ~/.vimrc'
 
-# ssh-clipboard syncs the Mac clipboard into the desktop display :0, not the ssh -Y forwarded one
-alias claude='DISPLAY=:0 claude'
+# ssh-clipboard syncs the Mac clipboard into the desktop display :0, not the ssh -Y forwarded one.
+# mx-beelink has no desktop (:0 is the gdm login screen), so its ssh-clipboard runs headless Xvfb on :99
+if [[ $HOST == mx-beelink ]]; then
+    alias claude='DISPLAY=:99 claude'
+else
+    alias claude='DISPLAY=:0 claude'
+fi
 alias cl='claude'
 
 alias cdrun="cd /home/jackyyeh/memryx/MIX/runtime"
