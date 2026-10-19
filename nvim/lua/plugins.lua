@@ -554,9 +554,20 @@ local neo_tree = {
     dependencies = {"nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim"},
 
     config = function()
-        require("neo-tree").setup {}
+        require("neo-tree").setup {
+            filesystem = {
+                -- Keep the cursor on the file you're editing while the tree is open
+                follow_current_file = { enabled = true },
+            },
+        }
 
-        vim.keymap.set('n', '<leader>e', ':Neotree filesystem toggle left<CR>', { desc = 'Toggle file explorer' })
+        -- Toggle the tree; when opening, jump to the current file if it lives
+        -- under cwd. Files outside cwd just open the tree, with no cwd prompt.
+        vim.keymap.set('n', '<leader>e', function()
+            local file = vim.api.nvim_buf_get_name(0)
+            local in_cwd = file ~= "" and vim.fs.relpath(vim.fn.getcwd(), file) ~= nil
+            vim.cmd("Neotree filesystem toggle left" .. (in_cwd and " reveal" or ""))
+        end, { desc = 'Toggle file explorer (reveal current file)' })
     end
 }
 
