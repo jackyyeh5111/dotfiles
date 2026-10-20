@@ -83,6 +83,7 @@ source $ZSH/oh-my-zsh.sh
 
 # Preferred editor 
 export EDITOR='nvim'
+export SUDO_EDITOR='nvim'
 
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
@@ -120,8 +121,13 @@ alias souz="source ~/.zshrc"
 alias vimv='vim ~/.vimrc'
 alias souv='source ~/.vimrc'
 
-# ssh-clipboard syncs the Mac clipboard into the desktop display :0, not the ssh -Y forwarded one
-alias claude='DISPLAY=:0 claude'
+# ssh-clipboard syncs the Mac clipboard into the desktop display :0, not the ssh -Y forwarded one.
+# mx-beelink has no desktop (:0 is the gdm login screen), so its ssh-clipboard runs headless Xvfb on :99
+if [[ $HOST == mx-beelink ]]; then
+    alias claude='DISPLAY=:99 claude'
+else
+    alias claude='DISPLAY=:0 claude'
+fi
 alias cl='claude'
 
 alias cdrun="cd /home/jackyyeh/memryx/MIX/runtime"
@@ -258,6 +264,7 @@ alias vim=nvim
 alias vi='nvim'
 alias v=nvim
 export PATH="$PATH:$HOME/.local/share/nvim/mason/bin"
+alias cdab='cd /home/jackyyeh/memryx/MX_API/tools/acclBench'
 
 # nvm setting
 #export NVM_DIR="$HOME/.nvm"
@@ -290,3 +297,5 @@ alias yz='yazi'
 # zsh's default Ctrl+U deletes the whole line; rebind to match bash/readline
 # (delete from cursor to start of line only)
 bindkey '^U' backward-kill-line
+
+export DRIVER_PATH=/home/jackyyeh/memryx/MX_API/driver

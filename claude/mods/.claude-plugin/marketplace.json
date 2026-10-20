@@ -18,6 +18,11 @@
       "name": "reply-style",
       "source": "./reply-style",
       "description": "Colored headers and shaded code blocks (with a language label and copy chip) in replies."
+    },
+    {
+      "name": "turn-footer",
+      "source": "./turn-footer",
+      "description": "End time, tokens used and a one-line recap at the end of every reply."
     }
   ]
 }
