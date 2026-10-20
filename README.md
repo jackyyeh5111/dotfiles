@@ -41,6 +41,10 @@ automatically.
 - `git config --global core.editor nvim`
 - Best-effort bootstrap of nvim plugins (`lazy.nvim`) and yazi plugins
   (`ya pkg install`)
+- Claude Code config via `claude/skills/claude-setup/install.sh`: links
+  settings, `CLAUDE.md`, keybindings, hooks, skills and mods into `~/.claude`,
+  installs every enabled plugin, then checks it all. Re-run it (or ask Claude
+  to use the `claude-setup` skill) after adding a skill or mod
 
 ## What `setup.mac.sh` installs
 

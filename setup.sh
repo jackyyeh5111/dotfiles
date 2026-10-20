@@ -425,21 +425,6 @@ link_dotfiles() {
   link "$DOTFILES_DIR/yazi/yazi_init.lua"    "$HOME/.config/yazi/init.lua"
   link "$DOTFILES_DIR/yazi/package.toml"     "$HOME/.config/yazi/package.toml"
   link "$DOTFILES_DIR/yazi/plugins"          "$HOME/.config/yazi/plugins"
-
-  # Claude Code: skills are linked one by one because ~/.claude/skills/synced
-  # is managed by Claude itself and must stay a real directory.
-  link "$DOTFILES_DIR/claude/settings.json"         "$HOME/.claude/settings.json"
-  link "$DOTFILES_DIR/claude/keybindings.json"      "$HOME/.claude/keybindings.json"
-  link "$DOTFILES_DIR/claude/CLAUDE.md"             "$HOME/.claude/CLAUDE.md"
-  link "$DOTFILES_DIR/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
-  link "$DOTFILES_DIR/claude/hooks"                 "$HOME/.claude/hooks"
-  # settings.json needs a mods path that is the same on Linux and macOS, and
-  # Claude Code doesn't expand ~ there, so the marketplace lives under /opt.
-  SUDO=sudo link "$DOTFILES_DIR/claude/mods" /opt/claude-mods
-  local skill
-  for skill in "$DOTFILES_DIR"/claude/skills/*/; do
-    link "${skill%/}" "$HOME/.claude/skills/$(basename "$skill")"
-  done
 }
 
 # ============================================================================
@@ -479,30 +464,15 @@ bootstrap_yazi_plugins() {
 }
 
 # ============================================================================
-# Install Claude Code mods from the jacky-mods marketplace (best-effort)
+# Claude Code config: links, mods and plugins, then a check (best-effort)
 # ============================================================================
 
-# settings.json only marks the mods as enabled. Claude Code then copies each
-# one into ~/.claude/plugins/cache on its own, but its cache cleanup can wipe
-# that copy right after install while the plugin still shows as installed.
-# The mod then silently never loads. `claude plugin install` puts the files
-# back (and is a no-op for settings.json), so run it for every mod and check
-# the files are really there.
-bootstrap_claude_mods() {
-  step "Installing Claude Code mods from jacky-mods (best-effort)"
-  claude plugin marketplace update jacky-mods >/dev/null 2>&1 \
-    || echo "  WARN: could not refresh the jacky-mods marketplace (/opt/claude-mods)"
-
-  local mod
-  for mod in $(python3 -c 'import json,sys; print(*(p["name"] for p in json.load(open(sys.argv[1]))["plugins"]))' \
-                 "$DOTFILES_DIR/claude/mods/.claude-plugin/marketplace.json"); do
-    claude plugin install "$mod@jacky-mods" >/dev/null 2>&1 || true
-    if [[ -n "$(ls -A "$HOME/.claude/plugins/cache/jacky-mods/$mod" 2>/dev/null)" ]]; then
-      echo "  installed: $mod"
-    else
-      echo "  WARN: $mod has no files in ~/.claude/plugins/cache — run: claude plugin install $mod@jacky-mods"
-    fi
-  done
+# One script shared with the claude-setup skill, so a re-run from inside
+# Claude does exactly what a fresh machine gets.
+setup_claude_config() {
+  step "Setting up Claude Code config (best-effort)"
+  bash "$DOTFILES_DIR/claude/skills/claude-setup/install.sh" \
+    || echo "  WARN: Claude Code setup is incomplete — fix what's listed above, then re-run: claude/skills/claude-setup/install.sh"
 }
 
 # ============================================================================
@@ -540,7 +510,7 @@ main() {
 
   bootstrap_nvim_plugins
   bootstrap_yazi_plugins
-  bootstrap_claude_mods
+  setup_claude_config
 
   step "Done"
   cat <<'EOF'

@@ -10,7 +10,7 @@
       "Bash(python3 -)"
     ]
   },
-  "model": "opus",
+  "model": "opus[1m]",
   "hooks": {
     "SessionStart": [
       {
@@ -19,6 +19,11 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/herdr-agent-state.sh session",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python3 -I ~/.claude/skills/claude-setup/check.py --hook",
             "timeout": 10
           }
         ]
@@ -43,6 +48,12 @@
     "turn-footer@jacky-mods": true
   },
   "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    },
     "claude-community": {
       "source": {
         "source": "github",
@@ -61,7 +72,7 @@
       "effortLevel": "high"
     },
     "claude-opus-5-5": {
-      "effortLevel": "medium"
+      "effortLevel": "high"
     }
   },
   "tui": "fullscreen",
