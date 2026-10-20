@@ -22,6 +22,7 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CURRENT_STEP="(startup)"
+NVIM_VERSION="0.12.6"
 
 # ~/.local/bin holds user-installed tools (fd symlink, pip --user scripts
 # like virtualenvwrapper). .zshrc.linux adds it to PATH too, but add it here
@@ -319,15 +320,15 @@ setup_docker() {
 # ============================================================================
 
 setup_neovim() {
-  step "Installing Neovim (official release build)"
+  step "Installing Neovim v$NVIM_VERSION (official release build)"
 
-  if have nvim; then
+  if have nvim && [[ "$(nvim --version | head -1)" == "NVIM v$NVIM_VERSION" ]]; then
     echo "  nvim already installed: $(nvim --version | head -1)"
     return
   fi
 
   local tmp="/tmp/nvim-release.tar.gz"
-  local url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${ARCH_NVIM}.tar.gz"
+  local url="https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-${ARCH_NVIM}.tar.gz"
   echo "  downloading $url"
   if ! curl -fLo "$tmp" "$url"; then
     die "Failed to download Neovim from $url — check your network connection or download manually from https://github.com/neovim/neovim/releases"

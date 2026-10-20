@@ -27,6 +27,8 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CURRENT_STEP="(startup)"
 BREW_PREFIX=""
+ARCH_NVIM=""
+NVIM_VERSION="0.12.6"
 
 # ~/.local/bin holds user-installed tools (Claude Code lands here). .zshrc.mac
 # adds it to PATH too, but add it here as well so this script's own run can
@@ -132,8 +134,8 @@ preflight() {
   # Homebrew's prefix is architecture-dependent, and .zshrc.mac hardcodes the
   # Intel one (see check_zshrc_brew_paths at the end of the run).
   case "$(uname -m)" in
-    arm64)   BREW_PREFIX=/opt/homebrew ;;
-    x86_64)  BREW_PREFIX=/usr/local ;;
+    arm64)   BREW_PREFIX=/opt/homebrew; ARCH_NVIM=arm64 ;;
+    x86_64)  BREW_PREFIX=/usr/local;    ARCH_NVIM=x86_64 ;;
     *) die "Unsupported architecture: $(uname -m) (this script supports arm64 and x86_64)" ;;
   esac
 
@@ -330,11 +332,34 @@ setup_docker() {
 # ============================================================================
 
 setup_neovim() {
-  step "Installing Neovim"
-  # brew's neovim tracks upstream closely, so unlike Debian there's no need to
-  # fetch the release tarball by hand.
-  brew_install neovim
-  have nvim || die "Neovim install completed but 'nvim' is not on PATH — check $BREW_PREFIX/bin is in PATH"
+  step "Installing Neovim v$NVIM_VERSION (official release build)"
+  # Pinned to a release tarball rather than brew, which only offers latest.
+
+  if have nvim && [[ "$(nvim --version | head -1)" == "NVIM v$NVIM_VERSION" ]]; then
+    echo "  nvim already installed: $(nvim --version | head -1)"
+    return
+  fi
+
+  # A brew neovim would shadow /usr/local/bin/nvim on Apple Silicon.
+  if brew list --formula neovim >/dev/null 2>&1; then
+    echo "  removing brew's neovim in favor of the pinned release"
+    brew uninstall neovim
+  fi
+
+  local tmp="/tmp/nvim-release.tar.gz"
+  local url="https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-macos-${ARCH_NVIM}.tar.gz"
+  echo "  downloading $url"
+  if ! curl -fLo "$tmp" "$url"; then
+    die "Failed to download Neovim from $url — check your network connection or download manually from https://github.com/neovim/neovim/releases"
+  fi
+
+  sudo rm -rf /opt/nvim
+  sudo mkdir -p /opt/nvim /usr/local/bin
+  sudo tar -C /opt/nvim --strip-components=1 -xzf "$tmp"
+  sudo ln -sfn /opt/nvim/bin/nvim /usr/local/bin/nvim
+  rm -f "$tmp"
+
+  have nvim || die "Neovim install completed but 'nvim' is not on PATH — check /usr/local/bin is in PATH"
   echo "  installed: $(nvim --version | head -1)"
 }
 
