@@ -160,9 +160,8 @@ keymap("x", "K", ":m '<-2<CR>gv=gv", desc("Move selection up"))
 vim.keymap.set('i', '<C-h>', '<Left>', { noremap = true, silent = true, desc = 'Cursor left' })
 vim.keymap.set('i', '<C-j>', '<Down>', { noremap = true, silent = true, desc = 'Cursor down' })
 vim.keymap.set('i', '<C-k>', '<Up>', { noremap = true, silent = true, desc = 'Cursor up' })
-vim.keymap.set('i', '<C-w>', '<C-o>w', { noremap = true, silent = true, desc = 'Cursor forward one word' })
 vim.keymap.set('i', '<C-b>', '<C-o>b', { noremap = true, silent = true, desc = 'Cursor back one word' })
-vim.keymap.set('i', '<C-e>', '<C-o>e', { noremap = true, silent = true, desc = 'Cursor to end of word' })
+vim.keymap.set('i', '<C-e>', '<C-o>w', { noremap = true, silent = true, desc = 'Cursor forward one word' })
 -- VSCode-style Option+Left/Right word jump. Ghostty unbinds alt+left/right, so
 -- they arrive as <M-Left>/<M-Right>. <S-Left>/<S-Right> are insert mode's
 -- native word motions: no <C-o> round-trip, and they wrap across lines.
