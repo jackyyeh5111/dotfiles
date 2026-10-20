@@ -291,7 +291,6 @@ plugins=(git zsh-autosuggestions)
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
-alias cl='claude code'
 alias yz='yazi'
 
 # zsh's default Ctrl+U deletes the whole line; rebind to match bash/readline
