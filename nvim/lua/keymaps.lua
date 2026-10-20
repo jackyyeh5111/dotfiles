@@ -163,6 +163,14 @@ vim.keymap.set('i', '<C-k>', '<Up>', { noremap = true, silent = true, desc = 'Cu
 vim.keymap.set('i', '<C-w>', '<C-o>w', { noremap = true, silent = true, desc = 'Cursor forward one word' })
 vim.keymap.set('i', '<C-b>', '<C-o>b', { noremap = true, silent = true, desc = 'Cursor back one word' })
 vim.keymap.set('i', '<C-e>', '<C-o>e', { noremap = true, silent = true, desc = 'Cursor to end of word' })
+-- VSCode-style Option+Left/Right word jump. Ghostty unbinds alt+left/right, so
+-- they arrive as <M-Left>/<M-Right>. <S-Left>/<S-Right> are insert mode's
+-- native word motions: no <C-o> round-trip, and they wrap across lines.
+vim.keymap.set('i', '<M-Left>', '<S-Left>', { noremap = true, silent = true, desc = 'Cursor back one word' })
+vim.keymap.set('i', '<M-Right>', '<S-Right>', { noremap = true, silent = true, desc = 'Cursor forward one word' })
+-- Ghostty sends Cmd+Left/Right as <Home>/<End>. Like VSCode, <Home> stops at
+-- the first non-blank instead of column 0; <End> already goes to line end.
+vim.keymap.set('i', '<Home>', '<C-o>^', { noremap = true, silent = true, desc = 'Move to first non-blank' })
 vim.keymap.set('i', '<C-l>', '<Right>', { noremap = true, silent = true, desc = 'Cursor right' })
 vim.keymap.set('i', '<C-u>', '<C-o>10k', { noremap = true, silent = true, desc = 'Cursor up 10 lines' })
 vim.keymap.set('i', '<C-d>', '<C-o>10j', { noremap = true, silent = true, desc = 'Cursor down 10 lines' })
