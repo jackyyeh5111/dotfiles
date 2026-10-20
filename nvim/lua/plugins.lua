@@ -1212,6 +1212,19 @@ local todo_comments = {
     end,
 }
 
+-- Label-based jumps: press s, type a few chars, then the label shown next to
+-- the match you want. S selects a whole Treesitter node (function, block, ...).
+-- Also adds jump labels to the built-in f/F/t/T motions.
+local flash = {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    opts = {},
+    keys = {
+        { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+        { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+    },
+}
+
 return {
     commentor,
     devicons,
@@ -1238,4 +1251,5 @@ return {
     visual_multi,
     render_markdown,
     todo_comments,
+    flash,
 }

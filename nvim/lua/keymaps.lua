@@ -73,7 +73,8 @@ keymap("i", "kj", "<ESC>", desc("Exit insert mode"))
 -- clipboard=unnamedplus (options.lua) links the unnamed register to the
 -- system clipboard, so d/c normally overwrite it too. Route delete/change
 -- through the black hole register so they only delete, never copy.
-for _, lhs in ipairs({ "d", "D", "c", "C", "x", "X", "s", "S" }) do
+-- s/S are left out: flash.nvim (plugins.lua) uses them for jumping.
+for _, lhs in ipairs({ "d", "D", "c", "C", "x", "X" }) do
   keymap({ "n", "v" }, lhs, '"_' .. lhs, desc(lhs .. ' (no yank, black hole register)'))
 end
 
