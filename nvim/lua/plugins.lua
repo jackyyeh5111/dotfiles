@@ -217,44 +217,57 @@ local telescope = {
     end
 }
 
--- Treesitter config
+-- Treesitter config. Uses the "main" branch: the old "master" branch only
+-- supports nvim <= 0.11 and its query directives crash on 0.12 ("attempt to
+-- call method 'range'"). main has no configs.setup() modules, so highlight
+-- and indent are turned on per buffer in a FileType autocmd, and textobject
+-- keymaps are set by hand. Installing parsers needs tree-sitter-cli, which
+-- mason-tool-installer provides.
 local treesitter = {
     "nvim-treesitter/nvim-treesitter",
-    branch = "master",
+    branch = "main",
+    lazy = false,
     build = ":TSUpdate",
     dependencies = {
-        { "nvim-treesitter/nvim-treesitter-textobjects", branch = "master" },
+        { "nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
     },
     config = function()
-        require("nvim-treesitter.configs").setup({
-            ensure_installed = { "lua", "vim", "vimdoc", "python", "c", "cpp", "markdown", "markdown_inline" },
-            highlight = { enable = true },
-            indent = { enable = true },
-            textobjects = {
-                select = {
-                    enable = true,
-                    lookahead = true, -- Automatically jump forward to textobj
-                    keymaps = {
-                        ["af"] = "@function.outer",
-                        ["if"] = "@function.inner",
-                        ["ac"] = "@class.outer",
-                        ["ic"] = "@class.inner",
-                    },
-                },
-                move = {
-                    enable = true,
-                    set_jumps = true, -- so <C-o>/<C-i> can jump back/forward through these too
-                    goto_next_start = {
-                        ["m"] = "@function.outer",
-                        ["<A-c>"] = "@class.outer",
-                    },
-                    goto_previous_start = {
-                        ["M"] = "@function.outer",
-                        ["<A-C>"] = "@class.outer",
-                    },
-                },
-            },
+        require("nvim-treesitter").install({ "lua", "vim", "vimdoc", "python", "c", "cpp", "markdown", "markdown_inline" })
+
+        -- Start highlight + indent on any buffer whose language has a parser
+        vim.api.nvim_create_autocmd("FileType", {
+            callback = function(args)
+                if pcall(vim.treesitter.start, args.buf) then
+                    vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+                end
+            end,
         })
+
+        require("nvim-treesitter-textobjects").setup({
+            select = { lookahead = true }, -- Automatically jump forward to textobj
+            move = { set_jumps = true }, -- so <C-o>/<C-i> can jump back/forward through these too
+        })
+
+        local select = require("nvim-treesitter-textobjects.select")
+        for key, capture in pairs({
+            ["af"] = "@function.outer",
+            ["if"] = "@function.inner",
+            ["ac"] = "@class.outer",
+            ["ic"] = "@class.inner",
+        }) do
+            vim.keymap.set({ "x", "o" }, key, function() select.select_textobject(capture, "textobjects") end,
+                { desc = "Select " .. capture })
+        end
+
+        local move = require("nvim-treesitter-textobjects.move")
+        for key, capture in pairs({ ["m"] = "@function.outer", ["<A-c>"] = "@class.outer" }) do
+            vim.keymap.set({ "n", "x", "o" }, key, function() move.goto_next_start(capture, "textobjects") end,
+                { desc = "Next " .. capture })
+        end
+        for key, capture in pairs({ ["M"] = "@function.outer", ["<A-C>"] = "@class.outer" }) do
+            vim.keymap.set({ "n", "x", "o" }, key, function() move.goto_previous_start(capture, "textobjects") end,
+                { desc = "Previous " .. capture })
+        end
     end
 }
 
@@ -315,7 +328,7 @@ local lspconfig = {
         "WhoIsSethDaniel/mason-tool-installer.nvim",
         lazy = false,
         opts = {
-            ensure_installed = { "stylua", "black", "isort", "clang-format" },
+            ensure_installed = { "stylua", "black", "isort", "clang-format", "tree-sitter-cli" },
         },
     },
 
@@ -541,9 +554,20 @@ local neo_tree = {
     dependencies = {"nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim"},
 
     config = function()
-        require("neo-tree").setup {}
+        require("neo-tree").setup {
+            filesystem = {
+                -- Keep the cursor on the file you're editing while the tree is open
+                follow_current_file = { enabled = true },
+            },
+        }
 
-        vim.keymap.set('n', '<leader>e', ':Neotree filesystem toggle left<CR>', { desc = 'Toggle file explorer' })
+        -- Toggle the tree; when opening, jump to the current file if it lives
+        -- under cwd. Files outside cwd just open the tree, with no cwd prompt.
+        vim.keymap.set('n', '<leader>e', function()
+            local file = vim.api.nvim_buf_get_name(0)
+            local in_cwd = file ~= "" and vim.fs.relpath(vim.fn.getcwd(), file) ~= nil
+            vim.cmd("Neotree filesystem toggle left" .. (in_cwd and " reveal" or ""))
+        end, { desc = 'Toggle file explorer (reveal current file)' })
     end
 }
 
@@ -742,6 +766,16 @@ local diffview = {
                 vim.cmd("DiffviewOpen -uno")
             end
         end, { noremap = true, silent = true, desc = "Diffview Toggle" })
+        -- Review the last commit without resetting it: the right side is still
+        -- the real file on disk, so it stays editable.
+        vim.keymap.set('n', '<A-D>', function()
+            local ok, lib = pcall(require, "diffview.lib")
+            if ok and lib.get_current_view() then
+                vim.cmd("DiffviewClose")
+            else
+                vim.cmd("DiffviewOpen HEAD~1 -uno")
+            end
+        end, { noremap = true, silent = true, desc = "Diffview last commit Toggle" })
         -- vim.keymap.set('n', '<leader>do', ':Diffview<CR>', { noremap = true, silent = true, desc = "Diffview " })
         -- vim.keymap.set('n', '<leader>dc', ':DiffviewClose<CR>', { noremap = true, silent = true, desc = "Diffview Close" })
         -- vim.keymap.set("n", "<leader>df", ":DiffviewToggleFiles<CR>", { desc = "Toggle Diffview file panel" })

@@ -1,0 +1,1 @@
+{ "name": "turn-footer", "version": "0.1.0", "description": "Adds the end time and tokens used to the line that closes each turn, plus a one-line recap of the reply", "types": "./types/index.d.ts" }
