@@ -269,7 +269,12 @@ local blink_cmp = {
     version = "1.*",
     dependencies = { "rafamadriz/friendly-snippets" },
     opts = {
-        keymap = { preset = "default" },
+        keymap = {
+            preset = "default",
+            -- The preset maps <C-k> to show signature help, and that always
+            -- wins over keymaps.lua's insert-mode <C-k> (cursor up).
+            ["<C-k>"] = false,
+        },
         appearance = {
             nerd_font_variant = "mono",
         },
