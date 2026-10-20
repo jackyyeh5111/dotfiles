@@ -12,6 +12,16 @@ local colortheme = {
                 diffview = true,
                 gitsigns = true,
             },
+            -- Catppuccin's flash labels are plain green text, which blends
+            -- into code with the transparent background. Draw them as soft
+            -- pastel badges with dark text instead.
+            custom_highlights = function(C)
+                return {
+                    FlashLabel = { fg = C.crust, bg = C.pink, style = { "bold" } },
+                    FlashCurrent = { fg = C.crust, bg = C.peach, style = { "bold" } },
+                    FlashMatch = { fg = C.lavender, bg = C.surface0 },
+                }
+            end,
         })
         vim.cmd.colorscheme("catppuccin")
     end
