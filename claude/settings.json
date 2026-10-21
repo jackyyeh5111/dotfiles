@@ -45,7 +45,8 @@
     "slash-fuzzy@jacky-mods": true,
     "code-simplifier@claude-plugins-official": true,
     "reply-style@jacky-mods": true,
-    "turn-footer@jacky-mods": true
+    "turn-footer@jacky-mods": true,
+    "mattpocock-skills@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
