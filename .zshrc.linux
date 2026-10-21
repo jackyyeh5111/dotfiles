@@ -106,7 +106,6 @@ alias gca="git commit --amend"
 alias gd="git diff"
 alias gb="git branch"
 alias gck="git checkout"
-alias gh="git checkout HEAD"
 alias glo='git log --oneline'
 alias gl='git log'
 alias gpull='git pull'
