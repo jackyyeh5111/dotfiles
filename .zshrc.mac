@@ -211,6 +211,7 @@ export PATH="$HOME/.local/bin:$PATH"
 source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 eval "$(starship init zsh)"
+eval "$(zoxide init --cmd cd zsh)"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
