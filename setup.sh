@@ -23,6 +23,7 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CURRENT_STEP="(startup)"
 NVIM_VERSION="0.12.6"
+APT_UPDATED=""
 
 # ~/.local/bin holds user-installed tools (fd symlink, pip --user scripts
 # like virtualenvwrapper). .zshrc.linux adds it to PATH too, but add it here
@@ -62,8 +63,25 @@ step() {
 
 have() { command -v "$1" >/dev/null 2>&1; }
 
+# apt-get install, but skips packages that are already there, since
+# `apt-get install` on an installed package upgrades it. The package list is
+# refreshed once, right before the first real install.
 apt_install() {
-  sudo apt-get install -y "$@"
+  local pkg missing=()
+  for pkg in "$@"; do
+    if dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "ok installed"; then
+      echo "  already installed: $pkg"
+    else
+      missing+=("$pkg")
+    fi
+  done
+  (( ${#missing[@]} )) || return 0
+
+  if [[ -z "$APT_UPDATED" ]]; then
+    sudo apt-get update
+    APT_UPDATED=1
+  fi
+  sudo apt-get install -y "${missing[@]}"
 }
 
 # link <source-in-dotfiles-repo> <destination-path>
@@ -108,8 +126,6 @@ preflight() {
   # instead of prompting for a password a dozen times.
   sudo -v
   ( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) 2>/dev/null &
-
-  sudo apt-get update
 }
 
 # ============================================================================
@@ -190,7 +206,7 @@ setup_eza() {
     | sudo tee /etc/apt/sources.list.d/gierens.list >/dev/null
   sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
 
-  sudo apt-get update
+  APT_UPDATED=""  # so apt_install picks up the repo just added
   apt_install eza
 }
 
@@ -280,7 +296,11 @@ setup_virtualenvwrapper() {
   # it's sourced from .zshrc and bootstraps other venvs via `workon`, so it
   # inherently can't live inside a venv itself. This still installs to
   # --user (~/.local), not system site-packages.
-  pip3 install --user --break-system-packages --upgrade virtualenvwrapper
+  if [[ -x "$HOME/.local/bin/virtualenvwrapper.sh" ]]; then
+    echo "  virtualenvwrapper already installed"
+    return
+  fi
+  pip3 install --user --break-system-packages virtualenvwrapper
   if [[ ! -x "$HOME/.local/bin/virtualenvwrapper.sh" ]]; then
     die "virtualenvwrapper.sh not found in ~/.local/bin after pip install — check pip3's user install path with 'python3 -m site --user-base'"
   fi
@@ -448,7 +468,7 @@ setup_git_config() {
 
 bootstrap_nvim_plugins() {
   step "Bootstrapping nvim plugins via lazy.nvim (best-effort)"
-  if nvim --headless "+Lazy! sync" +qa 2>/tmp/nvim-bootstrap.log; then
+  if nvim --headless "+Lazy! install" +qa 2>/tmp/nvim-bootstrap.log; then
     echo "  nvim plugins installed."
   else
     echo "  WARN: automatic plugin install failed — see /tmp/nvim-bootstrap.log"

@@ -158,7 +158,10 @@ preflight() {
   BREW_PREFIX="$(brew --prefix)"
   echo "  homebrew:     $BREW_PREFIX"
 
-  brew update
+  # Only install what's missing. By default brew refreshes its package list
+  # before an install and then upgrades other formulas that depend on the
+  # new one, which is slow and changes tools nobody asked to change.
+  export HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
 }
 
 # ============================================================================
@@ -470,7 +473,7 @@ check_zshrc_brew_paths() {
 
 bootstrap_nvim_plugins() {
   step "Bootstrapping nvim plugins via lazy.nvim (best-effort)"
-  if nvim --headless "+Lazy! sync" +qa 2>/tmp/nvim-bootstrap.log; then
+  if nvim --headless "+Lazy! install" +qa 2>/tmp/nvim-bootstrap.log; then
     echo "  nvim plugins installed."
   else
     echo "  WARN: automatic plugin install failed — see /tmp/nvim-bootstrap.log"
