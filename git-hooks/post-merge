@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#
+# post-merge — after a `git pull` brings in changes, re-sync Claude Code from
+# this repo so new skills, mods and settings take effect without a manual
+# re-run. Enabled by setup.sh / setup.mac.sh via `core.hooksPath`.
+
+bash "$(git rev-parse --show-toplevel)/claude/skills/claude-setup/install.sh" \
+  || echo "Claude Code setup has problems. Run /claude-setup in Claude to fix them."

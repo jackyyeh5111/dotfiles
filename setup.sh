@@ -471,6 +471,8 @@ bootstrap_yazi_plugins() {
 # Claude does exactly what a fresh machine gets.
 setup_claude_config() {
   step "Setting up Claude Code config (best-effort)"
+  # Re-runs this after every pull, see git-hooks/post-merge.
+  git -C "$DOTFILES_DIR" config core.hooksPath git-hooks
   bash "$DOTFILES_DIR/claude/skills/claude-setup/install.sh" \
     || echo "  WARN: Claude Code setup is incomplete — fix what's listed above, then re-run: claude/skills/claude-setup/install.sh"
 }
