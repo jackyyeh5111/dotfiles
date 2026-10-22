@@ -70,7 +70,7 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git) 
+plugins=(git zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -284,8 +284,6 @@ export PATH=$PATH:/usr/local/go/bin
 # format alias
 alias mxstyle='astyle --align-pointer=type --align-reference=name --style=kr --add-braces --attach-return-type-decl --keep-one-line-statements --convert-tabs --close-templates --max-code-length=200 --pad-comma --pad-oper --indent-col1-comments --indent-preproc-define --indent-preproc-block --indent-labels --indent-switches --indent-modifiers --indent=spaces=4 --break-closing-braces --keep-one-line-blocks --lineend=linux'
 export GST_PLUGIN_PATH=$HOME/memryx/MX_GStreamer/plugins
-
-plugins=(git zsh-autosuggestions)
 
 eval "$(starship init zsh)"
 eval "$(zoxide init --cmd cd zsh)"
