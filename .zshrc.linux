@@ -296,4 +296,41 @@ alias yz='yazi'
 # (delete from cursor to start of line only)
 bindkey '^U' backward-kill-line
 
+# Ctrl+X: copy the whole command line being typed to the clipboard.
+# A green note shows under the line, and goes away after 2 seconds or on the next edit.
+_copy_note_fd= _copy_note_hl= _copy_note_buf=
+copy-buffer() {
+    print -rn -- "$BUFFER" | xclip -selection clipboard
+    _copy_note_clear
+    _copy_note_buf=$BUFFER
+    POSTDISPLAY=$'\n  ✔ Copied command to clipboard'
+    _copy_note_hl="$#BUFFER $(( $#BUFFER + $#POSTDISPLAY )) fg=green,bold"
+    region_highlight+=("$_copy_note_hl")
+    # zle calls _copy_note_timeout once `sleep 2` exits and closes the pipe
+    exec {_copy_note_fd}< <(sleep 2)
+    zle -F -w $_copy_note_fd _copy_note_timeout
+}
+_copy_note_clear() {
+    (( _copy_note_fd )) || return 0
+    zle -F $_copy_note_fd
+    exec {_copy_note_fd}<&-
+    _copy_note_fd=
+    POSTDISPLAY=
+    region_highlight=("${(@)region_highlight:#$_copy_note_hl}")
+}
+_copy_note_timeout() { _copy_note_clear; zle -R }
+_copy_note_on_redraw() { [[ $BUFFER == $_copy_note_buf ]] || _copy_note_clear }
+zle -N copy-buffer
+zle -N _copy_note_timeout
+zle -N _copy_note_clear
+zle -N _copy_note_on_redraw
+autoload -Uz add-zle-hook-widget
+add-zle-hook-widget line-pre-redraw _copy_note_on_redraw
+add-zle-hook-widget line-finish _copy_note_clear
+# zsh-autosuggestions would otherwise put its own suggestion back over the note
+ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(copy-buffer)
+# drop zsh's default Ctrl+X-prefixed combos so Ctrl+X fires instantly instead of waiting for a second key
+bindkey -rp '^X'
+bindkey '^X' copy-buffer
+
 export DRIVER_PATH=/home/jackyyeh/memryx/MX_API/driver
