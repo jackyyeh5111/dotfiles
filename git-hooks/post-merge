@@ -1,8 +1,21 @@
 #!/usr/bin/env bash
 #
-# post-merge — after a `git pull` brings in changes, re-sync Claude Code from
-# this repo so new skills, mods and settings take effect without a manual
-# re-run. Enabled by setup.sh / setup.mac.sh via `core.hooksPath`.
+# post-merge — after a `git pull` brings in changes, set up whatever they add,
+# so a new tool, skill or mod works without a manual re-run. Enabled by
+# setup.sh / setup.mac.sh via `core.hooksPath`.
+#
+# If the pull changed the setup script (or yazi's plugin list), re-run it:
+# every step skips work it already did, so only the new parts get installed,
+# and it re-syncs Claude Code at its end. Otherwise only re-sync Claude Code.
 
-bash "$(git rev-parse --show-toplevel)/claude/skills/claude-setup/install.sh" \
-  || echo "Claude Code setup has problems. Run /claude-setup in Claude to fix them."
+repo="$(git rev-parse --show-toplevel)"
+if [[ "$(uname)" == Darwin ]]; then setup=setup.mac.sh; else setup=setup.sh; fi
+
+# ORIG_HEAD is where HEAD was before the pull
+if git diff --quiet ORIG_HEAD HEAD -- "$setup" yazi/package.toml; then
+  bash "$repo/claude/skills/claude-setup/install.sh" \
+    || echo "Claude Code setup has problems. Run /claude-setup in Claude to fix them."
+else
+  echo "==> $setup changed in this pull, re-running it to set up what's new"
+  "$repo/$setup" || echo "$setup failed. Fix the error above, then re-run: $repo/$setup"
+fi
