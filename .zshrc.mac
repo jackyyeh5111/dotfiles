@@ -149,6 +149,9 @@ alias fzfp='fzf --preview="cat {}'
 # fzf-tab: show Tab completions in fzf
 zstyle ':completion:*' menu no  # let fzf-tab replace zsh's own menu
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+# Press ; to number the lines, then a number to pick that line
+zstyle ':fzf-tab:*' fzf-flags --jump-labels=1234567890
+zstyle ':fzf-tab:*' fzf-bindings ';:jump-accept'
 
 # copy current working directory
 alias cpw='pwd | pbcopy'
