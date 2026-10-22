@@ -26,7 +26,7 @@ automatically.
 
 - Base packages: python3/pip, vim, htop, tmux, git, openssh-server, build tools
 - ripgrep, neofetch, fzf, bat, fd, xclip, astyle, eza
-- zsh + oh-my-zsh + zsh-autosuggestions
+- zsh + oh-my-zsh + zsh-autosuggestions + fzf-tab
 - starship prompt, zoxide
 - Rust (rustup)
 - virtualenvwrapper
@@ -54,7 +54,7 @@ Same set, via Homebrew, minus what macOS already provides:
 - Base packages: python3, git, tmux, vim, htop, wget
 - ripgrep, fastfetch, fzf, bat, fd, astyle, eza
 - oh-my-zsh + `zsh-autosuggestions` (the brew formula, which is what
-  `.zshrc.mac` sources)
+  `.zshrc.mac` sources), plus `fzf-tab` as an oh-my-zsh custom plugin
 - starship prompt, zoxide
 - Rust (rustup, so `~/.cargo/env` exists for `.zshrc.mac`)
 - virtualenvwrapper (brew formula, so it lands in `$(brew --prefix)/bin`)

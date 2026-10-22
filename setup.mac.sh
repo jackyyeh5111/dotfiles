@@ -226,7 +226,7 @@ setup_eza() {
 # ============================================================================
 
 setup_zsh() {
-  step "Installing oh-my-zsh + zsh-autosuggestions"
+  step "Installing oh-my-zsh + zsh-autosuggestions + fzf-tab"
   # macOS already ships zsh as the default shell, so nothing to install or
   # chsh here — just the framework and the plugin.
 
@@ -240,6 +240,14 @@ setup_zsh() {
   # .zshrc.mac sources the brew copy ($BREW_PREFIX/share/zsh-autosuggestions),
   # not an oh-my-zsh custom plugin like .zshrc.linux does.
   brew_install zsh-autosuggestions
+
+  # fzf-tab has no brew formula, so it's an oh-my-zsh custom plugin here too.
+  local zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+  if [[ ! -d "$zsh_custom/plugins/fzf-tab" ]]; then
+    git clone --depth=1 https://github.com/Aloxaf/fzf-tab "$zsh_custom/plugins/fzf-tab"
+  else
+    echo "  fzf-tab already installed"
+  fi
 
   if [[ "$SHELL" != *"zsh"* ]]; then
     if [[ -t 0 ]]; then

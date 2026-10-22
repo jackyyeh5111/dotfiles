@@ -199,7 +199,7 @@ setup_eza() {
 # ============================================================================
 
 setup_zsh() {
-  step "Installing zsh + oh-my-zsh + zsh-autosuggestions"
+  step "Installing zsh + oh-my-zsh + zsh-autosuggestions + fzf-tab"
   apt_install zsh
 
   if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
@@ -214,6 +214,12 @@ setup_zsh() {
     git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions "$zsh_custom/plugins/zsh-autosuggestions"
   else
     echo "  zsh-autosuggestions already installed"
+  fi
+
+  if [[ ! -d "$zsh_custom/plugins/fzf-tab" ]]; then
+    git clone --depth=1 https://github.com/Aloxaf/fzf-tab "$zsh_custom/plugins/fzf-tab"
+  else
+    echo "  fzf-tab already installed"
   fi
 
   if [[ "$SHELL" != *"zsh"* ]]; then
