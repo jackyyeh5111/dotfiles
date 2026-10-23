@@ -31,13 +31,15 @@ automatically.
 - Rust (rustup)
 - virtualenvwrapper
 - uv (official install script)
+- just
 - Docker (official convenience script)
 - Neovim (latest official release build, not the apt package)
 - yazi (latest official release build)
 - herdr
 - Claude Code
 - Symlinks all dotfiles into place (`.zshrc`, `.vimrc`, `.tmux.conf`,
-  `starship.toml`, `ghostty.config`, `herdr_config.toml`, `nvim/`, `yazi/*`)
+  `starship.toml`, `ghostty.config`, `herdr_config.toml`, `nvim/`, `yazi/*`,
+  `just/justfile` as `~/.justfile`)
 - `git config --global core.editor nvim`
 - Best-effort bootstrap of nvim plugins (`lazy.nvim`) and yazi plugins
   (`ya pkg install`)
@@ -59,6 +61,7 @@ Same set, via Homebrew, minus what macOS already provides:
 - Rust (rustup, so `~/.cargo/env` exists for `.zshrc.mac`)
 - virtualenvwrapper (brew formula, so it lands in `$(brew --prefix)/bin`)
 - uv (official install script)
+- just
 - Docker Desktop (cask)
 - Neovim, yazi, herdr (brew), Claude Code (install script)
 - Ghostty (cask — unlike Linux, it's automated here)

@@ -1,0 +1,14 @@
+# Global just recipes, linked to ~/.justfile by setup.sh. `just` looks for a
+# justfile in every parent folder, so `just <project> <recipe>` works from
+# anywhere under ~ (elsewhere, or inside a repo with its own justfile, use
+# `just -g ...`). Each project is a module in this folder.
+#
+# Module paths assume this repo lives at ~/dotfiles.
+
+mod mxapi '~/dotfiles/just/mxapi.just'
+mod mix '~/dotfiles/just/mix.just'
+
+# List every recipe
+[private]
+default:
+    @{{just_executable()}} --justfile {{justfile()}} --list --list-submodules

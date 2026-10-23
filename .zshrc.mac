@@ -156,6 +156,7 @@ zstyle ':fzf-tab:*' fzf-bindings ';:jump-accept'
 # copy current working directory
 alias cpw='pwd | pbcopy'
 alias hr='herdr'
+alias j='just -g'  # global recipes in ~/.justfile, from any folder
 
 ### use fzf for preview git diff ###
 # Navigate files with arrows

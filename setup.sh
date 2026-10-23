@@ -323,6 +323,21 @@ setup_uv() {
 }
 
 # ============================================================================
+# just (command runner for per-project recipes)
+# ============================================================================
+
+setup_just() {
+  step "Installing just"
+  if have just; then
+    echo "  just already installed: $(just --version)"
+    return
+  fi
+  # Ubuntu 22.04's apt has no just package, so use the official installer
+  curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh \
+    | bash -s -- --to "$HOME/.local/bin"
+}
+
+# ============================================================================
 # Docker
 # ============================================================================
 
@@ -443,6 +458,7 @@ link_dotfiles() {
   link "$DOTFILES_DIR/.vimrc"           "$HOME/.vimrc"
   link "$DOTFILES_DIR/.tmux.conf"       "$HOME/.tmux.conf"
   link "$DOTFILES_DIR/starship.toml"    "$HOME/.config/starship.toml"
+  link "$DOTFILES_DIR/just/justfile"    "$HOME/.justfile"
   link "$DOTFILES_DIR/ghostty.config"   "$HOME/.config/ghostty/config"
   link "$DOTFILES_DIR/herdr_config.toml" "$HOME/.config/herdr/config.toml"
   link "$DOTFILES_DIR/nvim"             "$HOME/.config/nvim"
@@ -526,6 +542,7 @@ main() {
   setup_rust
   setup_virtualenvwrapper
   setup_uv
+  setup_just
   setup_docker
 
   setup_neovim
