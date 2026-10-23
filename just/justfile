@@ -7,6 +7,7 @@
 
 mod mxapi '~/dotfiles/just/mxapi.just'
 mod mix '~/dotfiles/just/mix.just'
+mod devhub '~/dotfiles/just/devhub.just'
 
 # List every recipe
 [private]
