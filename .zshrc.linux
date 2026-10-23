@@ -110,15 +110,9 @@ alias glo='git log --oneline'
 alias gl='git log'
 alias gpull='git pull'
 alias gpush='git push'
-alias dp="docker ps"
-alias de="docker exec"
-alias di="docker image"
-alias dr="docker rm"
 
 alias vimz="vim ~/.zshrc"
 alias souz="source ~/.zshrc"
-alias vimv='vim ~/.vimrc'
-alias souv='source ~/.vimrc'
 
 # ssh-clipboard syncs the Mac clipboard into the desktop display :0, not the ssh -Y forwarded one.
 # mx-beelink has no desktop (:0 is the gdm login screen), so its ssh-clipboard runs headless Xvfb on :99
@@ -129,17 +123,9 @@ else
 fi
 alias cl='claude'
 
-alias cdrun="cd /home/jackyyeh/memryx/MIX/runtime"
-alias cdaccl='cd ~/memryx/MX_API/build/mx_accl'
-alias cdmg='cd ~/memryx/MX_API/build/mxa_manager'
-alias cdpy='cd ~/memryx/MX_API/mx_accl/pymodule/tests && workon mx3p0' 
 alias cdpp='cd ~/memryx/MxPrepost && workon no_pip_memryx'
 alias cdapi='cd ~/memryx/MX_API'
-alias u='cd ..'
-alias runmg='cd /home/jackyyeh/memryx/MX_API/build/mxa_manager && ./mxa_manager'
-alias cdt='workon test && ~/memryx/Tahakom-Pipeline/Tahakom-video-pipeline/src'
 alias cds='workon mx2p2 && ~/memryx/Tahakom-Pipeline/src'
-alias cdsc='cd ~/memryx/MX_API/tools/dfp_schedule_bench'
 alias cdfc='workon mx2p2 && ~/memryx/MX_API/samples/multi_dfp/cartoonizer_pose/src/cpp'
 alias cdfp='workon mx2p2 && /home/jackyyeh/memryx/MX_API/samples/multi_dfp/conditional_pipe'
 alias hr='herdr'
@@ -173,14 +159,7 @@ source $(which virtualenvwrapper.sh)
 
 alias tk='tmux kill-server'
 alias ta='tmux attach -t'
-alias kill9='sudo kill -9 '
 alias cdmix='cd /home/jackyyeh/memryx/MIX && source .venv/bin/activate && source setup_env.sh'
-alias cdpytest='workon no_pip_memryx && setupmix && cd ~/memryx/MIX/runtime/tests'
-alias cdtest='cd /home/jackyyeh/memryx/MX_API/build/mx_accl'
-alias initmgr='cd /run &&  sudo mkdir -p mxa_manager && cd mxa_manager && sudo touch 10000.sock 10001.sock 10002.sock && cd /run && sudo chmod -R 777 mxa_manager'
-alias mm='workon mx2.0 && ~/memryx/elm_async_fps_fix_internal/multistream_cpp'
-alias cdgi='/usr/include/gstreamer-1.0/gst'
-alias cdd='cd ~/SideProjects/pybind11-collection/reproduce && workon pybind11'
 
 export SPDLOG_LEVEL="debug"
 export MX_API_HOME=/home/jackyyeh/memryx/MX_API
@@ -271,7 +250,6 @@ alias vim=nvim
 alias vi='nvim'
 alias v=nvim
 export PATH="$PATH:$HOME/.local/share/nvim/mason/bin"
-alias cdab='cd /home/jackyyeh/memryx/MX_API/tools/acclBench'
 
 # nvm setting
 #export NVM_DIR="$HOME/.nvm"
