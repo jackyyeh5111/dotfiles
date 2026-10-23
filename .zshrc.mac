@@ -157,6 +157,7 @@ zstyle ':fzf-tab:*' fzf-bindings ';:jump-accept'
 alias cpw='pwd | pbcopy'
 alias hr='herdr'
 alias j='just -g'  # global recipes in ~/.justfile, from any folder
+alias gds='git -c delta.side-by-side=true diff'  # side by side diff; replaces oh-my-zsh's gds (git diff --staged)
 
 ### use fzf for preview git diff ###
 # Navigate files with arrows

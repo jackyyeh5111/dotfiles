@@ -32,6 +32,7 @@ automatically.
 - virtualenvwrapper
 - uv (official install script)
 - just
+- delta (release binary into `~/.local/bin`)
 - Docker (official convenience script)
 - Neovim (latest official release build, not the apt package)
 - yazi (latest official release build)
@@ -40,7 +41,7 @@ automatically.
 - Symlinks all dotfiles into place (`.zshrc`, `.vimrc`, `.tmux.conf`,
   `starship.toml`, `ghostty.config`, `herdr_config.toml`, `nvim/`, `yazi/*`,
   `just/justfile` as `~/.justfile`)
-- `git config --global core.editor nvim`
+- `git config --global core.editor nvim`, plus delta as git's pager
 - Best-effort bootstrap of nvim plugins (`lazy.nvim`) and yazi plugins
   (`ya pkg install`)
 - Claude Code config via `claude/skills/claude-setup/install.sh`: links
@@ -62,11 +63,12 @@ Same set, via Homebrew, minus what macOS already provides:
 - virtualenvwrapper (brew formula, so it lands in `$(brew --prefix)/bin`)
 - uv (official install script)
 - just
+- delta (`git-delta`)
 - Docker Desktop (cask)
 - Neovim, yazi, herdr (brew), Claude Code (install script)
 - Ghostty (cask — unlike Linux, it's automated here)
 - Symlinks all dotfiles into place, with `.zshrc.mac` as `~/.zshrc`
-- `git config --global core.editor nvim`
+- `git config --global core.editor nvim`, plus delta as git's pager
 - Best-effort bootstrap of nvim and yazi plugins
 
 Differences from the Linux script, all deliberate:

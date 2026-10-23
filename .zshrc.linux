@@ -130,6 +130,7 @@ alias cdfc='workon mx2p2 && ~/memryx/MX_API/samples/multi_dfp/cartoonizer_pose/s
 alias cdfp='workon mx2p2 && /home/jackyyeh/memryx/MX_API/samples/multi_dfp/conditional_pipe'
 alias hr='herdr'
 alias j='just -g'  # global recipes in ~/.justfile, from any folder
+alias gds='git -c delta.side-by-side=true diff'  # side by side diff; replaces oh-my-zsh's gds (git diff --staged)
 
 # Standard listing replacement
 alias ls='eza --icons=auto'

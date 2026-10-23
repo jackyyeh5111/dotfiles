@@ -334,6 +334,15 @@ setup_just() {
 }
 
 # ============================================================================
+# delta (syntax-highlighted git diffs)
+# ============================================================================
+
+setup_delta() {
+  step "Installing delta (git-delta)"
+  brew_install git-delta
+}
+
+# ============================================================================
 # Docker (Desktop — there's no dockerd on macOS)
 # ============================================================================
 
@@ -453,6 +462,12 @@ link_dotfiles() {
 setup_git_config() {
   step "Configuring git"
   git config --global core.editor "nvim"
+  # delta shows diffs; n/N jump between files, diff3 adds the base to conflicts
+  git config --global core.pager delta
+  git config --global interactive.diffFilter "delta --color-only"
+  git config --global delta.navigate true
+  git config --global delta.line-numbers true
+  git config --global merge.conflictStyle diff3
 }
 
 # ============================================================================
@@ -541,6 +556,7 @@ main() {
   setup_virtualenvwrapper
   setup_uv
   setup_just
+  setup_delta
   setup_docker
 
   setup_neovim

@@ -24,6 +24,7 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CURRENT_STEP="(startup)"
 NVIM_VERSION="0.12.6"
 APT_UPDATED=""
+DELTA_VERSION="0.20.1"
 
 # ~/.local/bin holds user-installed tools (fd symlink, pip --user scripts
 # like virtualenvwrapper). .zshrc.linux adds it to PATH too, but add it here
@@ -338,6 +339,28 @@ setup_just() {
 }
 
 # ============================================================================
+# delta (syntax-highlighted git diffs)
+# ============================================================================
+
+setup_delta() {
+  step "Installing delta (git-delta)"
+  if have delta; then
+    echo "  delta already installed: $(delta --version)"
+    return
+  fi
+  # Ubuntu 22.04's apt has no git-delta package, so use the release binary
+  local tgz="/tmp/delta.tar.gz"
+  local url="https://github.com/dandavison/delta/releases/download/${DELTA_VERSION}/delta-${DELTA_VERSION}-${ARCH_YAZI}.tar.gz"
+  echo "  downloading $url"
+  if ! curl -fLo "$tgz" "$url"; then
+    die "Failed to download delta from $url — check your network connection or download manually from https://github.com/dandavison/delta/releases"
+  fi
+  tar -C /tmp -xzf "$tgz"
+  install -m 755 "/tmp/delta-${DELTA_VERSION}-${ARCH_YAZI}/delta" "$HOME/.local/bin/delta"
+  rm -rf "$tgz" "/tmp/delta-${DELTA_VERSION}-${ARCH_YAZI}"
+}
+
+# ============================================================================
 # Docker
 # ============================================================================
 
@@ -476,6 +499,12 @@ link_dotfiles() {
 setup_git_config() {
   step "Configuring git"
   git config --global core.editor "nvim"
+  # delta shows diffs; n/N jump between files, diff3 adds the base to conflicts
+  git config --global core.pager delta
+  git config --global interactive.diffFilter "delta --color-only"
+  git config --global delta.navigate true
+  git config --global delta.line-numbers true
+  git config --global merge.conflictStyle diff3
 }
 
 # ============================================================================
@@ -543,6 +572,7 @@ main() {
   setup_virtualenvwrapper
   setup_uv
   setup_just
+  setup_delta
   setup_docker
 
   setup_neovim
