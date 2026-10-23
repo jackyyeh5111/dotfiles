@@ -211,6 +211,17 @@ vim.keymap.set("n", "<A-x>", function()
   print("Wrap " .. (new_wrap and "enabled" or "disabled"))
 end, { desc = "Toggle text wrap in all windows" })
 
+-- Toggle the fold under the cursor with zf instead of za. zf's own job
+-- (create a fold by hand) is useless here: folds come from treesitter
+-- (options.lua's foldmethod=expr), and zf just errors under that.
+keymap("n", "zf", "za", desc("Toggle fold under cursor"))
+
+-- zF toggles every fold in the file: close all (zM) or open all (zR).
+-- zM sets 'foldlevel' to 0 and zR raises it, so 0 means "last did close all".
+keymap("n", "zF", function()
+  vim.cmd("normal! " .. (vim.wo.foldlevel == 0 and "zR" or "zM"))
+end, desc("Toggle all folds in file"))
+
 -- Resize splits easily with arrow keys.
 --
 -- A window with nothing above/below it (e.g. either pane of a side-by-side
