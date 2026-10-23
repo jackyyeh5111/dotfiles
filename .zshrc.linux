@@ -85,6 +85,17 @@ source $ZSH/oh-my-zsh.sh
 export EDITOR='nvim'
 export SUDO_EDITOR='nvim'
 
+# CMake builds go through ccache, so rebuilding unchanged files is instant
+if command -v ccache >/dev/null; then
+  export CMAKE_C_COMPILER_LAUNCHER=ccache
+  export CMAKE_CXX_COMPILER_LAUNCHER=ccache
+fi
+# Link with mold (much faster than ld) in anything that reads LDFLAGS.
+# The pattern check stops `source ~/.zshrc` from adding it twice.
+if command -v mold >/dev/null && [[ "${LDFLAGS:-}" != *-fuse-ld=mold* ]]; then
+  export LDFLAGS="-fuse-ld=mold ${LDFLAGS:-}"
+fi
+
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
 

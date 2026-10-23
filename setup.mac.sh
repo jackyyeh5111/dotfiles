@@ -343,6 +343,15 @@ setup_delta() {
 }
 
 # ============================================================================
+# ccache (faster C/C++ rebuilds; mold has no macOS build)
+# ============================================================================
+
+setup_ccache() {
+  step "Installing ccache"
+  brew_install ccache
+}
+
+# ============================================================================
 # Docker (Desktop — there's no dockerd on macOS)
 # ============================================================================
 
@@ -557,6 +566,7 @@ main() {
   setup_uv
   setup_just
   setup_delta
+  setup_ccache
   setup_docker
 
   setup_neovim

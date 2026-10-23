@@ -216,6 +216,13 @@ git_interactive() {
 alias gi='git_interactive'
 . "$HOME/.cargo/env"
 export PATH="$HOME/.local/bin:$PATH"
+
+# CMake builds go through ccache, so rebuilding unchanged files is instant
+if command -v ccache >/dev/null; then
+  export CMAKE_C_COMPILER_LAUNCHER=ccache
+  export CMAKE_CXX_COMPILER_LAUNCHER=ccache
+fi
+
 source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 eval "$(starship init zsh)"

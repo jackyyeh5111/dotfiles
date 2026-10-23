@@ -33,6 +33,8 @@ automatically.
 - uv (official install script)
 - just
 - delta (release binary into `~/.local/bin`)
+- ccache (apt) and mold (release build into `~/.local`); `.zshrc.linux`
+  points CMake at ccache and sets `LDFLAGS=-fuse-ld=mold`
 - Docker (official convenience script)
 - Neovim (latest official release build, not the apt package)
 - yazi (latest official release build)
@@ -64,6 +66,7 @@ Same set, via Homebrew, minus what macOS already provides:
 - uv (official install script)
 - just
 - delta (`git-delta`)
+- ccache, used by CMake via `.zshrc.mac` (no mold; it has no macOS build)
 - Docker Desktop (cask)
 - Neovim, yazi, herdr (brew), Claude Code (install script)
 - Ghostty (cask — unlike Linux, it's automated here)

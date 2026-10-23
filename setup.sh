@@ -25,6 +25,7 @@ CURRENT_STEP="(startup)"
 NVIM_VERSION="0.12.6"
 APT_UPDATED=""
 DELTA_VERSION="0.20.1"
+MOLD_VERSION="3.0.0"
 
 # ~/.local/bin holds user-installed tools (fd symlink, pip --user scripts
 # like virtualenvwrapper). .zshrc.linux adds it to PATH too, but add it here
@@ -361,6 +362,30 @@ setup_delta() {
 }
 
 # ============================================================================
+# ccache + mold (faster C/C++ rebuilds and links)
+# ============================================================================
+
+setup_ccache_mold() {
+  step "Installing ccache and mold"
+  apt_install ccache
+  if have mold; then
+    echo "  mold already installed: $(mold --version)"
+    return
+  fi
+  # Ubuntu 22.04's apt mold is 1.0, so use the release binary
+  local name="mold-${MOLD_VERSION}-${ARCH_YAZI%%-*}-linux"
+  local tgz="/tmp/mold.tar.gz"
+  local url="https://github.com/rui314/mold/releases/download/v${MOLD_VERSION}/${name}.tar.gz"
+  echo "  downloading $url"
+  if ! curl -fLo "$tgz" "$url"; then
+    die "Failed to download mold from $url — check your network connection or download manually from https://github.com/rui314/mold/releases"
+  fi
+  # bin/, lib/, libexec/ and share/ land under ~/.local
+  tar -C "$HOME/.local" --strip-components=1 -xzf "$tgz"
+  rm -f "$tgz"
+}
+
+# ============================================================================
 # Docker
 # ============================================================================
 
@@ -573,6 +598,7 @@ main() {
   setup_uv
   setup_just
   setup_delta
+  setup_ccache_mold
   setup_docker
 
   setup_neovim
