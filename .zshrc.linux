@@ -251,11 +251,8 @@ git_interactive() {
   esac
 }
 
-alias gi='git_interactive'
 alias bat='batcat'
 alias grep='rg'
-#alias find='fd'
-alias vc='cd /home/jackyyeh/.config/nvim && nvim init.lua'  
 
 # alias nvim='/usr/bin/nvim.appimage'
 alias vim=nvim
