@@ -179,6 +179,9 @@ export MX_API_HOME=/home/jackyyeh/memryx/MX_API
 source /usr/share/doc/fzf/examples/key-bindings.zsh
 # Ctrl+O: fzf history search, same as Ctrl+R
 bindkey '^O' fzf-history-widget
+# Option+K / Option+J: step back / forward through history, same as Up / Down
+bindkey '^[k' up-line-or-beginning-search
+bindkey '^[j' down-line-or-beginning-search
 
 # fzf-tab: show Tab completions in fzf
 zstyle ':completion:*' menu no  # let fzf-tab replace zsh's own menu

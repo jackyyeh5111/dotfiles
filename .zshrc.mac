@@ -144,6 +144,9 @@ alias cl='claude'
 source /usr/local/opt/fzf/shell/key-bindings.zsh
 # Ctrl+O: fzf history search, same as Ctrl+R
 bindkey '^O' fzf-history-widget
+# Option+K / Option+J: step back / forward through history, same as Up / Down
+bindkey '^[k' up-line-or-beginning-search
+bindkey '^[j' down-line-or-beginning-search
 alias vimf='vim $(fzf)'
 alias cdf='cd $(find * -type d | fzf)'
 alias fzfp='fzf --preview="cat {}'
