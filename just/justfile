@@ -5,11 +5,22 @@
 #
 # Module paths assume this repo lives at ~/dotfiles.
 
+# just has no module aliases, so each alias loads the same file again as a
+# hidden module: `just a build` runs `just mxapi build`.
+
 mod mxapi '~/dotfiles/just/mxapi.just'
 mod mix '~/dotfiles/just/mix.just'
 mod devhub '~/dotfiles/just/devhub.just'
 
-# List every recipe
+[private]
+mod a '~/dotfiles/just/mxapi.just'
+[private]
+mod b '~/dotfiles/just/mix.just'
+[private]
+mod c '~/dotfiles/just/devhub.just'
+
+# List every recipe, in file order so modules follow their aliases
 [private]
 default:
-    @{{just_executable()}} --justfile {{justfile()}} --list --list-submodules
+    @{{just_executable()}} --justfile {{justfile()}} --list --list-submodules --unsorted
+    @echo; echo 'Aliases: a = mxapi, b = mix, c = devhub'
