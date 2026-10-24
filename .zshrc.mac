@@ -142,6 +142,8 @@ alias cl='claude'
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 source /usr/local/opt/fzf/shell/key-bindings.zsh
+# Ctrl+O: fzf history search, same as Ctrl+R
+bindkey '^O' fzf-history-widget
 alias vimf='vim $(fzf)'
 alias cdf='cd $(find * -type d | fzf)'
 alias fzfp='fzf --preview="cat {}'
