@@ -56,6 +56,13 @@ keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", desc("Move selection up"))
 keymap("n", "<A-S-j>", ":t.<CR>", desc("Duplicate line below"))
 keymap("n", "<A-S-k>", ":t-1<CR>", desc("Duplicate line above"))
 
+-- Add a blank line below/above and stay in Normal mode, like o/O without
+-- insert. Reuses nvim's built-in ]<Space>/[<Space> (remap), which take a
+-- count (3go) and dot-repeat. Replaces the rarely used go (jump to byte) and
+-- gO (outline in help/LSP buffers).
+vim.keymap.set('n', 'go', ']<Space>', { remap = true, desc = 'Add blank line below' })
+vim.keymap.set('n', 'gO', '[<Space>', { remap = true, desc = 'Add blank line above' })
+
 -- Insert --
 -- Press jk fast to exit insert mode
 keymap("i", "jk", "<ESC>", desc("Exit insert mode"))
