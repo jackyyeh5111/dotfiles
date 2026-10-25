@@ -86,6 +86,12 @@ keymap("v", ">", ">gv^", desc("Indent and reselect"))
 -- Yank to system clipboard with Cmd+C (requires terminal to forward <D-c> to nvim)
 keymap("v", "<D-c>", '"+y', desc("Yank to system clipboard"))
 
+-- Cut: X in visual mode is the real d (noremap skips the black hole remap
+-- above), so the selection is deleted *and* lands in the system clipboard.
+-- Overrides the visual X from that loop; normal-mode X still copies nothing.
+-- "x" not "v": select mode (snippet placeholders) must still type a literal X.
+keymap("x", "X", "d", desc("Cut to system clipboard"))
+
 -- Wrap the visual selection with a bracket/quote pair. Unlike the old
 -- "c()<Esc>P" trick (which only made sense charwise), this edits the buffer at
 -- the selection's exact byte positions, so it works for charwise (v), linewise
