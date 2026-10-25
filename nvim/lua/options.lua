@@ -167,3 +167,41 @@ vim.api.nvim_create_autocmd("SafeState", {
     end
   end,
 })
+
+-- Clear the message line once a message has sat there for 2s (the `"file"
+-- 430L, 13985B written` line after :w, :echo, vim.notify, ...). The legacy
+-- message line has no timeout of its own and no "message shown" event, so
+-- poll the bottom screen row and clear it when it hasn't changed for 2s.
+-- Errors are kept until the next keypress, like before: an error sets
+-- v:errmsg, so a row that changed right after v:errmsg was set is left alone.
+-- Only clears in Normal mode, so -- INSERT -- (showmode), the hit-enter
+-- prompt, a : command being typed and `recording @q` are never wiped.
+-- <leader>R re-sources this file; close the old timer so reloads don't stack.
+if _G.clear_msg_timer then
+  _G.clear_msg_timer:close()
+end
+local POLL_MS, CLEAR_AFTER = 250, 8 -- 8 polls = 2s
+local shown, ticks, is_error, err_seen = "", 0, false, false
+_G.clear_msg_timer = vim.uv.new_timer()
+_G.clear_msg_timer:start(POLL_MS, POLL_MS, vim.schedule_wrap(function()
+  -- Consume v:errmsg so the same error repeated later still counts as new.
+  -- Carry it until the row changes, in case the error is drawn one poll
+  -- after v:errmsg is set.
+  if vim.v.errmsg ~= "" then
+    err_seen, vim.v.errmsg = true, ""
+  end
+  local cells = {}
+  for col = 1, vim.o.columns do
+    cells[col] = vim.fn.screenstring(vim.o.lines, col)
+  end
+  local row = vim.trim(table.concat(cells))
+  if row ~= shown then
+    shown, ticks, is_error, err_seen = row, 0, err_seen, false
+    return
+  end
+  ticks = ticks + 1
+  if row ~= "" and not is_error and ticks >= CLEAR_AFTER
+      and vim.fn.mode() == "n" and vim.fn.reg_recording() == "" then
+    vim.cmd.echo('""')
+  end
+end))
