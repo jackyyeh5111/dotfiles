@@ -256,6 +256,7 @@ git_interactive() {
   esac
 }
 
+alias gi='git_interactive'
 alias bat='batcat'
 alias grep='rg'
 
