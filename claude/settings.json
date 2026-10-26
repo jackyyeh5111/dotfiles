@@ -28,6 +28,18 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh ~/.claude/hooks/am-latest-index.sh",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
