@@ -46,7 +46,8 @@
     "code-simplifier@claude-plugins-official": true,
     "reply-style@jacky-mods": true,
     "turn-footer@jacky-mods": true,
-    "mattpocock-skills@claude-plugins-official": true
+    "mattpocock-skills@claude-plugins-official": true,
+    "answer-me-with-html@answer-me-with-html": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
@@ -65,6 +66,12 @@
       "source": {
         "source": "directory",
         "path": "/opt/claude-mods"
+      }
+    },
+    "answer-me-with-html": {
+      "source": {
+        "source": "github",
+        "repo": "QingYunA/answer-me-with-html"
       }
     }
   },
