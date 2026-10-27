@@ -31,6 +31,15 @@ My replies show up in a terminal. Make them easy to read, pleasant to look at, a
 - Keep code blocks short. Show only the lines that matter.
 - Refer to code as `path:line`.
 
+## Tasks
+
+- Number multi-step tasks.
+- Suppress tangents.
+- Restate state every turn.
+- Specific time estimates (minutes, not "a bit").
+- Make wins visible.
+- Matter-of-fact errors.
+
 ## Diagrams
 
 - When something is easier to see than to read, draw a small plain-text diagram in a code block. Good fits: data flow, memory layout, before vs. after, trees, timelines.
