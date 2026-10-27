@@ -11,6 +11,7 @@
 mod mxapi '~/dotfiles/just/mxapi.just'
 mod mix '~/dotfiles/just/mix.just'
 mod devhub '~/dotfiles/just/devhub.just'
+mod pages '~/dotfiles/just/pages.just'
 
 [private]
 mod a '~/dotfiles/just/mxapi.just'
@@ -18,9 +19,11 @@ mod a '~/dotfiles/just/mxapi.just'
 mod b '~/dotfiles/just/mix.just'
 [private]
 mod c '~/dotfiles/just/devhub.just'
+[private]
+mod d '~/dotfiles/just/pages.just'
 
 # List every recipe, in file order so modules follow their aliases
 [private]
 default:
     @{{just_executable()}} --justfile {{justfile()}} --list --list-submodules --unsorted
-    @echo; echo 'Aliases: a = mxapi, b = mix, c = devhub'
+    @echo; echo 'Aliases: a = mxapi, b = mix, c = devhub, d = pages'
