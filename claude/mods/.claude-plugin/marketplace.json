@@ -23,6 +23,11 @@
       "name": "turn-footer",
       "source": "./turn-footer",
       "description": "End time, tokens used and a one-line recap at the end of every reply."
+    },
+    {
+      "name": "answer-me-with-html",
+      "source": "./answer-me-with-html",
+      "description": "Answer hard questions with a one-page HTML explainer (copy of QingYunA/answer-me-with-html 0.5.10)."
     }
   ]
 }
