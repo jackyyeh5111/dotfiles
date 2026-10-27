@@ -287,7 +287,7 @@ alias mxstyle='astyle --align-pointer=type --align-reference=name --style=kr --a
 export GST_PLUGIN_PATH=$HOME/memryx/MX_GStreamer/plugins
 
 eval "$(starship init zsh)"
-eval "$(zoxide init --cmd cd zsh)"
+eval "$(zoxide init zsh)"
 
 alias yz='yazi'
 
