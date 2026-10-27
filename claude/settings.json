@@ -59,7 +59,8 @@
     "reply-style@jacky-mods": true,
     "turn-footer@jacky-mods": true,
     "mattpocock-skills@claude-plugins-official": true,
-    "answer-me-with-html@answer-me-with-html": true
+    "answer-me-with-html@answer-me-with-html": false,
+    "answer-me-with-html@jacky-mods": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
