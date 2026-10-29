@@ -742,8 +742,10 @@ local diffview = {
                 -- sides, so it reads the same colour left and right. Repaint the
                 -- left pane ("a") in reds and the right pane ("b") in greens.
                 diff_buf_win_enter = function(_, winid, ctx)
-                    -- Diff-mode folds unchanged regions by default (e.g. "+--384
-                    -- lines: ..."). Open every fold so all lines show by default.
+                    -- Use syntax folds in diff panes too, so zf toggles the
+                    -- function/block under the cursor just like normal editing.
+                    vim.wo[winid].foldmethod = "expr"
+                    vim.wo[winid].foldexpr = "v:lua.vim.treesitter.foldexpr()"
                     vim.wo[winid].foldlevel = 99
 
                     if not ctx.layout_name:match("^diff2") then return end
