@@ -1028,6 +1028,24 @@ local bufferline = {
     "akinsho/bufferline.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
+        -- Paint the focused buffer as a raised catppuccin "surface1" tab with
+        -- lavender text. Every *_selected part (icon, diagnostics, modified
+        -- dot, slant edges...) needs the same bg or the tab looks patchy.
+        local C = require("catppuccin.palettes").get_palette("mocha")
+        local selected = {}
+        for _, group in ipairs({
+            "numbers", "diagnostic", "modified", "duplicate", "pick",
+            "close_button", "indicator",
+            "hint", "hint_diagnostic", "info", "info_diagnostic",
+            "warning", "warning_diagnostic", "error", "error_diagnostic",
+        }) do
+            selected[group .. "_selected"] = { bg = C.surface1 }
+        end
+        selected.buffer_selected = { fg = C.lavender, bg = C.surface1, bold = true, italic = false }
+        selected.separator_selected = { fg = "#292c33", bg = C.surface1 }
+        selected.separator = { fg = "#292c33" }
+        selected.separator_visible = { fg = "#292c33" }
+
         require("bufferline").setup({
             options = {
                 mode = "buffers",
@@ -1037,12 +1055,7 @@ local bufferline = {
                 show_close_icon = false,
                 separator_style = "slant",
             },
-            highlights = {
-                separator = { fg = "#292c33" },
-                separator_visible = { fg = "#292c33" },
-                separator_selected = { fg = "#292c33" },
-                buffer_selected = { bg = "#31323c", bold = true },
-            },
+            highlights = selected,
         })
     end,
 }
