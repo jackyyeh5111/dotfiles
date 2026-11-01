@@ -1,6 +1,6 @@
 ---
 name: jacky-commit-msg
-description: "Writes or rewrites a git commit message or PR description in simple, everyday words with an airy, easy-to-scan layout (Problem / Fix, plus Tests only when a test matters, each heading followed by a blank line and short indented sentences), adding a tiny pure-text diagram or a 1–3 line code example only when prose can't explain it. The first draft must already be short and plain; the user should never need to ask to simplify it. Use whenever the user asks to write, reword, amend, or clean up a commit message or PR message/description, e.g. 'modify last commit msg', 'write the PR msg', 'make the commit message clearer', 'commit msg looks too crowded'."
+description: "Writes or rewrites a git commit message or PR description in simple, everyday words with an airy, easy-to-scan layout (Problem / Fix, plus Tests only when a test matters, each heading followed by a blank line and short indented sentences), adding a short usage example whenever the change adds something people run or call (a command, option, or API), and a tiny pure-text diagram or code snippet for a bug only when prose can't explain it. The first draft must already be short and plain; the user should never need to ask to simplify it. Use whenever the user asks to write, reword, amend, or clean up a commit message or PR message/description, e.g. 'modify last commit msg', 'write the PR msg', 'make the commit message clearer', 'commit msg looks too crowded'."
 user-invocable: true
 argument-hint: "[commit ref or PR number; default: HEAD]"
 ---
@@ -46,9 +46,20 @@ Write a message anyone on the team can read once and understand, even if they do
    reproduces this exact bug. Never add it just to say "builds", "all
    tests pass", or that you checked it by hand.
 
-4. **Diagram or example: almost never.** Add a 2–4 line plain-ASCII diagram
-   or a 1–3 line code snippet only when the sentences alone can't make the
-   bug clear. If the Problem section already reads clearly, skip it.
+4. **Usage example: include it for anything new people run or call.** When
+   the change adds or changes a command, option, flag, or API, show 1–3
+   lines of how to use it in the Fix section, with a short `#` comment on
+   each saying when to use it. This beats describing the options in prose.
+
+   ```
+       bash run_test.sh                # everything
+       bash run_test.sh quick          # after each change
+   ```
+
+5. **Diagram or bug snippet: almost never.** For a bug fix, add a 2–4 line
+   plain-ASCII diagram or a 1–3 line code snippet only when the sentences
+   alone can't make the bug clear. If the Problem section already reads
+   clearly, skip it.
 
    ```
      Passing a list of arrays failed with a TypeError:
@@ -58,8 +69,11 @@ Write a message anyone on the team can read once and understand, even if they do
 
    Never use markdown tables, box-drawing art, or anything wider than ~72 columns.
 
-5. **Simplify before showing it.** The body should be about 3–7 sentences
-   (blank lines don't count). Then go through it line by line:
+6. **Simplify before showing it.** The body should be about 3–7 sentences
+   (blank lines and usage-example lines don't count). Then go through it line by line:
+   - Describe the one main change. Leave out small side changes in the
+     same commit (a cleanup step, an output-format fix, a debug setting)
+     unless a reviewer would be surprised to find them.
    - Cut any line a teammate could skip and still get the point.
    - Replace mechanism words with what they mean: "blocks signals with
      pthread_sigmask and waits in sigwait()" becomes "the main thread
@@ -67,7 +81,7 @@ Write a message anyone on the team can read once and understand, even if they do
    - Drop "what still works as before" unless someone would really worry.
    - Drop anything that already lives in a code comment.
 
-6. **Apply it.**
+7. **Apply it.**
    - Commit: write the message to a file in the scratchpad, then `git commit --amend -F <file>` (or `-F` on a new commit). First check `git branch -r --contains HEAD`: if the commit is already pushed, say that amending needs a force-push, and ask before rewriting it.
    - PR: `gh pr edit <n> --body-file <file>`, or print the message for the user to paste.
    - No attribution line: leave out `Co-Authored-By: Claude ...` and the "Generated with Claude Code" footer.
@@ -139,4 +153,54 @@ Fix:
   The main thread now waits for Ctrl+C or kill.
   Then it shuts the server down normally.
   Worker threads are never interrupted by these signals.
+```
+
+## Example: a new option, too detailed vs. right
+
+Too detailed (lists every side change, explains options in prose):
+
+```
+Add a quick mode to run_test.sh
+
+Problem:
+
+  Checking a change meant running every suite in every mode.
+  Most tests give the same result in shared, local and shm mode,
+  so the repeats only cost time.
+
+  A pytest run that was cut short left its manager running.
+
+Fix:
+
+  run_test.sh quick runs the shared suite without slow tests,
+  plus a short smoke run in local and shm mode.
+  --prepost, --py and --bench add the area you touched.
+  With no arguments the script still runs everything.
+
+  Each run first stops a leftover test manager.
+  Messages print real line breaks, and crashes leave a core dump.
+  The test README explains how to use the script.
+```
+
+Right (write this the first time):
+
+```
+Add a quick mode to run_test.sh
+
+Problem:
+
+  run_test.sh runs every test in every mode, which is slow.
+  Many tests give the same result in every mode.
+
+Fix:
+
+  Add a quick mode that skips those repeats.
+  Running with no arguments still runs everything.
+
+    bash run_test.sh                # everything
+    bash run_test.sh quick          # after each change
+    bash run_test.sh quick --py     # also the Python tests
+
+  Use --prepost, --py or --bench for the area you changed.
+  The README explains each option.
 ```
