@@ -133,6 +133,7 @@ else
     alias claude='DISPLAY=:0 claude'
 fi
 alias cl='claude'
+alias co='codex'
 
 alias cdpp='cd ~/memryx/MxPrepost && workon no_pip_memryx'
 alias cdapi='cd ~/memryx/MX_API'
