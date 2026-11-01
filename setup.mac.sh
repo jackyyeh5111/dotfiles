@@ -542,6 +542,11 @@ setup_claude_config() {
     || echo "  WARN: Claude Code setup is incomplete — fix what's listed above, then re-run: claude/skills/claude-setup/install.sh"
 }
 
+setup_codex_config() {
+  step "Setting up Codex config"
+  bash "$DOTFILES_DIR/codex/install.sh"
+}
+
 # ============================================================================
 # Main
 # ============================================================================
@@ -582,6 +587,7 @@ main() {
   bootstrap_nvim_plugins
   bootstrap_yazi_plugins
   setup_claude_config
+  setup_codex_config
 
   step "Done"
   cat <<'EOF'

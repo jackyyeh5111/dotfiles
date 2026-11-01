@@ -50,6 +50,17 @@ automatically.
   settings, `CLAUDE.md`, keybindings, hooks, skills and mods into `~/.claude`,
   installs every enabled plugin, then checks it all. Re-run it (or ask Claude
   to use the `claude-setup` skill) after adding a skill or mod
+- Codex config via `codex/install.sh`: links `config.toml`, `AGENTS.md`,
+  `hooks.json`, hooks and command rules into `~/.codex`, plus shared skills
+  into `~/.agents/skills`. Existing files are saved under `~/.codex/backups`.
+  Both setup scripts and the post-merge hook run it; to run it yourself:
+  `bash codex/install.sh`
+
+Codex settings live in `codex/`, so editing a linked setting updates this repo.
+Authentication, sessions, caches, installed plugins and synced skills stay local.
+Plugin selections are saved in `config.toml`; use Codex's `/plugins` to install
+them on a new machine. The config also keeps current project paths and hook trust
+records; review these when moving to a different home directory.
 
 ## What `setup.mac.sh` installs
 

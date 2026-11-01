@@ -6,7 +6,7 @@
 #
 # If the pull changed the setup script (or yazi's plugin list), re-run it:
 # every step skips work it already did, so only the new parts get installed,
-# and it re-syncs Claude Code at its end. Otherwise only re-sync Claude Code.
+# and it re-syncs Claude Code and Codex at its end. Otherwise re-sync both.
 
 repo="$(git rev-parse --show-toplevel)"
 if [[ "$(uname)" == Darwin ]]; then setup=setup.mac.sh; else setup=setup.sh; fi
@@ -15,6 +15,8 @@ if [[ "$(uname)" == Darwin ]]; then setup=setup.mac.sh; else setup=setup.sh; fi
 if git diff --quiet ORIG_HEAD HEAD -- "$setup" yazi/package.toml; then
   bash "$repo/claude/skills/claude-setup/install.sh" \
     || echo "Claude Code setup has problems. Run /claude-setup in Claude to fix them."
+  bash "$repo/codex/install.sh" \
+    || echo "Codex setup has problems. Re-run: bash codex/install.sh"
 else
   echo "==> $setup changed in this pull, re-running it to set up what's new"
   "$repo/$setup" || echo "$setup failed. Fix the error above, then re-run: $repo/$setup"
