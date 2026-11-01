@@ -140,6 +140,7 @@ alias cdapi='cd ~/memryx/MX_API'
 alias cds='workon mx2p2 && ~/memryx/Tahakom-Pipeline/src'
 alias cdfc='workon mx2p2 && ~/memryx/MX_API/samples/multi_dfp/cartoonizer_pose/src/cpp'
 alias cdfp='workon mx2p2 && /home/jackyyeh/memryx/MX_API/samples/multi_dfp/conditional_pipe'
+alias cdpy='workon mx3p0 && cd /home/jackyyeh/memryx/MX_API/mx_accl/pymodule/tests'
 alias hr='herdr'
 alias j='just -g'  # global recipes in ~/.justfile, from any folder
 alias gds='git -c delta.side-by-side=true diff'  # side by side diff; replaces oh-my-zsh's gds (git diff --staged)
