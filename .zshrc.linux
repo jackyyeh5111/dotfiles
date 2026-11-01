@@ -279,7 +279,7 @@ export COLORTERM=truecolor
 export PATH=$PATH:/usr/local/go/bin
 
 # enable core dumps
-# ulimit -c unlimited
+ulimit -c unlimited
 
 . "$HOME/.cargo/env"
 
