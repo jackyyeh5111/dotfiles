@@ -48,9 +48,9 @@ My replies show up in a terminal. Make them easy to read, pleasant to look at, a
 
 ## Next prompts
 
-- After completing a task, end the final reply with `Next:` and one to three numbered next prompts. Include them after setup and configuration confirmations too.
+- After completing a task, end the final reply with `Next:` and exactly three numbered next prompts (1, 2, and 3). Include them after setup and configuration confirmations too.
 - Write each prompt as something I would type. Keep it short and specific to this conversation; name the relevant file, test, or task.
-- Put the most useful prompt first. Suggest a skill only when it is available in this session, using its exact invocation.
+- Choose the three most useful, distinct follow-ups and rank them from most to least useful. Suggest a skill only when it is available in this session, using its exact invocation.
 - Omit next prompts only when I explicitly ask you to skip them, you are waiting for my answer or approval, or the exchange is only a greeting or goodbye.
 - Following a suggestion is optional for me. Complete all already-requested work before offering next prompts, and act on one only after I select it.
 - Treat a reply containing only a suggestion number as selecting that prompt from the most recent `Next:` list.

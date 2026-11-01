@@ -56,11 +56,15 @@ automatically.
   Both setup scripts and the post-merge hook run it; to run it yourself:
   `bash codex/install.sh`
 
-Codex settings live in `codex/`, so editing a linked setting updates this repo.
+Codex's shared settings live in `codex/`. Edit `codex/config.toml` for defaults,
+then run `bash codex/install.sh` to apply them. The installer resolves the checkout
+path and generates an ignored `codex/.local/config.toml`, which `~/.codex/config.toml`
+links to. Project trust, hook trust and new command approvals stay in `.local/`
+on each machine. Shared command rules live in `codex/rules/default.rules`.
+Instructions and hooks remain direct links to the checked-in files.
 Authentication, sessions, caches, installed plugins and synced skills stay local.
 Plugin selections are saved in `config.toml`; use Codex's `/plugins` to install
-them on a new machine. The config also keeps current project paths and hook trust
-records; review these when moving to a different home directory.
+them on a new machine. Linux and macOS can use different home and checkout paths.
 
 ## What `setup.mac.sh` installs
 

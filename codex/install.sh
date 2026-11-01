@@ -27,7 +27,11 @@ link() {
 
 echo "==> Linking Codex config from $SRC"
 
-for name in config.toml AGENTS.md hooks.json hooks rules; do
+python3 "$SRC/configure.py" "$SRC" "$DEST/config.toml" "$DEST/rules"
+link "$SRC/.local/config.toml" "$DEST/config.toml"
+link "$SRC/.local/rules" "$DEST/rules"
+
+for name in AGENTS.md hooks.json hooks; do
   link "$SRC/$name" "$DEST/$name"
 done
 

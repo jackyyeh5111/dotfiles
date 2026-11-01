@@ -1,19 +1,7 @@
+# Shared defaults. Run bash codex/install.sh after editing this file.
+# The installer resolves @DOTFILES_DIR@ and keeps machine approvals in .local/.
 model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
-[projects."/home/jackyyeh/memryx/MX_API"]
-trust_level = "trusted"
-
-[projects."/home/jackyyeh/memryx/MX_API/driver"]
-trust_level = "trusted"
-
-[projects."/home/jackyyeh/memryx/MIX"]
-trust_level = "trusted"
-
-[projects."/home/jackyyeh/dotfiles"]
-trust_level = "trusted"
-
-[projects."/home/jackyyeh/memryx/memryx_examples_internal"]
-trust_level = "trusted"
 
 [tui]
 screen_reader_detection_done = true
@@ -26,7 +14,7 @@ gpt-6-astra = 3
 
 [marketplaces.jacky-mods]
 source_type = "local"
-source = "/home/jackyyeh/dotfiles/claude/mods"
+source = "@DOTFILES_DIR@/claude/mods"
 
 [marketplaces.claude-community]
 source_type = "git"
@@ -74,15 +62,3 @@ enabled = true
 
 [plugins."swift-lsp@claude-plugins-official"]
 enabled = true
-
-[hooks.state]
-
-[hooks.state."/home/jackyyeh/.codex/hooks.json:post_tool_use:0:0"]
-trusted_hash = "sha256:69935c85b27b9b8297bd8be8792f42fe86898d345d2660c506b59b2301cd14b3"
-enabled = true
-
-[hooks.state."/home/jackyyeh/.codex/hooks.json:session_start:0:0"]
-trusted_hash = "sha256:be6a5ef92a2bc366d2af5f9e379466af8030fcaa93c0c4936d937ba7c5a2f23d"
-
-[hooks.state."/home/jackyyeh/.codex/hooks.json:session_start:0:1"]
-trusted_hash = "sha256:65e316eff29e888b69384ea0a58a951b272f71856b6cbf5dc03e1addc1ae154a"
