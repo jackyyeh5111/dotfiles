@@ -45,11 +45,12 @@ edit anything.
    - **<Layer>:** `file` — what changed, in a few words
    - Note any unrelated file in the diff (e.g. submodule bump)
 
-   ## Reading order
-   ### Step N: <plain title> (`file:line`)
-   One or two lines: what it does and why read it now
-   Check that:
-   - <thing that must stay true, or a way it could break>
+   ## Review the changes in this order
+
+   | Order | Code | What to check |
+   |---|---|---|
+   | 1 | `function()` (`file:line`) | What it does and the important thing to check. |
+   | 2 | `next_function()` (`file:line`) | How it uses the previous piece and what could go wrong. |
 
    ## The things that matter before merge
    1. <top risks, most serious first, one line each>
@@ -60,6 +61,10 @@ edit anything.
    Order the steps so each one builds on the last. Start with the lowest
    piece the rest depends on (a helper, data type, or primitive), then the
    logic that uses it, then lifecycle and cleanup, then tests.
+   Use one table row per step. Name the relevant function or code and its
+   `file:line` in the Code column. In What to check, briefly explain the
+   behavior and the key review question. Group closely related code in one
+   row when that makes the relationship clearer.
 
 5. **For tests, check that they prove the fix.** Would the test fail
    without the fix? Does a regression fail the test, or just hang it? Do the
@@ -76,7 +81,7 @@ edit anything.
   trailing period
 - Add a diagram only when it explains the problem better than words (a
   deadlock, race, or ordering bug). Keep it to 2–4 lines of plain ASCII,
-  with no markdown tables and no box-drawing characters
+  with no box-drawing characters
 - Use bold labels only for the two or three risks that matter most, not on
   every bullet
 - Don't use filler or hedging. Say what you didn't verify once, at the end
