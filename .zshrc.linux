@@ -129,8 +129,10 @@ alias souz="source ~/.zshrc"
 # mx-beelink has no desktop (:0 is the gdm login screen), so its ssh-clipboard runs headless Xvfb on :99
 if [[ $HOST == mx-beelink ]]; then
     alias claude='DISPLAY=:99 claude'
+    alias codex='DISPLAY=:99 codex'
 else
     alias claude='DISPLAY=:0 claude'
+    alias codex='DISPLAY=:0 codex'
 fi
 alias cl='claude'
 alias co='codex'
