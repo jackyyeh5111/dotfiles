@@ -41,7 +41,7 @@ bench dfp="~/memryx/models/mobilenet.dfp" frames="2000":
 mgr *flags:
     sudo mkdir -p /run/mxa_manager
     sudo chmod a+rwx /run/mxa_manager
-    cd build/mxa_manager && ./mxa_manager {{flags}}
+    cd build/mxa_manager && exec ./mxa_manager {{flags}}
 
 # Build mx_accl and the Python module, then run its tests: just mxapi pytest test_op_freq
 pytest filter="" *flags: build
