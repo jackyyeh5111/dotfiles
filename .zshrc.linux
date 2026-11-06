@@ -198,11 +198,31 @@ zstyle ':fzf-tab:*' fzf-bindings ';:jump-accept'
 alias vimf='vim $(fzf --preview="batcat --color=always {}")'
 alias cdf='cd $(fd --type d . | fzf)'
 
-alias cpw='pwd | tee >(xclip -selection clipboard)'
-alias cpaf='fzf --preview="batcat --color=always {}" | xargs realpath | tee >(xclip -selection clipboard)'
-alias cpf='fzf --preview="batcat --color=always {}" | tee >(xclip -selection clipboard)'
+# Write to the terminal's clipboard over SSH/herdr, without X11 forwarding.
+# tmux relays these sequences with set-clipboard on (see .tmux.conf).
+osc52-copy() {
+    setopt localoptions pipefail
+    local encoded
+    encoded=$(base64 | tr -d '\r\n') || return
+    printf '\033]52;c;%s\a' "$encoded" > /dev/tty
+}
+
+# Keep the original text on stdout, including trailing newlines, and finish
+# copying before returning. Escape sequences must never enter redirected output.
+clipboard-tee() {
+    local text
+    IFS= read -r -d '' text
+    print -rn -- "$text"
+    # A cancelled fzf produces no input; leave the clipboard alone in that case.
+    [[ -n $text ]] || return 0
+    print -rn -- "$text" | osc52-copy
+}
+
+alias cpw='pwd | clipboard-tee'
+alias cpaf='fzf --preview="batcat --color=always {}" | xargs -r -d "\n" realpath -- | clipboard-tee'
+alias cpf='fzf --preview="batcat --color=always {}" | clipboard-tee'
 ff() {
-    "$@" | fzf | tee >(xclip -selection clipboard)
+    "$@" | fzf | clipboard-tee
 }
 
 ### Use fzf for preview git operation ###
@@ -303,7 +323,7 @@ bindkey '^U' backward-kill-line
 # A green note shows under the line, and goes away after 2 seconds or on the next edit.
 _copy_note_fd= _copy_note_hl= _copy_note_buf=
 copy-buffer() {
-    print -rn -- "$BUFFER" | xclip -selection clipboard
+    print -rn -- "$BUFFER" | osc52-copy || return
     _copy_note_clear
     _copy_note_buf=$BUFFER
     POSTDISPLAY=$'\n  ✔ Copied command to clipboard'
