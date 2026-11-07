@@ -742,6 +742,7 @@ local diffview = {
                 -- sides, so it reads the same colour left and right. Repaint the
                 -- left pane ("a") in reds and the right pane ("b") in greens.
                 diff_buf_win_enter = function(_, winid, ctx)
+                    vim.schedule(function() vim.cmd("redrawtabline") end)
                     -- Use syntax folds in diff panes too, so zf toggles the
                     -- function/block under the cursor just like normal editing.
                     vim.wo[winid].foldmethod = "expr"
@@ -1065,6 +1066,7 @@ local bufferline = {
             },
             highlights = selected,
         })
+        require("diffview_tabline").setup()
     end,
 }
 
