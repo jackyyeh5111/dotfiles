@@ -220,6 +220,24 @@ git_interactive() {
   esac
 }
 alias gi='git_interactive'
+
+# enable core dumps
+ulimit -c unlimited
+
+# macOS writes cores to /cores, so move them to /tmp at each prompt,
+# keeping the newest 5.
+CORE_DIR=/tmp/cores-$USER
+_sweep_cores() {
+    local f
+    for f in /cores/core.*(N.U); do
+        mkdir -p -m 700 $CORE_DIR
+        mv -- $f $CORE_DIR/${f:t}.$(date +%s) && print -u2 "core dump moved to $CORE_DIR"
+        rm -f -- $CORE_DIR/core.*(Nom[6,-1])
+    done
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _sweep_cores
+
 . "$HOME/.cargo/env"
 export PATH="$HOME/.local/bin:$PATH"
 
