@@ -22,6 +22,14 @@ default:
 run +cmd:
     @"$@"
 
+# Open a new shell with MIX's venv active, from where you are; `exit` to leave it
+[no-cd]
+activate:
+    #!/usr/bin/env zsh
+    # A recipe can't change the shell that ran it, so hand over to a new one
+    pushd ~/memryx/MIX >/dev/null && source .venv/bin/activate && source setup_env.sh; popd >/dev/null
+    exec zsh
+
 # Run the runtime tests, optionally only those matching: just mix test test_op_freq
 test filter="" *flags:
     pytest runtime/tests/test_accl.py -s -x -v -o log_cli=true --log-cli-level=DEBUG \
