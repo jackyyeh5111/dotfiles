@@ -35,6 +35,12 @@ build: build-core
     # On PATH because CMake runs bare python3 to find the numpy headers
     PATH={{mx3p0}}/bin:$PATH cmake -S mx_accl/pymodule -B mx_accl/pymodule/build -DCMAKE_BUILD_TYPE=Debug
     make -C mx_accl/pymodule/build -j$(nproc)
+    @printf '%s\n' '' 'Done:' \
+        '  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=1 -DBUILD_TESTS_PREPOST=1 -DDISABLE_SAN=1 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON' \
+        "  make -C build -j$(nproc)" \
+        '  rm -rf mx_accl/pymodule/build' \
+        '  PATH={{mx3p0}}/bin:$PATH cmake -S mx_accl/pymodule -B mx_accl/pymodule/build -DCMAKE_BUILD_TYPE=Debug' \
+        "  make -C mx_accl/pymodule/build -j$(nproc)"
 
 # Build, then run tests: just mxapi test '*PassThrough*' --local
 test filter="*" *flags: build-core
