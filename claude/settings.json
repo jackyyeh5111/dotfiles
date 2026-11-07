@@ -10,7 +10,7 @@
       "Bash(python3 -)"
     ]
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
