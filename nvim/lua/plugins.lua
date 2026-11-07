@@ -804,6 +804,14 @@ local diffview = {
                 vim.cmd("DiffviewFileHistory %")
             end
         end, { noremap = true, silent = true, desc = "Toggle file history of current file" })
+        vim.keymap.set("n", "<A-F>", function()
+            local ok, lib = pcall(require, "diffview.lib")
+            if ok and lib.get_current_view() then
+                vim.cmd("DiffviewClose")
+            else
+                vim.cmd("DiffviewFileHistory")
+            end
+        end, { noremap = true, silent = true, desc = "Toggle history of whole repo" })
 
         -- Keep the 2-pane before/after layout whenever a file gets opened into
         -- a Diffview pane by other means (<leader>ff, <leader>gd, :e, ...).
