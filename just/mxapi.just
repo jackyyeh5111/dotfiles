@@ -7,6 +7,7 @@ root := home_directory() / "memryx/MX_API"
 tests := "build/mx_accl"
 # The active venv, or mx3p0 (the one cdpy uses) when none is active
 py := env("VIRTUAL_ENV", home_directory() / ".virtualenvs/mx3p0") / "bin/python"
+mx3p0 := home_directory() / ".virtualenvs/mx3p0"
 dkms := "/lib/modules/$(uname -r)/updates/dkms"
 
 # List recipes
@@ -15,17 +16,25 @@ default:
     @{{just_executable()}} --justfile {{justfile()}} --list mxapi
 
 # Configure (Debug, tests, no sanitizer) and build
-build:
+[private]
+build-core:
     cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=1 -DBUILD_TESTS_PREPOST=1 \
         -DDISABLE_SAN=1 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     make -C build -j$(nproc)
 
+# Build mx_accl, then rebuild the Python module from scratch
+build: build-core
+    rm -rf mx_accl/pymodule/build
+    # On PATH because CMake runs bare python3 to find the numpy headers
+    PATH={{mx3p0}}/bin:$PATH cmake -S mx_accl/pymodule -B mx_accl/pymodule/build -DCMAKE_BUILD_TYPE=Debug
+    make -C mx_accl/pymodule/build -j$(nproc)
+
 # Build, then run tests: just mxapi test '*PassThrough*' --local
-test filter="*" *flags: build
+test filter="*" *flags: build-core
     ./{{tests}}/all_tests --gtest_filter='{{filter}}' -v {{flags}}
 
 # Build, then run the pre/post tests: just mxapi prepost '*PassThrough*'
-prepost filter="*" *flags: build
+prepost filter="*" *flags: build-core
     ./{{tests}}/all_tests_prepost --gtest_filter='{{filter}}' -v {{flags}}
 
 # Run tests in gdb, stopping at the first failure: just mxapi dbg accl_dfp_tests.foo
@@ -44,7 +53,7 @@ mgr *flags:
     cd build/mxa_manager && exec ./mxa_manager {{flags}}
 
 # Build mx_accl and the Python module, then run its tests: just mxapi pytest test_op_freq
-pytest filter="" *flags: build
+pytest filter="" *flags: build-core
     cmake -S mx_accl/pymodule -B mx_accl/pymodule/build -DCMAKE_BUILD_TYPE=Debug
     make -C mx_accl/pymodule/build -j$(nproc)
     cd mx_accl/pymodule/tests && ln -sf ../build/mxapi.cpython-*.so .
