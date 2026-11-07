@@ -1,0 +1,90 @@
+local function check()
+  local root = vim.fn.stdpath('data') .. '/lazy/'
+  for _, plugin in ipairs({'diffview.nvim', 'plenary.nvim', 'bufferline.nvim', 'nvim-web-devicons', 'catppuccin'}) do
+    vim.opt.rtp:prepend(root .. plugin)
+  end
+  vim.opt.rtp:prepend(vim.fn.fnamemodify(debug.getinfo(1, 'S').source:sub(2), ':p:h:h'))
+  require('bufferline').setup({})
+  local opened = 0
+  require('diffview').setup({use_icons = false})
+  vim.cmd('runtime plugin/diffview.lua')
+  local bar = require('diffview_tabline')
+  bar.setup()
+  local repo = vim.fn.tempname()
+  vim.fn.mkdir(repo .. '/src', 'p')
+  local function git(args)
+    local command = {'git', '-C', repo}
+    vim.list_extend(command, args)
+    local out = vim.fn.system(command)
+    assert(vim.v.shell_error == 0, out)
+  end
+  git({'init', '-q'})
+  vim.fn.writefile({'before'}, repo .. '/src/one.txt')
+  vim.fn.writefile({'before'}, repo .. '/src/two.txt')
+  git({'add', '.'})
+  git({'-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-qm', 'before'})
+  vim.fn.writefile({'after'}, repo .. '/src/one.txt')
+  vim.fn.writefile({'after'}, repo .. '/src/two.txt')
+  git({'add', '.'})
+  git({'-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-qm', 'after'})
+  vim.cmd.cd(repo)
+  vim.fn.writefile({'latest'}, repo .. '/src/one.txt')
+  vim.fn.writefile({'latest'}, repo .. '/src/two.txt')
+  git({'add', '.'})
+  git({'-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-qm', 'latest'})
+  vim.cmd('DiffviewFileHistory --max-count=2')
+  local lib = require('diffview.lib')
+  assert(vim.wait(10000, function()
+    local v = lib.get_current_view()
+    return v and v.cur_entry and v.cur_entry.opened
+  end), 'history failed to load')
+  local rendered = bar.render()
+  assert(rendered:find('one.txt', 1, true), 'opened file is missing')
+  assert(not rendered:find('two.txt', 1, true), 'unopened file leaked into bar')
+  assert(not rendered:find('No Name', 1, true), 'normal buffer leaked into history')
+  local evaluated = vim.api.nvim_eval_statusline(rendered, {use_tabline = true, maxwidth = 120})
+  assert(evaluated.str:find('DIFFVIEW · HISTORY', 1, true), evaluated.str)
+  assert(not evaluated.str:find('src/', 1, true), 'bar shows paths instead of filenames')
+  lib.get_current_view().emitter:on('file_open_post', function() opened = opened + 1 end)
+  local view = lib.get_current_view()
+  local before = opened
+  bar.cycle(1)
+  assert(view.cur_entry.path == 'src/one.txt', 'cycling opened an unvisited file')
+  assert(vim.wait(5000, function() return opened > before end), 'cycle did not finish')
+  before = opened
+  view:set_file(view.panel.entries[1].files[2], true)
+  assert(vim.wait(5000, function() return opened > before end), 'second file did not finish opening')
+  rendered = bar.render()
+  assert(rendered:find('one.txt', 1, true) and rendered:find('two.txt', 1, true), 'opened files did not stay in bar')
+  before = opened
+  bar.cycle(-1)
+  assert(vim.wait(5000, function() return opened > before and view.cur_entry.path == 'src/one.txt' end), 'cycle did not return to first opened diff')
+  before = opened
+  _G.DiffviewTabClick(2, 1, 'l')
+  assert(vim.wait(5000, function() return opened > before and view.cur_entry.path == 'src/two.txt' end), 'click did not select second opened diff')
+  before = opened
+  view:set_file(view.panel.entries[2].files[1], true)
+  assert(vim.wait(5000, function() return opened > before end), 'older revision did not open')
+  before = opened
+  _G.DiffviewTabClick(1, 1, 'l')
+  assert(vim.wait(5000, function() return opened > before and view.cur_entry == view.panel.entries[1].files[1] end), 'tab switched to wrong commit')
+  before = opened
+  _G.DiffviewTabClick(3, 1, 'l')
+  assert(vim.wait(5000, function() return opened > before and view.cur_entry == view.panel.entries[2].files[1] end), 'older revision disappeared from tabs')
+  vim.cmd('DiffviewClose')
+  assert(bar.render() == _G.nvim_bufferline(), 'normal buffer bar did not return')
+  vim.fn.writefile({'uncommitted'}, repo .. '/src/two.txt')
+  vim.cmd('DiffviewOpen')
+  assert(vim.wait(10000, function()
+    local v = lib.get_current_view()
+    return v and v.cur_entry and v.cur_entry.opened
+  end), 'working diff failed to load')
+  assert(bar.render():find('two.txt', 1, true), 'working diff missing from bar')
+  assert(not bar.render():find('one.txt', 1, true), 'previous history session leaked into working diff')
+  vim.cmd('DiffviewClose')
+  vim.fn.delete(repo, 'rf')
+  print('PASS: opened files only, filenames only, tab rendering, cycling, clicking, normal bar restoration, working diff')
+end
+local ok, err = xpcall(check, debug.traceback)
+if not ok then print(err); vim.cmd('cquit 1') end
+vim.cmd('qa!')
