@@ -1,0 +1,11 @@
+{
+  "lastChangelogVersion": "1.5.0",
+  "deviceId": "ff383a9c-401c-4eec-aca8-10cef1bbbdb6",
+  "defaultProvider": "openai",
+  "defaultModel": "gpt-6.1-sol",
+  "packages": [
+    "npm:pi-web-access",
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:pi-claude-bridge"
+  ]
+}
