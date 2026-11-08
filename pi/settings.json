@@ -7,10 +7,19 @@
     "npm:pi-web-access",
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:pi-claude-bridge",
-    "npm:pi-open-tui"
+    "npm:pi-open-tui",
+    "npm:billion-context",
+    "npm:pi-subagents",
+    "npm:pi-btw",
+    "npm:@sherif-fanous/pi-catppuccin",
+    "npm:pi-mcp-adapter"
   ],
   "extensionChangelogVersions": {
     "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.47.0",
-    "{\"source\":\"npm:pi-open-tui\",\"scope\":\"user\"}": "0.4.4"
-  }
+    "{\"source\":\"npm:pi-open-tui\",\"scope\":\"user\"}": "0.4.4",
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.87.0"
+  },
+  "extensions": [
+    "-builtin:mcp"
+  ]
 }
