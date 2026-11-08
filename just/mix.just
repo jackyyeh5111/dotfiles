@@ -44,22 +44,32 @@ dbg filter *flags:
 bench dfp="~/memryx/models/mobilenet.dfp" *flags:
     mix_bench -d {{dfp}} -f 2000 -s {{flags}}
 
-# Show which memryx, mxapi and mxa modules Python imports and the files they link to
+# The venv active where you ran just (the exports above hide it from recipes),
+# or MIX's own when none is active
+caller_py := env("VIRTUAL_ENV", root / ".venv") / "bin/python"
+
+# Show where the memryx Python modules and the runtime and driver libraries come from
 [no-cd]
-which-py:
-    #!/usr/bin/env python
-    import importlib, os
+where:
+    #!{{caller_py}}
+    import importlib, os, sys
     memryx = importlib.import_module('memryx')
     # Same as `from memryx import mxapi`, which may hand back memryx.runtime.mxapi
     mods = {'memryx': memryx}
     for name in ('mxapi', 'mxa'):
         mods[name] = getattr(memryx, name, None) or importlib.import_module('memryx.' + name)
+    entries = [(f'{label}  ({mod.__name__})', 'Imported from:', mod.__file__) for label, mod in mods.items()]
+    entries += [('runtime  (libmx_accl.so)', 'Path:', '/lib/x86_64-linux-gnu/libmx_accl.so'),
+                ('driver  (libmemx.so)', 'Path:', '/lib/x86_64-linux-gnu/libmemx.so')]
     # A blank line keeps the sanitizer noise from the import apart
     print()
-    for label, mod in mods.items():
-        path = mod.__file__
+    print('python')
+    print(f"  {'Path:':15}", sys.executable, end='\n\n')
+    for title, kind, path in entries:
+        print(title)
+        if not os.path.exists(path):
+            print(f"  {'Missing:':15}", path, end='\n\n')
+            continue
         real = os.path.realpath(path)
-        print(f'{label}  ({mod.__name__})')
-        print('  Imported from:', path)
-        print('  Links to:     ', real if real != path else '(not a link, the file itself)')
-        print()
+        print(f'  {kind:15}', path)
+        print(f"  {'Links to:':15}", real if real != path else '(not a link, the file itself)', end='\n\n')
