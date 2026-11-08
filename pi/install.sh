@@ -35,8 +35,15 @@ for name in settings.json AGENTS.md SYSTEM.md keybindings.json models.json \
   link "$SRC/$name" "$DEST/$name"
 done
 
-# Pi reads CLAUDE.md too, so share Claude Code's instructions as-is.
-# A pi/AGENTS.md, if added, takes priority over it.
-link "$(dirname "$SRC")/claude/CLAUDE.md" "$DEST/CLAUDE.md"
+# Share Codex's instructions. Pi's skills already come from
+# ~/.agents/skills, which codex/install.sh links to codex/skills.
+# A pi/AGENTS.md, if added, is linked above instead.
+[[ -e "$SRC/AGENTS.md" ]] || link "$(dirname "$SRC")/codex/AGENTS.md" "$DEST/AGENTS.md"
+
+# Drop the old link to Claude Code's instructions.
+if [[ -L "$DEST/CLAUDE.md" ]]; then
+  rm "$DEST/CLAUDE.md"
+  echo "  removed: $DEST/CLAUDE.md"
+fi
 
 echo "  pi settings linked. Start a new pi session to load changes."
