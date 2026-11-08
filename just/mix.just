@@ -53,23 +53,38 @@ caller_py := env("VIRTUAL_ENV", root / ".venv") / "bin/python"
 where:
     #!{{caller_py}}
     import importlib, os, sys
-    memryx = importlib.import_module('memryx')
-    # Same as `from memryx import mxapi`, which may hand back memryx.runtime.mxapi
-    mods = {'memryx': memryx}
-    for name in ('mxapi', 'mxa'):
-        mods[name] = getattr(memryx, name, None) or importlib.import_module('memryx.' + name)
-    entries = [(f'{label}  ({mod.__name__})', 'Imported from:', mod.__file__) for label, mod in mods.items()]
-    entries += [('runtime  (libmx_accl.so)', 'Path:', '/lib/x86_64-linux-gnu/libmx_accl.so'),
-                ('driver  (libmemx.so)', 'Path:', '/lib/x86_64-linux-gnu/libmemx.so')]
-    # A blank line keeps the sanitizer noise from the import apart
-    print()
-    print('python')
-    print(f"  {'Path:':15}", sys.executable, end='\n\n')
-    for title, kind, path in entries:
-        print(title)
-        if not os.path.exists(path):
-            print(f"  {'Missing:':15}", path, end='\n\n')
-            continue
+    def show_path(kind, path):
+        if path is None:
+            print(f"  {kind:15}", '(no file)', end='\n\n')
+            return
         real = os.path.realpath(path)
         print(f'  {kind:15}', path)
-        print(f"  {'Links to:':15}", real if real != path else '(not a link, the file itself)', end='\n\n')
+        print(f"  {'Links to:':15}", real if real != path else '(not a link, the file itself)')
+        if not os.path.exists(path):
+            print(f"  {'Missing:':15}", real)
+        print()
+
+    print('python')
+    show_path('Path:', sys.executable)
+    for name in ('memryx', 'mxapi', 'mxa'):
+        requested = 'memryx' if name == 'memryx' else 'memryx.' + name
+        try:
+            memryx = importlib.import_module('memryx')
+            # Match `from memryx import mxapi`, including runtime re-exports.
+            mod = memryx if name == 'memryx' else (
+                getattr(memryx, name, None) or importlib.import_module(requested))
+        except Exception as exc:
+            print(name)
+            if isinstance(exc, ModuleNotFoundError):
+                print(f"  {'Missing module:':15}", exc.name)
+            print(f"  {'Import failed:':15}", f'{type(exc).__name__}: {exc}', end='\n\n')
+            continue
+        print(f'{name}  ({mod.__name__})')
+        show_path('Imported from:', getattr(mod, '__file__', None))
+
+    for title, path in (
+        ('runtime  (libmx_accl.so)', '/lib/x86_64-linux-gnu/libmx_accl.so'),
+        ('driver  (libmemx.so)', '/lib/x86_64-linux-gnu/libmemx.so'),
+    ):
+        print(title)
+        show_path('Path:', path)
