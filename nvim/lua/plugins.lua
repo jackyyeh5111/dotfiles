@@ -776,42 +776,53 @@ local diffview = {
         --     vim.cmd("DiffviewToggleFiles") -- automatically close the file panel
         -- end, { desc = "Open Diffview (no file panel)" })
 
-        vim.keymap.set('n', '<A-d>', function()
-            local ok, lib = pcall(require, "diffview.lib")
-            if ok and lib.get_current_view() then
-                vim.cmd("DiffviewClose")
-            else
-                vim.cmd("DiffviewOpen -uno")
+        -- Switch tabs instead of closing views, keeping each command's opened files.
+        local function toggle_diffview(command)
+            local lib = require("diffview.lib")
+            local view = lib.get_current_view()
+            local tab = vim.api.nvim_get_current_tabpage()
+            if view then
+                local normal_tab = lib.get_prev_non_view_tabpage()
+                if not normal_tab then
+                    vim.cmd("tabnew")
+                    normal_tab = vim.api.nvim_get_current_tabpage()
+                end
+                command = vim.t[tab].diffview_toggle_command or command
+                local saved = vim.t[normal_tab].saved_diffview_tabs or {}
+                saved[command] = tab
+                vim.t[normal_tab].saved_diffview_tabs = saved
+                vim.t[tab].diffview_toggle_command = command
+                vim.api.nvim_set_current_tabpage(normal_tab)
+                return
             end
+            local saved = vim.t[tab].saved_diffview_tabs or {}
+            local target = saved[command]
+            if target and vim.api.nvim_tabpage_is_valid(target) then
+                vim.api.nvim_set_current_tabpage(target)
+                return
+            end
+            vim.cmd(command)
+            view = lib.get_current_view()
+            if view then
+                saved[command] = view.tabpage
+                vim.t[tab].saved_diffview_tabs = saved
+                vim.t[view.tabpage].diffview_toggle_command = command
+            end
+        end
+
+        vim.keymap.set('n', '<A-d>', function()
+            toggle_diffview("DiffviewOpen -uno")
         end, { noremap = true, silent = true, desc = "Diffview Toggle" })
         -- Review the last commit without resetting it: the right side is still
         -- the real file on disk, so it stays editable.
         vim.keymap.set('n', '<A-D>', function()
-            local ok, lib = pcall(require, "diffview.lib")
-            if ok and lib.get_current_view() then
-                vim.cmd("DiffviewClose")
-            else
-                vim.cmd("DiffviewOpen HEAD~1 -uno")
-            end
+            toggle_diffview("DiffviewOpen HEAD~1 -uno")
         end, { noremap = true, silent = true, desc = "Diffview last commit Toggle" })
-        -- vim.keymap.set('n', '<leader>do', ':Diffview<CR>', { noremap = true, silent = true, desc = "Diffview " })
-        -- vim.keymap.set('n', '<leader>dc', ':DiffviewClose<CR>', { noremap = true, silent = true, desc = "Diffview Close" })
-        -- vim.keymap.set("n", "<leader>df", ":DiffviewToggleFiles<CR>", { desc = "Toggle Diffview file panel" })
         vim.keymap.set("n", "<A-f>", function()
-            local ok, lib = pcall(require, "diffview.lib")
-            if ok and lib.get_current_view() then
-                vim.cmd("DiffviewClose")
-            else
-                vim.cmd("DiffviewFileHistory %")
-            end
+            toggle_diffview("DiffviewFileHistory " .. vim.fn.fnameescape(vim.fn.expand("%:p")))
         end, { noremap = true, silent = true, desc = "Toggle file history of current file" })
         vim.keymap.set("n", "<A-F>", function()
-            local ok, lib = pcall(require, "diffview.lib")
-            if ok and lib.get_current_view() then
-                vim.cmd("DiffviewClose")
-            else
-                vim.cmd("DiffviewFileHistory")
-            end
+            toggle_diffview("DiffviewFileHistory")
         end, { noremap = true, silent = true, desc = "Toggle history of whole repo" })
 
         -- Keep the 2-pane before/after layout whenever a file gets opened into
