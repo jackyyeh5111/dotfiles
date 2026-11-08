@@ -61,7 +61,12 @@ automatically.
   Pi also loads Codex's skills from `~/.agents/skills`.
   Existing files are saved under `~/.pi/agent/backups`. Auth, sessions and
   installed packages stay local; pi installs the `packages` listed in
-  `settings.json` on its next start. To run it yourself: `bash pi/install.sh`
+  `settings.json` on its next start. To run it yourself: `bash pi/install.sh`.
+  The installer also installs the local highlight extension's dependencies.
+  The `codex-soft` dark theme uses green inline code/paths, pink bold text,
+  and blue headings/links. Run `/reload`, select `codex-soft` in `/settings`
+  if needed, then use `/color-preview` to check the palette.
+  Bold highlighting is display-only and only active with `codex-soft`.
 
 Codex's shared settings live in `codex/`. Edit `codex/config.toml` for defaults,
 then run `bash codex/install.sh` to apply them. The installer resolves the checkout

@@ -25,6 +25,9 @@ link() {
   echo "  linked: $dest"
 }
 
+echo "==> Installing pi highlight extension dependencies"
+npm ci --prefix "$SRC/extensions/codex-highlights" --ignore-scripts --no-fund
+
 echo "==> Linking pi config from $SRC"
 
 # Pi writes settings.json in place, so edits from inside pi land in the repo.
