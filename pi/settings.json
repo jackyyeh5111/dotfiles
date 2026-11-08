@@ -6,6 +6,11 @@
   "packages": [
     "npm:pi-web-access",
     "npm:@juicesharp/rpiv-ask-user-question",
-    "npm:pi-claude-bridge"
-  ]
+    "npm:pi-claude-bridge",
+    "npm:pi-open-tui"
+  ],
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.47.0",
+    "{\"source\":\"npm:pi-open-tui\",\"scope\":\"user\"}": "0.4.4"
+  }
 }
