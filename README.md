@@ -55,8 +55,9 @@ automatically.
   into `~/.agents/skills`. Existing files are saved under `~/.codex/backups`.
   Both setup scripts and the post-merge hook run it; to run it yourself:
   `bash codex/install.sh`
-- pi config via `pi/install.sh`: links `settings.json` (and any `AGENTS.md`,
-  skills, prompts, extensions or themes added to `pi/`) into `~/.pi/agent`.
+- pi config via `pi/install.sh`: links `settings.json`, `claude/CLAUDE.md`
+  (shared with Claude Code), and any `AGENTS.md`,
+  skills, prompts, extensions or themes added to `pi/` into `~/.pi/agent`.
   Existing files are saved under `~/.pi/agent/backups`. Auth, sessions and
   installed packages stay local; pi installs the `packages` listed in
   `settings.json` on its next start. To run it yourself: `bash pi/install.sh`

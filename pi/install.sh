@@ -35,4 +35,8 @@ for name in settings.json AGENTS.md SYSTEM.md keybindings.json models.json \
   link "$SRC/$name" "$DEST/$name"
 done
 
+# Pi reads CLAUDE.md too, so share Claude Code's instructions as-is.
+# A pi/AGENTS.md, if added, takes priority over it.
+link "$(dirname "$SRC")/claude/CLAUDE.md" "$DEST/CLAUDE.md"
+
 echo "  pi settings linked. Start a new pi session to load changes."
