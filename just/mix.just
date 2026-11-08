@@ -43,3 +43,23 @@ dbg filter *flags:
 [no-cd]
 bench dfp="~/memryx/models/mobilenet.dfp" *flags:
     mix_bench -d {{dfp}} -f 2000 -s {{flags}}
+
+# Show which memryx, mxapi and mxa modules Python imports and the files they link to
+[no-cd]
+which-py:
+    #!/usr/bin/env python
+    import importlib, os
+    memryx = importlib.import_module('memryx')
+    # Same as `from memryx import mxapi`, which may hand back memryx.runtime.mxapi
+    mods = {'memryx': memryx}
+    for name in ('mxapi', 'mxa'):
+        mods[name] = getattr(memryx, name, None) or importlib.import_module('memryx.' + name)
+    # A blank line keeps the sanitizer noise from the import apart
+    print()
+    for label, mod in mods.items():
+        path = mod.__file__
+        real = os.path.realpath(path)
+        print(f'{label}  ({mod.__name__})')
+        print('  Imported from:', path)
+        print('  Links to:     ', real if real != path else '(not a link, the file itself)')
+        print()
