@@ -130,9 +130,11 @@ alias souz="source ~/.zshrc"
 if [[ $HOST == mx-beelink ]]; then
     alias claude='DISPLAY=:99 claude'
     alias codex='DISPLAY=:99 codex'
+    alias pi='DISPLAY=:99 pi'
 else
     alias claude='DISPLAY=:0 claude'
     alias codex='DISPLAY=:0 codex'
+    alias pi='DISPLAY=:0 pi'
 fi
 alias cl='claude'
 alias co='codex'

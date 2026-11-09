@@ -1,10 +1,9 @@
 {
   "lastChangelogVersion": "1.5.0",
-  "theme": "codex-soft",
-  "deviceId": "ff383a9c-401c-4eec-aca8-10cef1bbbdb6",
-  "defaultProvider": "openai",
-  "defaultModel": "gpt-6.1-sol",
   "theme": "jacky-dark",
+  "deviceId": "ff383a9c-401c-4eec-aca8-10cef1bbbdb6",
+  "defaultProvider": "claude-bridge",
+  "defaultModel": "claude-opus-5-5",
   "packages": [
     "npm:pi-web-access",
     "npm:@juicesharp/rpiv-ask-user-question",
@@ -17,7 +16,10 @@
     "npm:pi-mcp-adapter",
     {
       "source": "git:github.com/mattpocock/skills",
-      "skills": ["skills/engineering/*", "skills/productivity/*"]
+      "skills": [
+        "skills/engineering/*",
+        "skills/productivity/*"
+      ]
     }
   ],
   "extensionChangelogVersions": {
@@ -28,5 +30,6 @@
   },
   "extensions": [
     "-builtin:mcp"
-  ]
+  ],
+  "defaultThinkingLevel": "high"
 }
