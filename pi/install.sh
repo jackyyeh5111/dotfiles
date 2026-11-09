@@ -49,4 +49,23 @@ if [[ -L "$DEST/CLAUDE.md" ]]; then
   echo "  removed: $DEST/CLAUDE.md"
 fi
 
+# Patch installed pi packages: patches/<package>/*.patch applies to
+# $DEST/npm/node_modules/<package>. Run this again after `pi update`,
+# which reinstalls packages unpatched.
+echo "==> Patching pi packages"
+for patch_file in "$SRC"/patches/*/*.patch; do
+  [[ -e "$patch_file" ]] || continue
+  pkg="$(basename "$(dirname "$patch_file")")"
+  pkg_dir="$DEST/npm/node_modules/$pkg"
+  name="$pkg/$(basename "$patch_file")"
+  if [[ ! -d "$pkg_dir" ]]; then
+    echo "  skipped (not installed): $name"
+  elif patch -d "$pkg_dir" -p1 -R --dry-run -s -f < "$patch_file" >/dev/null; then
+    echo "  already patched: $name"
+  else
+    patch -d "$pkg_dir" -p1 -s -f < "$patch_file"
+    echo "  patched: $name"
+  fi
+done
+
 echo "  pi settings linked. Start a new pi session to load changes."
