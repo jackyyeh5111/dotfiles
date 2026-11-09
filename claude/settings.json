@@ -10,7 +10,7 @@
       "Bash(python3 -)"
     ]
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -93,7 +93,7 @@
       "effortLevel": "high"
     },
     "claude-opus-5-5": {
-      "effortLevel": "high"
+      "effortLevel": "medium"
     }
   },
   "tui": "fullscreen",

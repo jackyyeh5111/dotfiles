@@ -585,6 +585,11 @@ setup_codex_config() {
   bash "$DOTFILES_DIR/codex/install.sh"
 }
 
+setup_pi_config() {
+  step "Setting up pi config"
+  bash "$DOTFILES_DIR/pi/install.sh"
+}
+
 # ============================================================================
 # Main
 # ============================================================================
@@ -625,6 +630,7 @@ main() {
   bootstrap_yazi_plugins
   setup_claude_config
   setup_codex_config
+  setup_pi_config
 
   step "Done"
   cat <<'EOF'

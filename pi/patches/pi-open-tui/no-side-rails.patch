@@ -1,0 +1,29 @@
+--- a/extensions/open-tui/editor.ts
++++ b/extensions/open-tui/editor.ts
+@@ -19,7 +19,8 @@
+ 	underline: "\x1b[4 q",
+ };
+ const DEFAULT_CURSOR_STYLE_SEQUENCE = "\x1b[0 q";
+-const EDITOR_FRAME_LEFT_INSET = 2;
++// No side rails: terminal text selection would copy them with the prompt.
++const EDITOR_FRAME_LEFT_INSET = 0;
+ const EDITOR_FRAME_HORIZONTAL_CHROME = EDITOR_FRAME_LEFT_INSET * 2;
+ 
+ type EditorFactory = NonNullable<Parameters<ExtensionContext["ui"]["setEditorComponent"]>[0]>;
+@@ -295,7 +296,6 @@
+ 		return renderWithCursor(decoration, width);
+ 	}
+ 	const borderPaint = (text: string) => decoration.editor.borderColor(text);
+-	const rail = borderPaint("│");
+ 
+ 	const result: string[] = [];
+ 	const inlineFooter = decoration.inlineFooter?.enabled() === true;
+@@ -307,7 +307,7 @@
+ 
+ 	for (let i = 1; i < bottomIdx; i++) {
+ 		const line = baseLines[i] ?? "";
+-		result.push(`${rail} ${fillLine(line, innerWidth)} ${rail}`);
++		result.push(fillLine(line, innerWidth));
+ 	}
+ 
+ 	result.push(inlineFooter

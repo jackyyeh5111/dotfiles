@@ -130,9 +130,11 @@ alias souz="source ~/.zshrc"
 if [[ $HOST == mx-beelink ]]; then
     alias claude='DISPLAY=:99 claude'
     alias codex='DISPLAY=:99 codex'
+    alias pi='DISPLAY=:99 pi'
 else
     alias claude='DISPLAY=:0 claude'
     alias codex='DISPLAY=:0 codex'
+    alias pi='DISPLAY=:0 pi'
 fi
 alias cl='claude'
 alias co='codex'
@@ -303,6 +305,21 @@ export PATH=$PATH:/usr/local/go/bin
 
 # enable core dumps
 ulimit -c unlimited
+
+# The kernel writes cores to the crash dir, and changing that needs root.
+# So move them to /tmp at each prompt instead, keeping the newest 5.
+CORE_DIR=/tmp/cores-$USER
+_sweep_cores() {
+    local f
+    for f in core.<->(N.U); do
+        [[ $(file -b -- $f) == *"core file"* ]] || continue
+        mkdir -p -m 700 $CORE_DIR
+        mv -- $f $CORE_DIR/$f.$(date +%s) && print -u2 "core dump moved to $CORE_DIR"
+        rm -f -- $CORE_DIR/core.*(Nom[6,-1])
+    done
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _sweep_cores
 
 . "$HOME/.cargo/env"
 

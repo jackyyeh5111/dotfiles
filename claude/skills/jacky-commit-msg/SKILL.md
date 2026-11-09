@@ -1,6 +1,6 @@
 ---
 name: jacky-commit-msg
-description: "Writes or rewrites a git commit message or PR description in simple, everyday words with an airy, easy-to-scan layout (Problem / Fix, plus Tests only when a test matters, each heading followed by a blank line and short indented sentences), adding a short usage example whenever the change adds something people run or call (a command, option, or API), and a tiny pure-text diagram or code snippet for a bug only when prose can't explain it. The first draft must already be short and plain; the user should never need to ask to simplify it. Use whenever the user asks to write, reword, amend, or clean up a commit message or PR message/description, e.g. 'modify last commit msg', 'write the PR msg', 'make the commit message clearer', 'commit msg looks too crowded'."
+description: "Writes or rewrites a git commit message or PR description in simple, everyday words with an airy, easy-to-scan layout (Problem / Fix, plus Tests only when a test matters, each heading followed by a blank line and short indented sentences), adding a short usage example whenever the change adds something people run or call (a command, option, or API), and a tiny pure-text diagram or code snippet for a bug only when prose can't explain it. Always write two drafts: follow the guide, then rewrite for clarity with plain words and a small ASCII diagram when helpful. Use whenever the user asks to write, reword, amend, or clean up a commit message or PR message/description, e.g. 'modify last commit msg', 'write the PR msg', 'make the commit message clearer', 'commit msg looks too crowded'."
 user-invocable: true
 argument-hint: "[commit ref or PR number; default: HEAD]"
 ---
@@ -9,13 +9,18 @@ argument-hint: "[commit ref or PR number; default: HEAD]"
 
 Write a message anyone on the team can read once and understand, even if they don't know the code: what broke, why, and what changed.
 
-**The first draft you show must already be the simple one.** The user should never have to say "make it simpler". If you're unsure, go shorter and plainer.
+**Write every commit or PR message twice before showing or applying it.**
+First, draft the complete message using this guide. Then rewrite the whole
+message for readability in step 6, even if the first draft seems good.
+Keep both passes internal and show only the second draft unless the user
+asks to see both.
 
 ## Process
 
 1. **Read the real change.** Run `git show <ref>` (or `git diff dev...HEAD` / `gh pr view` for a PR) and the current message. Write from the diff, not from the old message alone. If the old message has facts the diff doesn't show (the trigger, the root cause), keep them.
 
-2. **Write the message in this shape:**
+2. **First pass: draft the complete message in this shape.** Follow
+   the layout below and the rules in steps 3–5:
 
    ```
    <Subject: imperative, plain words, what the user gets, ≤ ~50 chars>
@@ -56,10 +61,10 @@ Write a message anyone on the team can read once and understand, even if they do
        bash run_test.sh quick          # after each change
    ```
 
-5. **Diagram or bug snippet: almost never.** For a bug fix, add a 2–4 line
-   plain-ASCII diagram or a 1–3 line code snippet only when the sentences
-   alone can't make the bug clear. If the Problem section already reads
-   clearly, skip it.
+5. **Use a small text visual when it makes the explanation easier.**
+   A 2–4 line ASCII diagram can show cause and effect, a sequence, or
+   before/after behavior. A 1–3 line code snippet can show a failing call.
+   Use the visual in place of the prose it explains; otherwise keep prose.
 
    ```
      Passing a list of arrays failed with a TypeError:
@@ -69,19 +74,23 @@ Write a message anyone on the team can read once and understand, even if they do
 
    Never use markdown tables, box-drawing art, or anything wider than ~72 columns.
 
-6. **Simplify before showing it.** The body should be about 3–7 sentences
-   (blank lines and usage-example lines don't count). Then go through it line by line:
-   - Describe the one main change. Leave out small side changes in the
-     same commit (a cleanup step, an output-format fix, a debug setting)
-     unless a reviewer would be surprised to find them.
-   - Cut any line a teammate could skip and still get the point.
-   - Replace mechanism words with what they mean: "blocks signals with
-     pthread_sigmask and waits in sigwait()" becomes "the main thread
-     waits for Ctrl+C".
-   - Drop "what still works as before" unless someone would really worry.
-   - Drop anything that already lives in a code comment.
+6. **Second pass: rewrite the entire message for clarity.** Write a new
+   version of the subject and body, rather than just checking the first
+   draft or swapping a few words. Read it as a teammate seeing this change
+   for the first time:
+   - Lead with what the reader sees, why it happens, and what changes.
+   - Use everyday words and short sentences. Keep jargon only when needed
+     for accuracy or to name something the reader needs to find in code.
+   - Cut repetition, side details, and sentences that add no useful meaning.
+   - Consider the ASCII visual from step 5 if it makes the explanation
+     easier to understand than prose alone.
+   - Preserve the facts, important limits, required usage example, and layout.
+   - Aim for 3–7 body sentences; trivial changes may stay shorter.
 
-7. **Apply it.**
+   Compare both drafts against the diff. Finish only when the second draft
+   accurately explains the change and is as easy to read as you can make it.
+
+7. **Apply only the second draft.**
    - Commit: write the message to a file in the scratchpad, then `git commit --amend -F <file>` (or `-F` on a new commit). First check `git branch -r --contains HEAD`: if the commit is already pushed, say that amending needs a force-push, and ask before rewriting it.
    - PR: `gh pr edit <n> --body-file <file>`, or print the message for the user to paste.
    - No attribution line: leave out `Co-Authored-By: Claude ...` and the "Generated with Claude Code" footer.
@@ -135,7 +144,7 @@ Tests:
   main_linux.cpp builds on its own against the committed server code.
 ```
 
-Right (write this the first time):
+After the second pass (show this version):
 
 ```
 Stop mxa_manager safely on Ctrl+C
@@ -182,7 +191,7 @@ Fix:
   The test README explains how to use the script.
 ```
 
-Right (write this the first time):
+After the second pass (show this version):
 
 ```
 Add a quick mode to run_test.sh
