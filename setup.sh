@@ -330,11 +330,18 @@ setup_uv() {
 
 setup_just() {
   step "Installing just"
+  # `j` runs `just -g`, which needs just 1.27+
+  local min=1.27.0 current
   if have just; then
-    echo "  just already installed: $(just --version)"
-    return
+    current=$(just --version | awk '{print $2}')
+    if [ "$(printf '%s\n' "$min" "$current" | sort -V | head -n1)" = "$min" ]; then
+      echo "  just already installed: just $current"
+      return
+    fi
+    echo "  just $current is older than $min, installing a newer one to ~/.local/bin"
   fi
-  # Ubuntu 22.04's apt has no just package, so use the official installer
+  # Ubuntu 22.04's apt has no just package, and 24.04's is too old, so use
+  # the official installer. ~/.local/bin comes first in PATH.
   curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh \
     | bash -s -- --to "$HOME/.local/bin"
 }
