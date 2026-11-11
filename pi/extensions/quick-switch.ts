@@ -1,5 +1,5 @@
 // Quick model and effort switching.
-//   /cl    -> Opus 5.5 (through claude-bridge), also the default for new sessions
+//   /cl    -> Opus 5.5 (native Anthropic), also the default for new sessions
 //   /co    -> GPT-6.1-Sol, also the default for new sessions
 //   alt+m  -> lower thinking effort, also the default for new sessions
 //   alt+,  -> higher thinking effort, also the default for new sessions
@@ -34,7 +34,7 @@ export default function (pi: ExtensionAPI) {
     });
   };
 
-  useModel("cl", "claude-bridge", "claude-opus-5-5");
+  useModel("cl", "anthropic", "claude-opus-5-5");
   useModel("co", "openai", "gpt-6.1-sol");
 
   // Step one level at a time. pi clamps levels the model can't use, so
