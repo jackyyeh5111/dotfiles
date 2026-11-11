@@ -9,7 +9,19 @@
      this.hintsText.setText(this.hintsTextValue);
      this.tui.requestRender();
    }
-@@ -1779,12 +1779,22 @@
+@@ -1754,6 +1754,11 @@
+     const activeCtx = ctx ?? lastUiContext;
+     if (activeCtx?.hasUI) {
+       activeCtx.ui.setWidget("btw", undefined);
++      // The overlay hides when unfocused; say so in the footer so it isn't lost.
++      activeCtx.ui.setStatus(
++        "btw",
++        overlayRuntime?.handle?.isHidden() ? `btw hidden · ${BTW_FOCUS_SHORTCUTS_LABEL} to show` : undefined,
++      );
+       overlayRuntime?.refresh?.();
+     }
+   }
+@@ -1779,13 +1784,23 @@
        return;
      }
  
@@ -20,7 +32,8 @@
      } else {
 -      handle.focus();
 +      focusOverlay();
-+    }
+     }
+-    overlayRuntime?.refresh?.();
 +  }
 +
 +  // Hide the overlay whenever it loses focus, so it only shows while focused.
@@ -28,14 +41,24 @@
 +    const handle = overlayRuntime?.handle;
 +    if (!handle) {
 +      return;
-     }
++    }
 +
 +    handle.unfocus();
 +    handle.setHidden(true);
-     overlayRuntime?.refresh?.();
++    syncUi();
    }
  
-@@ -1825,8 +1835,7 @@
+   function focusOverlay(): void {
+@@ -1796,7 +1811,7 @@
+ 
+     handle.setHidden(false);
+     handle.focus();
+-    overlayRuntime?.refresh?.();
++    syncUi();
+   }
+ 
+   function getOverlayOptions(): OverlayOptions {
+@@ -1825,8 +1840,7 @@
      dismissOverlay();
      await ensureOverlay(ctx);
      if (!wasFocused) {
@@ -45,7 +68,15 @@
      }
      setOverlayStatus(
        overlayWidthMode === "full"
-@@ -2311,8 +2320,7 @@
+@@ -2284,6 +2298,7 @@
+         overlayRuntime = null;
+       }
+       runtime.finish?.();
++      syncUi();
+     };
+ 
+     runtime.close = closeRuntime;
+@@ -2311,8 +2326,7 @@
                void dismissOrAbortOverlaySession();
              },
              () => {
@@ -55,7 +86,7 @@
              },
              () => {
                void toggleOverlayWidth(ctx);
-@@ -3039,7 +3047,7 @@
+@@ -3039,7 +3053,7 @@
  
    for (const shortcut of BTW_FOCUS_SHORTCUTS) {
      pi.registerShortcut(shortcut, {
