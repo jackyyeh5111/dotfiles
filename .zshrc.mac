@@ -100,7 +100,8 @@ source $ZSH/oh-my-zsh.sh
 
 export WORKON_HOME=~/pyEnv
 VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
-source /usr/local/bin/virtualenvwrapper.sh
+# setup.mac.sh skips it on Macs with no pre-built brew package
+[ -f /usr/local/bin/virtualenvwrapper.sh ] && source /usr/local/bin/virtualenvwrapper.sh
 
 export DYLD_LIBRARY_PATH="/Users/jackyyeh/gatos/gvaoi/gatoslib/usr/local/lib"
 alias cdpost="cd /Users/jackyyeh/gatos/AOI-Deluxe/postprocessor" 
@@ -142,7 +143,8 @@ alias co='codex'
 
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-source /usr/local/opt/fzf/shell/key-bindings.zsh
+# brew's fzf only; a release fzf's ~/.fzf.zsh already loads them
+[ -f /usr/local/opt/fzf/shell/key-bindings.zsh ] && source /usr/local/opt/fzf/shell/key-bindings.zsh
 # Ctrl+O: fzf history search, same as Ctrl+R
 bindkey '^O' fzf-history-widget
 # Option+K / Option+J: step back / forward through history, same as Up / Down

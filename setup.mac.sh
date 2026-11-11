@@ -28,6 +28,8 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CURRENT_STEP="(startup)"
 BREW_PREFIX=""
 ARCH_NVIM=""
+ARCH_RUST=""  # release names: x86_64-apple-darwin, aarch64-apple-darwin
+ARCH_GO=""    # fzf's release names: darwin_amd64, darwin_arm64
 NVIM_VERSION="0.12.6"
 
 # ~/.local/bin holds user-installed tools (Claude Code lands here). .zshrc.mac
@@ -67,16 +69,100 @@ step() {
 
 have() { command -v "$1" >/dev/null 2>&1; }
 
-# brew install, but quiet and fast when the formula is already there.
+# Setup never compiles anything: brew installs only pre-built packages
+# (bottles). Homebrew no longer builds bottles for most formulas on Intel
+# Macs, so there a tool falls back to its official release binary, or is
+# skipped and listed at the end of the run.
+SKIPPED=()
+
+# Prints the formulas among $1 and its dependencies that `brew install $1`
+# would have to compile: ones it would install or upgrade but that have no
+# bottle for this Mac (brew's JSON only lists this Mac's bottles).
+brew_no_bottle() {
+  # shellcheck disable=SC2046  # brew deps prints one formula per word
+  # 2>/dev/null: brew deps warns that it lists declared, not installed, deps
+  brew info --json=v2 "$1" $(brew deps "$1" 2>/dev/null) | python3 -I -c '
+import json, sys
+for f in json.load(sys.stdin)["formulae"]:
+    if (not f["installed"] or f["outdated"]) and not f["bottle"].get("stable", {}).get("files"):
+        print(f["name"])'
+}
+
+# Installs one formula from bottles, or returns 1 without installing so the
+# caller can fall back to something else.
+brew_try() {
+  local pkg="$1" missing
+  if brew list --formula --versions "$pkg" >/dev/null 2>&1; then
+    echo "  already installed: $pkg"
+    return
+  fi
+  missing="$(brew_no_bottle "$pkg")"
+  if [[ -n "$missing" ]]; then
+    echo "  no pre-built brew package for: $(echo $missing)"
+    return 1
+  fi
+  brew install "$pkg"
+}
+
+# brew_try for formulas with no fallback: skip them and list them at the end.
 brew_install() {
   local pkg
   for pkg in "$@"; do
-    if brew list --formula --versions "$pkg" >/dev/null 2>&1; then
-      echo "  already installed: $pkg"
-    else
-      brew install "$pkg"
-    fi
+    brew_try "$pkg" || SKIPPED+=("$pkg")
   done
+}
+
+# Prints the download URL of the newest release asset in GitHub repo $1
+# whose name matches regex $2. Looks past the latest release, because some
+# projects stop shipping a platform (delta's last Intel Mac build is 0.18.2).
+gh_asset_url() {
+  curl -fsSL "https://api.github.com/repos/$1/releases?per_page=20" | python3 -I -c '
+import json, re, sys
+for rel in json.load(sys.stdin):
+    if rel["draft"] or rel["prerelease"]:
+        continue
+    for asset in rel["assets"]:
+        if re.search(sys.argv[1], asset["name"]):
+            print(asset["browser_download_url"])
+            sys.exit()
+sys.exit(1)' "$2"
+}
+
+# install_release <repo> <asset-regex> <binary>...
+# Downloads a release archive (.tar.gz or .zip) and puts the named binaries
+# in ~/.local/bin.
+install_release() {
+  local repo="$1" pattern="$2" url tmp bin path
+  shift 2
+  url="$(gh_asset_url "$repo" "$pattern")" \
+    || die "No release of $repo matches '$pattern' — download one manually from https://github.com/$repo/releases"
+  tmp="$(mktemp -d)"
+  echo "  downloading $url"
+  curl -fLo "$tmp/archive" "$url" \
+    || die "Failed to download $url — check your network connection"
+  case "$url" in
+    *.zip) unzip -q "$tmp/archive" -d "$tmp" ;;
+    *)     tar -C "$tmp" -xzf "$tmp/archive" ;;
+  esac
+  for bin in "$@"; do
+    path="$(find "$tmp" -type f -name "$bin" | head -n1)"
+    [[ -n "$path" ]] || die "No '$bin' inside $url — inspect the archive manually"
+    install -m 755 "$path" "$HOME/.local/bin/$bin"
+    echo "  installed: ~/.local/bin/$bin"
+  done
+  rm -rf "$tmp"
+}
+
+# install_tool <command> <formula> <repo> <asset-regex> <binary>...
+# brew_try the formula, else install_release the rest.
+install_tool() {
+  local cmd="$1" formula="$2"
+  shift 2
+  if have "$cmd"; then
+    echo "  already installed: $cmd"
+    return
+  fi
+  brew_try "$formula" || install_release "$@"
 }
 
 # Same, for GUI apps (casks). A cask installed by hand (dragged into
@@ -134,8 +220,8 @@ preflight() {
   # Homebrew's prefix is architecture-dependent, and .zshrc.mac hardcodes the
   # Intel one (see check_zshrc_brew_paths at the end of the run).
   case "$(uname -m)" in
-    arm64)   BREW_PREFIX=/opt/homebrew; ARCH_NVIM=arm64 ;;
-    x86_64)  BREW_PREFIX=/usr/local;    ARCH_NVIM=x86_64 ;;
+    arm64)   BREW_PREFIX=/opt/homebrew; ARCH_NVIM=arm64;  ARCH_RUST=aarch64; ARCH_GO=arm64 ;;
+    x86_64)  BREW_PREFIX=/usr/local;    ARCH_NVIM=x86_64; ARCH_RUST=x86_64;  ARCH_GO=amd64 ;;
     *) die "Unsupported architecture: $(uname -m) (this script supports arm64 and x86_64)" ;;
   esac
 
@@ -172,46 +258,53 @@ setup_base_packages() {
   step "Installing base packages (python3, git, tmux, vim, htop, wget)"
   # No build-essential (Command Line Tools cover it), no openssh-server
   # (macOS ships sshd — enable it in System Settings > General > Sharing >
-  # Remote Login), no curl/unzip/gpg (all built in).
+  # Remote Login), no curl/unzip/gpg (all built in). Without bottles,
+  # python3, git and vim fall back to the ones macOS and the Command Line
+  # Tools ship; tmux and wget get skipped.
   brew_install python3 git tmux vim htop wget
 }
 
 # ============================================================================
-# CLI tools available directly via brew
+# CLI tools: brew, or the official release binary
 # ============================================================================
 
 setup_ripgrep() {
   step "Installing ripgrep (rg)"
-  brew_install ripgrep
+  install_tool rg ripgrep BurntSushi/ripgrep "-$ARCH_RUST-apple-darwin\.tar\.gz$" rg
 }
 
 setup_fastfetch() {
   step "Installing fastfetch (neofetch's maintained replacement)"
   # neofetch is archived upstream and no longer in homebrew-core.
-  brew_install fastfetch
+  install_tool fastfetch fastfetch fastfetch-cli/fastfetch "^fastfetch-macos-universal\.tar\.gz$" fastfetch
 }
 
 setup_fzf() {
   step "Installing fzf"
-  brew_install fzf
-  # .zshrc.mac sources ~/.fzf.zsh, which brew's install script generates.
+  install_tool fzf fzf junegunn/fzf "-darwin_$ARCH_GO\.tar\.gz$" fzf
+  # .zshrc.mac sources ~/.fzf.zsh: brew's install script generates it, and a
+  # release fzf prints the same setup itself. That file runs before
+  # .zshrc.mac puts ~/.local/bin on PATH, hence the full path.
   if [[ -f "$HOME/.fzf.zsh" ]]; then
     echo "  ~/.fzf.zsh already present"
+  elif [[ -x "$BREW_PREFIX/opt/fzf/install" ]]; then
+    "$BREW_PREFIX/opt/fzf/install" --key-bindings --completion --no-update-rc
   else
-    "$(brew --prefix)/opt/fzf/install" --key-bindings --completion --no-update-rc
+    echo "source <(\"$HOME/.local/bin/fzf\" --zsh)" >"$HOME/.fzf.zsh"
+    echo "  wrote ~/.fzf.zsh"
   fi
 }
 
 setup_bat() {
   step "Installing bat"
   # Unlike Debian there's no batcat rename here — the binary is just `bat`.
-  brew_install bat
+  install_tool bat bat sharkdp/bat "-$ARCH_RUST-apple-darwin\.tar\.gz$" bat
 }
 
 setup_fd() {
   step "Installing fd"
   # Likewise no fdfind rename, so no ~/.local/bin/fd symlink needed.
-  brew_install fd
+  install_tool fd fd sharkdp/fd "-$ARCH_RUST-apple-darwin\.tar\.gz$" fd
 }
 
 setup_astyle() {
@@ -221,6 +314,7 @@ setup_astyle() {
 
 setup_eza() {
   step "Installing eza"
+  # eza ships no macOS release binary, so no fallback.
   brew_install eza
 }
 
@@ -268,12 +362,12 @@ setup_zsh() {
 
 setup_starship() {
   step "Installing starship prompt"
-  brew_install starship
+  install_tool starship starship starship/starship "^starship-$ARCH_RUST-apple-darwin\.tar\.gz$" starship
 }
 
 setup_zoxide() {
   step "Installing zoxide"
-  brew_install zoxide
+  install_tool zoxide zoxide ajeetdsouza/zoxide "-$ARCH_RUST-apple-darwin\.tar\.gz$" zoxide
 }
 
 # ============================================================================
@@ -302,10 +396,8 @@ setup_virtualenvwrapper() {
   # brew, not `pip install --user`: .zshrc.mac sources
   # /usr/local/bin/virtualenvwrapper.sh, which is exactly where the formula
   # puts it (pip --user would hide it under ~/Library/Python/3.x/bin).
+  # Without a bottle it's skipped, and .zshrc.mac only sources it if present.
   brew_install virtualenvwrapper
-  if [[ ! -x "$BREW_PREFIX/bin/virtualenvwrapper.sh" ]]; then
-    die "virtualenvwrapper.sh not found in $BREW_PREFIX/bin after install — check 'brew list virtualenvwrapper'"
-  fi
 }
 
 # ============================================================================
@@ -330,7 +422,7 @@ setup_uv() {
 
 setup_just() {
   step "Installing just"
-  brew_install just
+  install_tool just just casey/just "-$ARCH_RUST-apple-darwin\.tar\.gz$" just
 }
 
 # ============================================================================
@@ -339,7 +431,7 @@ setup_just() {
 
 setup_delta() {
   step "Installing delta (git-delta)"
-  brew_install git-delta
+  install_tool delta git-delta dandavison/delta "-$ARCH_RUST-apple-darwin\.tar\.gz$" delta
 }
 
 # ============================================================================
@@ -348,7 +440,7 @@ setup_delta() {
 
 setup_ccache() {
   step "Installing ccache"
-  brew_install ccache
+  install_tool ccache ccache ccache/ccache "-darwin\.tar\.gz$" ccache
 }
 
 # ============================================================================
@@ -407,7 +499,7 @@ setup_neovim() {
 
 setup_yazi() {
   step "Installing yazi (terminal file manager)"
-  brew_install yazi
+  install_tool yazi yazi sxyazi/yazi "^yazi-$ARCH_RUST-apple-darwin\.zip$" yazi ya
   have yazi || die "yazi install completed but 'yazi' is not on PATH"
 }
 
@@ -417,7 +509,12 @@ setup_yazi() {
 
 setup_herdr() {
   step "Installing herdr"
-  brew_install herdr
+  if have herdr; then
+    echo "  already installed: herdr"
+    return
+  fi
+  # herdr's installer downloads its release binary into ~/.local/bin
+  brew_try herdr || curl -fsSL https://herdr.dev/install.sh | sh
 }
 
 # ============================================================================
@@ -611,6 +708,10 @@ main() {
 
   Open a new terminal (or `exec zsh`) to pick up the new shell config.
 EOF
+  if ((${#SKIPPED[@]})); then
+    echo ""
+    echo "  Skipped (no pre-built package for this Mac): ${SKIPPED[*]}"
+  fi
 }
 
 main "$@"
