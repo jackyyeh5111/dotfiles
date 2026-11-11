@@ -61,7 +61,9 @@ automatically.
   Pi also loads Codex's skills from `~/.agents/skills`.
   Existing files are saved under `~/.pi/agent/backups`. It then installs any
   missing `packages` from `settings.json` (never upgrades them), applies
-  `pi/patches`, and ends with a check. Auth and sessions stay local: run
+  `pi/patches`, and ends with a check. It also sets a git filter that hides
+  the machine state pi writes into `settings.json` (`deviceId`, changelog
+  versions), so the file only shows as changed when the config does. Auth and sessions stay local: run
   `/login` in pi once per machine. Re-run it (or ask pi to use the `pi-setup`
   skill) after `pi update --extensions`, which drops the patches.
   pi itself is installed by hand: `curl -fsSL https://pi.dev/install.sh | sh`.

@@ -1,7 +1,5 @@
 {
-  "lastChangelogVersion": "1.5.2",
   "theme": "codex-soft",
-  "deviceId": "ff383a9c-401c-4eec-aca8-10cef1bbbdb6",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-5-5",
   "packages": [
@@ -23,13 +21,6 @@
     "npm:pi-memory",
     "npm:pi-copy-message"
   ],
-  "extensionChangelogVersions": {
-    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.47.0",
-    "{\"source\":\"npm:pi-open-tui\",\"scope\":\"user\"}": "0.4.4",
-    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.88.0",
-    "{\"source\":\"npm:pi-mcp-adapter\",\"scope\":\"user\"}": "7.0.1",
-    "{\"source\":\"npm:pi-memory\",\"scope\":\"user\"}": "0.4.2"
-  },
   "extensions": [
     "-builtin:mcp"
   ],

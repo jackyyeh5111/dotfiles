@@ -60,6 +60,14 @@ for name in settings.json open-tui.json AGENTS.md SYSTEM.md keybindings.json \
   link "$SRC/$name" "$DEST/$name"
 done
 
+# Pi also writes deviceId and changelog versions into settings.json. This
+# git filter (see settings-filter.py) hides them, so the file only shows
+# as changed when the real config changes.
+if git -C "$SRC" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  git -C "$SRC" config filter.pi-settings.clean "python3 pi/settings-filter.py"
+  echo "  git filter set: pi-settings"
+fi
+
 # Share Codex's instructions. Pi's skills already come from
 # ~/.agents/skills, which codex/install.sh links to codex/skills.
 # A pi/AGENTS.md, if added, is linked above instead.

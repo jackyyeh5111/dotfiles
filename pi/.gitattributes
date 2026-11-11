@@ -1,0 +1,3 @@
+# Hide the machine state pi writes into settings.json; pi/install.sh sets
+# up the filter.
+settings.json filter=pi-settings
