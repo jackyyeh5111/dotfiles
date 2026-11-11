@@ -1,0 +1,62 @@
+--- a/extensions/open-tui/copy-buttons.ts
++++ b/extensions/open-tui/copy-buttons.ts
+@@ -22,6 +22,9 @@
+ // Zero-width APC sequence: survives wrapping and padding, and marks the label column before we strip it.
+ const MARKER_PREFIX = "\x1b_open-tui:cb:";
+ const PATCH_KEY = Symbol.for("pi-open-tui.copy-buttons");
++// APC bounds need ST terminators: BEL can swallow code and padding in real terminals.
++const CODE_START = "\x1b_open-tui:code-start\x1b\\";
++const CODE_END = "\x1b_open-tui:code-end\x1b\\";
+ // Pi only synthesizes `click` for a zero-movement release, so allow a little jitter.
+ const RELEASE_TOLERANCE = 2;
+ 
+@@ -53,6 +56,11 @@
+ 	createMouseEvent(type: TuiMouseEvent["type"], button: number, x: number, y: number): TuiMouseEvent;
+ 	resetTextSelection(): void;
+ 	requestRender(): void;
++	getSelectionColumns(line: string, row: number, selection: {
++		start: { row: number; col: number; boundary?: boolean };
++		end: { row: number; col: number; boundary?: boolean };
++	}, minColumn?: number, maxColumn?: number): { start: number; end: number };
++	applySelection(screen: string[], layout?: unknown): string[];
+ }
+ 
+ // Pi's private fields; checked at runtime because they can change between releases.
+@@ -129,7 +137,8 @@
+ 	const fill = Math.max(0, frameWidth - visibleWidth(prefix) - visibleWidth(suffix) - 1);
+ 	const top = (label === undefined ? marker : "") + border("╭─ ") + theme.codeBlockBorder(`${name} `) + border("─".repeat(fill))
+ 		+ (label === undefined ? "" : ` ${marker}${label} `) + border("╮");
+-	const body = rows.map((row) => border("│ ") + row + " ".repeat(Math.max(0, frameWidth - 4 - visibleWidth(row))) + border(" │"));
++	const body = rows.map((row) => border("│ ") + CODE_START + row + CODE_END
++		+ " ".repeat(Math.max(0, frameWidth - 4 - visibleWidth(row))) + border(" │"));
+ 	return [top, ...body, border(`╰${"─".repeat(frameWidth - 2)}╯`)];
+ }
+ 
+@@ -278,8 +287,27 @@
+ 	const originalUserRender = userProto.render;
+ 	const originalUserMouse = userProto.handleMouse;
+ 	const originalAltScreenMouse = altScreenProto.handleMouseEvent;
++	const originalSelectionColumns = altScreenProto.getSelectionColumns;
++	const originalApplySelection = altScreenProto.applySelection;
+ 
+ 	const restores = [
++		// Pi uses this boundary for both highlighting and clipboard extraction.
++		...(typeof originalSelectionColumns === "function" ? [patch(altScreenProto, "getSelectionColumns",
++			function (this: AltScreenInternals, line, row, selection, minColumn, maxColumn) {
++				const columns = originalSelectionColumns.call(this, line, row, selection, minColumn, maxColumn);
++				const startAt = line.indexOf(CODE_START);
++				const endAt = line.indexOf(CODE_END, startAt + CODE_START.length);
++				if (startAt < 0 || endAt < 0) return columns;
++				const start = visibleWidth(line.slice(0, startAt));
++				const end = visibleWidth(line.slice(0, endAt));
++				return { start: Math.max(columns.start, start), end: Math.min(columns.end, end) };
++			})] : []),
++		// Bounds are for selection math only; multiplexers can mangle unknown APC output, so never send them.
++		...(typeof originalApplySelection === "function" ? [patch(altScreenProto, "applySelection",
++			function (this: AltScreenInternals, screen, layout) {
++				return originalApplySelection.call(this, screen, layout)
++					.map((line) => line.replaceAll(CODE_START, "").replaceAll(CODE_END, ""));
++			})] : []),
+ 		patch(altScreenProto, "handleMouseEvent", function (this: AltScreenInternals, raw) {
+ 			// Pi's stable TUI Proxy binds methods to the real renderer and forwards fields.
+ 			// The child list identifies that renderer, even when mode switches reuse a terminal.

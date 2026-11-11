@@ -1,0 +1,11 @@
+{
+  "name": "pi-open-tui-patch-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test code-selection.test.mjs"
+  },
+  "devDependencies": {
+    "@xterm/headless": "6.0.0"
+  }
+}
