@@ -1,0 +1,25 @@
+--- a/extensions/btw.ts
++++ b/extensions/btw.ts
+@@ -38,6 +38,8 @@
+   type OverlayHandle,
+   type OverlayOptions,
+   type TUI,
++  type TuiMouseEvent,
++  type TuiMouseEventResult,
+ } from "@earendil-works/pi-tui";
+ import { loadBtwExtensionResources, readBtwExtensionSources, readBtwWorkspaceMode } from "./btw-extension-tools";
+ import { createBtwSshWorkspace, type BtwSshWorkspace } from "./btw-ssh-workspace";
+@@ -1559,6 +1561,13 @@
+     return (button & 1) === 0 ? -3 : 3;
+   }
+ 
++  // Fullscreen Pi parses wheel turns itself and sends them here, not to handleInput.
++  handleMouse(event: TuiMouseEvent): TuiMouseEventResult | undefined {
++    if (event.type !== "wheel" || !event.wheelDelta) return undefined;
++    this.scrollTranscript(event.wheelDelta);
++    return { handled: true };
++  }
++
+   handleInput(data: string): void {
+     if (matchesBtwFocusShortcut(data)) {
+       this.onUnfocusCallback();
