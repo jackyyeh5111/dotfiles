@@ -2,6 +2,10 @@
   "theme": "codex-soft",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-5-5",
+  "enabledModels": [
+    "anthropic/claude-opus-5-5",
+    "openai/gpt-6.1-sol"
+  ],
   "packages": [
     "npm:pi-web-access",
     "npm:@juicesharp/rpiv-ask-user-question",
@@ -24,5 +28,5 @@
   "extensions": [
     "-builtin:mcp"
   ],
-  "defaultThinkingLevel": "high"
+  "defaultThinkingLevel": "medium"
 }
