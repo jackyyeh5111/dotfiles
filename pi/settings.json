@@ -1,13 +1,12 @@
 {
-  "lastChangelogVersion": "1.5.0",
-  "theme": "jacky-dark",
+  "lastChangelogVersion": "1.5.2",
+  "theme": "codex-soft",
   "deviceId": "ff383a9c-401c-4eec-aca8-10cef1bbbdb6",
-  "defaultProvider": "claude-bridge",
+  "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-5-5",
   "packages": [
     "npm:pi-web-access",
     "npm:@juicesharp/rpiv-ask-user-question",
-    "npm:pi-claude-bridge",
     "npm:pi-open-tui",
     "npm:billion-context",
     "npm:pi-subagents",
@@ -20,7 +19,8 @@
         "skills/engineering/*",
         "skills/productivity/*"
       ]
-    }
+    },
+    "npm:pi-claude-bridge"
   ],
   "extensionChangelogVersions": {
     "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.47.0",
