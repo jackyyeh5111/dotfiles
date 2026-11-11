@@ -11,14 +11,26 @@
 repo="$(git rev-parse --show-toplevel)"
 if [[ "$(uname)" == Darwin ]]; then setup=setup.mac.sh; else setup=setup.sh; fi
 
+# Run one tool's setup and record a summary line for it, for example:
+#   ✓ pi
+#   ✗ pi: run /skill:pi-setup in pi, or: bash pi/install.sh
+summary=()
+sync() {
+  local name="$1" fix="$2" script="$3"
+  if bash "$repo/$script"; then
+    summary+=("  ✓ $name")
+  else
+    summary+=("  ✗ $name: $fix")
+  fi
+}
+
 # ORIG_HEAD is where HEAD was before the pull
 if git diff --quiet ORIG_HEAD HEAD -- "$setup" yazi/package.toml; then
-  bash "$repo/claude/skills/claude-setup/install.sh" \
-    || echo "Claude Code setup has problems. Run /claude-setup in Claude to fix them."
-  bash "$repo/codex/install.sh" \
-    || echo "Codex setup has problems. Re-run: bash codex/install.sh"
-  bash "$repo/pi/install.sh" \
-    || echo "pi setup has problems. Re-run: bash pi/install.sh"
+  sync "Claude Code" "run /claude-setup in Claude" claude/skills/claude-setup/install.sh
+  sync "Codex" "re-run: bash codex/install.sh" codex/install.sh
+  sync "pi" "run /skill:pi-setup in pi, or: bash pi/install.sh" pi/install.sh
+  echo "==> Setup after pull"
+  printf '%s\n' "${summary[@]}"
 else
   echo "==> $setup changed in this pull, re-running it to set up what's new"
   "$repo/$setup" || echo "$setup failed. Fix the error above, then re-run: $repo/$setup"
