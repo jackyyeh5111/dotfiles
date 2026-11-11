@@ -1,6 +1,6 @@
 ---
 name: pi-setup
-description: "Sets up or repairs pi on this machine from ~/dotfiles: links settings.json, open-tui.json, AGENTS.md, extensions, themes and skills into ~/.pi/agent, installs missing packages from settings.json, applies the patches in pi/patches, then checks it all. Use when setting up a machine, after pulling pi changes, after `pi update`, or when packages, patches, themes or extensions seem missing."
+description: "Sets up or repairs pi on this machine from ~/dotfiles: links settings.json, open-tui.json, models.json, AGENTS.md, extensions, themes and skills into ~/.pi/agent, installs missing packages from settings.json, applies the patches in pi/patches, then checks it all. Use when setting up a machine, after pulling pi changes, after `pi update`, or when packages, patches, themes or extensions seem missing."
 ---
 
 # pi setup from dotfiles

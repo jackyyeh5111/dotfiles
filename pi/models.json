@@ -1,0 +1,9 @@
+{
+  "providers": {
+    "anthropic": {
+      "compat": {
+        "supportsMessageThreads": false
+      }
+    }
+  }
+}

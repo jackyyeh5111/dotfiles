@@ -19,13 +19,15 @@
         "skills/engineering/*",
         "skills/productivity/*"
       ]
-    }
+    },
+    "npm:pi-memory"
   ],
   "extensionChangelogVersions": {
     "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.47.0",
     "{\"source\":\"npm:pi-open-tui\",\"scope\":\"user\"}": "0.4.4",
     "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.88.0",
-    "{\"source\":\"npm:pi-mcp-adapter\",\"scope\":\"user\"}": "7.0.1"
+    "{\"source\":\"npm:pi-mcp-adapter\",\"scope\":\"user\"}": "7.0.1",
+    "{\"source\":\"npm:pi-memory\",\"scope\":\"user\"}": "0.4.2"
   },
   "extensions": [
     "-builtin:mcp"
