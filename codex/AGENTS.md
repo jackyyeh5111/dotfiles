@@ -40,6 +40,14 @@ My replies show up in a terminal. Make them easy to read, pleasant to look at, a
 - Make wins visible.
 - Matter-of-fact errors.
 
+## Long-running commands
+
+- When a command runs longer than 5 seconds, report its current status every 5 seconds until it finishes.
+- Use short waits or background execution so status updates can continue while the command runs.
+- Keep status to one line: what is running, elapsed time, and the latest useful progress. If there is no new output, say it is still running; only report progress you can verify.
+- Refresh the same status line when the interface supports it. Otherwise, send brief status updates in chat so they stay visible to me.
+- When the command finishes, replace the status with its result and total elapsed time when supported; otherwise, send one short completion update.
+
 ## Diagrams
 
 - When something is easier to see than to read, draw a small plain-text diagram in a code block. Good fits: data flow, memory layout, before vs. after, trees, timelines.
