@@ -1,0 +1,2 @@
+#Install deb package in /tmp
+python -m pip install --target /tmp/mxprepost-relink-tools --no-deps patchelf
