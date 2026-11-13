@@ -1,0 +1,2 @@
+# Find directories containing "build" in their name
+fd -t d build
