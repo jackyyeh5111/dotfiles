@@ -1,2 +1,5 @@
 # Find directories containing "build" in their name
 fd -t d build
+
+#Install deb package in /tmp
+python -m pip install --target /tmp/mxprepost-relink-tools --no-deps patchelf
